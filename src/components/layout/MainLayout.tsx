@@ -1,18 +1,20 @@
-"use client";
 
-import Navbar from "./Navbar";
+import { ReactNode } from "react";
+import Header from "./Header";
 import Footer from "./Footer";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+interface MainLayoutProps {
+  children: ReactNode;
+}
+
+const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Header />
       <main className="flex-grow">{children}</main>
       <Footer />
     </div>
   );
-}
+};
+
+export default MainLayout;

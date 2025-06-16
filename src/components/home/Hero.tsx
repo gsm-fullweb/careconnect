@@ -1,10 +1,7 @@
-"use client";
-
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export default function Hero() {
+const Hero = () => {
   return (
     <section className="bg-primary/5 py-16 md:py-24">
       <div className="container-custom">
@@ -20,28 +17,26 @@ export default function Hero() {
               <Button
                 asChild
                 size="lg"
-                className="btn-primary text-base"
+                className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white text-base"
               >
-                <Link href="/assinatura">Buscar Cuidadores</Link>
+                <a href="https://careconnect.com.br/plans" target="_self" rel="noopener noreferrer">Encontre um Cuidador</a>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 size="lg"
-                className="btn-secondary text-base"
+                className="border-[#6B46C1] text-[#6B46C1] hover:bg-[#6B46C1]/10 text-base"
               >
-                <Link href="/cadastrar-cuidador">Cadastrar como Cuidador</Link>
+                <a href="https://careconnect.com.br/pre-cadastro" target="_self" rel="noopener noreferrer">Cadastrar como Cuidador</a>
               </Button>
             </div>
           </div>
           <div className="order-1 md:order-2 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-full overflow-hidden">
-              <Image
-                src="/hero-image.jpg"
+              <img
+                src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//hero-image.jpg"
                 alt="Cuidador e pessoa idosa juntos"
-                fill
-                className="object-cover"
-                priority
+                className="object-cover w-full h-full"
               />
             </div>
           </div>
@@ -49,4 +44,6 @@ export default function Hero() {
       </div>
     </section>
   );
-}
+};
+
+export default Hero;

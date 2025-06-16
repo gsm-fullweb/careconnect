@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function HowItWorks() {
@@ -64,13 +63,6 @@ export default function HowItWorks() {
                 </p>
               </div>
             </div>
-
-            <Button
-              asChild
-              className="btn-primary text-base"
-            >
-              <Link href="https://wa.me/551148633976">Falar com a Mila</Link>
-            </Button>
           </div>
 
           <div className="space-y-10">

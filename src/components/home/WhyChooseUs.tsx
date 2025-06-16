@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   Shield,
   UserCheck,
@@ -11,22 +10,22 @@ import {
 export default function WhyChooseUs() {
   const benefits = [
     {
-      icon: <Shield className="w-12 h-12 text-primary" />,
+      icon: <Shield className="w-12 h-12 text-[#6B46C1]" />,
       title: "Segurança",
       description: "Todos os cuidadores passam por verificação de antecedentes e validação de documentos",
     },
     {
-      icon: <UserCheck className="w-12 h-12 text-primary" />,
+      icon: <UserCheck className="w-12 h-12 text-[#6B46C1]" />,
       title: "Profissionais Qualificados",
       description: "Cuidadores com experiência comprovada e certificações na área de saúde",
     },
     {
-      icon: <Clock className="w-12 h-12 text-primary" />,
+      icon: <Clock className="w-12 h-12 text-[#6B46C1]" />,
       title: "Disponibilidade 24/7",
       description: "Atendimento disponível a qualquer hora, incluindo feriados e fins de semana",
     },
     {
-      icon: <Brain className="w-12 h-12 text-primary" />,
+      icon: <Brain className="w-12 h-12 text-[#6B46C1]" />,
       title: "Matching Inteligente com IA Mila",
       description: "Sistema que encontra o profissional ideal com base nas suas necessidades",
     },
@@ -36,7 +35,7 @@ export default function WhyChooseUs() {
     <section className="py-16 md:py-24">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="section-title">Por que escolher a CareConnect?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Por que escolher a CareConnect?</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
