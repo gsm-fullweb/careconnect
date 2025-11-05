@@ -20,26 +20,26 @@ const Services = () => { // Alterado de export default function Servicos() para 
   const categories = [
     {
       title: "Cuidados Básicos",
-      icon: <Heart className="w-16 h-16 text-[#6B46C1] mb-4" />,
+      icon: <Heart className="w-16 h-16 text-[#3e8861] mb-4" />,
       description: "Serviços essenciais de assistência diária para garantir conforto e bem-estar",
       services: [
         {
-          icon: <Bath className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <Bath className="w-8 h-8 text-[#3e8861]" />,
           name: "Higiene Pessoal",
           description: "Auxílio no banho, higiene bucal, troca de roupas e fraldas"
         },
         {
-          icon: <Utensils className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <Utensils className="w-8 h-8 text-[#3e8861]" />,
           name: "Alimentação",
           description: "Preparo de refeições adequadas à dieta e auxílio na alimentação"
         },
         {
-          icon: <BedDouble className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <BedDouble className="w-8 h-8 text-[#3e8861]" />,
           name: "Locomoção e Transferência",
           description: "Auxílio para levantar da cama, sentar, caminhar e realizar atividades"
         },
         {
-          icon: <Clock className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <Clock className="w-8 h-8 text-[#3e8861]" />,
           name: "Companhia",
           description: "Presença para conversar, entreter e fornecer apoio emocional"
         }
@@ -47,26 +47,26 @@ const Services = () => { // Alterado de export default function Servicos() para 
     },
     {
       title: "Cuidados Específicos",
-      icon: <Activity className="w-16 h-16 text-[#6B46C1] mb-4" />,
+      icon: <Activity className="w-16 h-16 text-[#3e8861] mb-4" />,
       description: "Cuidados especializados para necessidades específicas de saúde",
       services: [
         {
-          icon: <Thermometer className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <Thermometer className="w-8 h-8 text-[#3e8861]" />,
           name: "Monitoramento de Sinais Vitais",
           description: "Acompanhamento de pressão, temperatura e batimentos cardíacos"
         },
         {
-          icon: <Pill className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <Pill className="w-8 h-8 text-[#3e8861]" />,
           name: "Administração de Medicamentos",
           description: "Controle da medicação conforme prescrição médica"
         },
         {
-          icon: <ShieldPlus className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <ShieldPlus className="w-8 h-8 text-[#3e8861]" />,
           name: "Cuidados com Feridas",
           description: "Limpeza e curativos em feridas sob orientação médica"
         },
         {
-          icon: <BookOpen className="w-8 h-8 text-[#6B46C1]" />,
+          icon: <BookOpen className="w-8 h-8 text-[#3e8861]" />,
           name: "Estímulo Cognitivo",
           description: "Atividades para manter e estimular as capacidades mentais"
         }
@@ -103,12 +103,12 @@ const Services = () => { // Alterado de export default function Servicos() para 
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="py-16 md:py-24 bg-primary/5">
+      {/* Hero Section - Estilo Humanizado */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-[#f4f8f9] via-[#e9f3f1] to-[#f8fbfa]">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
                 Nossos Serviços de Cuidados
               </h1>
               <p className="text-lg text-gray-600 mb-6">
@@ -119,7 +119,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </p>
               <Button
                 asChild
-                className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white"
+                className="bg-[#3e8861] hover:bg-[#347553] text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <Link to="/plans">
                   Encontrar Cuidadores
@@ -127,12 +127,16 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </Button>
             </div>
             <div className="flex justify-center">
-              <div className="relative w-full max-w-md aspect-square rounded-lg overflow-hidden">
-                <img
-                  src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//services-main.png"
-                  alt="Cuidador auxiliando idoso"
-                  className="object-cover w-full h-full"
-                />
+              <div className="relative w-full max-w-md">
+                <div className="absolute inset-0 bg-blue-200 rounded-3xl transform rotate-6"></div>
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                  <img
+                    src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//services-main.png"
+                    alt="Cuidador auxiliando idoso"
+                    className="object-cover w-full h-full"
+                    loading="lazy"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -201,7 +205,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#6B46C1] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#3e8861] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 1
               </div>
               <h3 className="text-xl font-bold mb-2">Entre em Contato</h3>
@@ -210,7 +214,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#6B46C1] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#3e8861] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 2
               </div>
               <h3 className="text-xl font-bold mb-2">Receba Indicações</h3>
@@ -219,7 +223,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#6B46C1] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#3e8861] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 3
               </div>
               <h3 className="text-xl font-bold mb-2">Inicie o Atendimento</h3>
@@ -275,7 +279,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
           <div className="mt-10 text-center">
             <Link
               to="/contato"
-              className="text-[#6B46C1] font-medium hover:underline"
+              className="text-[#3e8861] font-medium hover:underline"
             >
               Ver todas as perguntas frequentes →
             </Link>
@@ -284,7 +288,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 bg-[#6B46C1] text-white">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-[#3e8861] to-[#2d6647] text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Pronto para encontrar o cuidador ideal?
@@ -296,8 +300,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="bg-white text-[#6B46C1] hover:bg-white/90 rounded-full"
+              className="bg-white text-[#3e8861] hover:bg-white/90 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Link to="/plans">
                 Buscar Cuidadores
