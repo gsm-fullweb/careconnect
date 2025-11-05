@@ -109,10 +109,6 @@ function Testimonials() {
               Sem baixar ou descobrir novos aplicativos. O CareConnect organiza tudo por meio do seu aplicativo de mensagens. Basta adicionar o número da Mila!
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-lg text-gray-600">Em breve, novos depoimentos serão adicionados.</p>
-            <p className="text-sm text-gray-500 mt-2">Verifique o console do navegador para logs de debug.</p>
-          </div>
         </div>
       </section>
     );
