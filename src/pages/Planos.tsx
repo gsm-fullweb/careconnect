@@ -68,9 +68,8 @@ const Planos = () => {
               
               {/* Pricing Highlight - Centralizado */}
               <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 mb-6 border border-blue-100 shadow-lg max-w-sm mx-auto lg:mx-0">
-                <div className="flex items-baseline justify-center gap-2 mb-1">
-                  <span className="text-4xl md:text-5xl font-black text-[#3e8861]">R$19,90</span>
-                  <span className="text-lg font-semibold text-gray-500">/ mês</span>
+                <div className="flex items-center justify-center mb-1">
+                  <span className="text-3xl md:text-4xl font-black text-[#3e8861]">Plano Gratuito</span>
                 </div>
                 <p className="text-xs text-gray-600 text-center">Sem fidelidade • Cancele quando quiser</p>
               </div>
@@ -82,7 +81,7 @@ const Planos = () => {
                   onClick={handlePay}
                   className="group inline-flex items-center justify-center bg-[#3e8861] text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 hover:bg-[#347553] transition-all duration-300"
                 >
-                  <span>Pagar com Mercado Pago — R$ 19,90</span>
+                  <span>Plano Gratuito</span>
                   <Sparkles className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
                 </button>
                 <a 
@@ -261,117 +260,7 @@ const Planos = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="assinar" className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="container-custom mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">
-              Plano simples e transparente
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-              Sem taxas ocultas, sem surpresas. Apenas R$19,90/mês para acesso total.
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              {/* Popular Badge */}
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                  ⭐ Mais Popular
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-[#3e8861]">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-2 text-gray-900">Plano Completo</h3>
-                  <p className="text-gray-600 mb-6">Acesso ilimitado a todos os recursos</p>
-                  
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-6xl md:text-7xl font-black text-[#3e8861]">R$19,90</span>
-                    <span className="text-2xl text-gray-500 font-semibold">/ mês</span>
-                  </div>
-                  <p className="text-sm text-gray-500">Sem fidelidade • Cancele quando quiser</p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Mila IA ilimitada</p>
-                        <p className="text-sm text-gray-600">Converse 24/7 pelo WhatsApp</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Busca personalizada</p>
-                        <p className="text-sm text-gray-600">Filtros por especialidade e região</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Agendamento automático</p>
-                        <p className="text-sm text-gray-600">Coordene visitas em segundos</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Notificações em tempo real</p>
-                        <p className="text-sm text-gray-600">Atualizações instantâneas</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Perfis verificados</p>
-                        <p className="text-sm text-gray-600">Background check completo</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Histórico completo</p>
-                        <p className="text-sm text-gray-600">Todas as conversas salvas</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Suporte prioritário</p>
-                        <p className="text-sm text-gray-600">Atendimento 24/7</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-6 h-6 text-[#3e8861] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-gray-900">Atualizações gratuitas</p>
-                        <p className="text-sm text-gray-600">Novos recursos inclusos</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <button 
-                    type="button"
-                    onClick={handlePay}
-                    className="w-full group inline-flex items-center justify-center bg-[#3e8861] text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-[#347553] hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                  >
-                    <span>Pagar com Mercado Pago — R$ 19,90</span>
-                    <Sparkles className="ml-2 w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+     
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-white">
@@ -392,7 +281,8 @@ const Planos = () => {
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                Por apenas R$19,90/mês, você tem acesso ilimitado à Mila e todos os recursos da plataforma. Sem fidelidade, cancele quando quiser.
+                Tenha acesso à Mila e aos recursos essenciais da plataforma — sem pagar nada por mês.
+100% gratuito, sem fidelidade e com liberdade total para usar quando quiser.
               </p>
             </details>
 
@@ -432,7 +322,7 @@ const Planos = () => {
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                A assinatura de R$19,90/mês dá acesso à plataforma. Os valores dos serviços dos cuidadores são negociados diretamente com eles.
+               O acesso à plataforma é gratuito. Os valores dos serviços dos cuidadores são negociados diretamente com eles.
               </p>
             </details>
 
