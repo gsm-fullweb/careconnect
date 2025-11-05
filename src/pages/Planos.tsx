@@ -36,7 +36,7 @@ const Planos = () => {
       } as any);
       return;
     } catch (e) {
-      window.open('https://wa.me/551148633976?text=Quero%20assinar%20o%20plano', '_blank');
+      window.open('https://wa.me/551148633976', '_blank');
     }
   };
   return (
@@ -252,7 +252,7 @@ const Planos = () => {
             <a href="#assinar" className="inline-flex items-center justify-center bg-[#3e8861] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#347553]">
               Ativar Mila 2.0
             </a>
-            <a href="https://wa.me/551148633976?text=Quero%20ativar%20Lembrete%20de%20Medica%C3%A7%C3%A3o%20e%20Bot%C3%A3o%20de%20P%C3%A2nico" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50">
+            <a href="https://wa.me/551148633976" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50">
               Falar no WhatsApp
             </a>
           </div>
