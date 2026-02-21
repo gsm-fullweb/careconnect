@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      '/api/n8n': {
+        target: 'https://n8n-n8n.n1n956.easypanel.host',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/n8n/, ''),
+        secure: true,
+      },
+    },
   },
   plugins: [
     react(),

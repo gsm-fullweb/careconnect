@@ -15,7 +15,7 @@ const CadastrarCuidador = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [candidatoData, setCandidatoData] = useState<any>(null);
-  const [editingSections, setEditingSections] = useState<{[key: string]: boolean}>({});
+  const [editingSections, setEditingSections] = useState<{ [key: string]: boolean }>({});
   const [editFormData, setEditFormData] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -49,7 +49,7 @@ const CadastrarCuidador = () => {
         }
 
         setCandidatoData(data);
-        setEditFormData({...data});
+        setEditFormData({ ...data });
       } catch (error) {
         console.error('Erro ao buscar candidato:', error);
         toast({
@@ -66,8 +66,8 @@ const CadastrarCuidador = () => {
   }, [user]);
 
   // Redirect if not authenticated
-  if (!user) {
-    return <Navigate to="/admin/login" replace />;
+  if (!user && !loading) {
+    return <Navigate to="/login" replace />;
   }
 
   // Redirect if not a caregiver (no data found)
@@ -95,13 +95,13 @@ const CadastrarCuidador = () => {
   // 📤 Returns: void
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setEditFormData((prev: any) => ({ ...prev, [name]: checked }));
       return;
     }
-    
+
     setEditFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
@@ -119,13 +119,13 @@ const CadastrarCuidador = () => {
   // 📤 Returns: void
   const handleSectionSave = async (section: string) => {
     setSaving(true);
-    
+
     try {
       const updateData = {
         ...editFormData, // Isso incluirá 'estado' se estiver em editFormData
         ultima_atualizacao: new Date().toISOString()
       };
-      
+
       // Log para depuração (opcional, mas útil)
       console.log("Enviando para Supabase (updateData):", JSON.stringify(updateData, null, 2));
 
@@ -133,24 +133,24 @@ const CadastrarCuidador = () => {
         .from('candidatos_cuidadores_rows')
         .update(updateData)
         .eq('id', candidatoData.id);
-        
+
       if (error) throw error;
-      
-      setCandidatoData({...candidatoData, ...updateData}); // Mescla para manter dados não editados
+
+      setCandidatoData({ ...candidatoData, ...updateData }); // Mescla para manter dados não editados
       setEditingSections(prev => ({ ...prev, [section]: false }));
-      
+
       toast({
         title: "Dados atualizados",
         description: "Suas informações foram atualizadas com sucesso.",
       });
-      
+
     } catch (error) {
       console.error("Erro ao atualizar dados:", error);
       // Verifique se o erro é específico sobre a coluna 'estado'
       // Se o erro for "Could not find the 'X' column", então X não existe na tabela.
       toast({
         title: "Erro",
-        description: `Não foi possível atualizar seus dados. Detalhe: ${error.message || 'Erro desconhecido'}`, 
+        description: `Não foi possível atualizar seus dados. Detalhe: ${error.message || 'Erro desconhecido'}`,
         variant: "destructive"
       });
     } finally {
@@ -163,7 +163,7 @@ const CadastrarCuidador = () => {
   // 📥 Parameters: section (string)
   // 📤 Returns: void
   const handleSectionCancel = (section: string) => {
-    setEditFormData({...candidatoData});
+    setEditFormData({ ...candidatoData });
     setEditingSections(prev => ({ ...prev, [section]: false }));
   };
 
@@ -198,10 +198,10 @@ const CadastrarCuidador = () => {
   };
 
   // Check if registration is incomplete
-  const isRegistrationIncomplete = !candidatoData?.escolaridade || 
-    !candidatoData?.disponibilidade_horarios || 
-    !candidatoData?.cargo || 
-    !candidatoData?.experiencia || 
+  const isRegistrationIncomplete = !candidatoData?.escolaridade ||
+    !candidatoData?.disponibilidade_horarios ||
+    !candidatoData?.cargo ||
+    !candidatoData?.experiencia ||
     !candidatoData?.referencias;
 
   if (loading) {
@@ -234,7 +234,7 @@ const CadastrarCuidador = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               )}
-              
+
               <Button
                 variant="outline"
                 onClick={() => supabase.auth.signOut()}
@@ -255,7 +255,7 @@ const CadastrarCuidador = () => {
               <div>
                 <h3 className="text-yellow-800 font-medium">Cadastro Incompleto</h3>
                 <p className="text-yellow-700 text-sm">
-                  Seu cadastro ainda não está completo. Clique em "Completar Cadastro" para preencher 
+                  Seu cadastro ainda não está completo. Clique em "Completar Cadastro" para preencher
                   todas as informações necessárias e ativar seu perfil profissional.
                 </p>
               </div>
@@ -284,9 +284,8 @@ const CadastrarCuidador = () => {
               ].map(({ key, label, icon: Icon }) => {
                 const isComplete = checkSectionCompletion(key);
                 return (
-                  <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${
-                    isComplete ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-                  }`}>
+                  <div key={key} className={`flex items-center gap-2 p-2 rounded-lg ${isComplete ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                    }`}>
                     <Icon className="w-4 h-4" />
                     <span className="text-sm font-medium">{label}</span>
                     {isComplete ? (
@@ -305,7 +304,7 @@ const CadastrarCuidador = () => {
       {/* Main Content - Accordion Sections */}
       <div className="container mx-auto px-4 py-8">
         <Accordion type="multiple" className="space-y-4">
-          
+
           {/* 📁 1. Dados Pessoais */}
           <AccordionItem value="personal" className="border rounded-lg">
             <Card>
@@ -355,12 +354,12 @@ const CadastrarCuidador = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
                       {editingSections.personal ? (
-                        <Input 
+                        <Input
                           name="nome"
                           value={editFormData.nome || ''}
                           onChange={handleInputChange}
@@ -370,17 +369,17 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.nome}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                       <p className="text-gray-900">{candidatoData?.email}</p>
                       <p className="text-xs text-gray-500">Email não pode ser alterado</p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                       {editingSections.personal ? (
-                        <Input 
+                        <Input
                           name="telefone"
                           value={editFormData.telefone || ''}
                           onChange={handleInputChange}
@@ -389,11 +388,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.telefone}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
                       {editingSections.personal ? (
-                        <Input 
+                        <Input
                           name="data_nascimento"
                           type="date"
                           value={editFormData.data_nascimento || ''}
@@ -403,7 +402,7 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.data_nascimento}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Possui Filhos</label>
                       {editingSections.personal ? (
@@ -420,7 +419,7 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.possui_filhos}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Fumante</label>
                       {editingSections.personal ? (
@@ -492,12 +491,12 @@ const CadastrarCuidador = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
                       {editingSections.address ? (
-                        <Input 
+                        <Input
                           name="cep"
                           value={editFormData.cep || ''}
                           onChange={handleInputChange}
@@ -506,11 +505,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.cep || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
                       {editingSections.address ? (
-                        <Input 
+                        <Input
                           name="endereco"
                           value={editFormData.endereco || ''}
                           onChange={handleInputChange}
@@ -519,11 +518,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.endereco || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                       {editingSections.address ? (
-                        <Input 
+                        <Input
                           name="estado"
                           value={editFormData.estado || ''}
                           onChange={handleInputChange}
@@ -532,11 +531,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.estado || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
                       {editingSections.address ? (
-                        <Input 
+                        <Input
                           name="cidade"
                           value={editFormData.cidade || ''}
                           onChange={handleInputChange}
@@ -600,12 +599,12 @@ const CadastrarCuidador = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Escolaridade</label>
                       {editingSections.education ? (
-                        <Input 
+                        <Input
                           name="escolaridade"
                           value={editFormData.escolaridade || ''}
                           onChange={handleInputChange}
@@ -614,11 +613,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.escolaridade || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Cursos Realizados</label>
                       {editingSections.education ? (
-                        <Textarea 
+                        <Textarea
                           name="cursos_realizados"
                           value={editFormData.cursos_realizados || ''}
                           onChange={handleInputChange}
@@ -628,11 +627,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.cursos_realizados || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Categoria Profissional</label>
                       {editingSections.education ? (
-                        <Input 
+                        <Input
                           name="cargo"
                           value={editFormData.cargo || ''}
                           onChange={handleInputChange}
@@ -641,11 +640,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.cargo || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">COREN</label>
                       {editingSections.education ? (
-                        <Input 
+                        <Input
                           name="coren"
                           value={editFormData.coren || ''}
                           onChange={handleInputChange}
@@ -654,11 +653,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.coren || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">CREFITO</label>
                       {editingSections.education ? (
-                        <Input 
+                        <Input
                           name="crefito"
                           value={editFormData.crefito || ''}
                           onChange={handleInputChange}
@@ -667,11 +666,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.crefito || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">CRM</label>
                       {editingSections.education ? (
-                        <Input 
+                        <Input
                           name="crm"
                           value={editFormData.crm || ''}
                           onChange={handleInputChange}
@@ -735,7 +734,7 @@ const CadastrarCuidador = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Possui Experiência</label>
@@ -753,11 +752,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.possui_experiencia}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Disponibilidade de Horários</label>
                       {editingSections.experience ? (
-                        <Input 
+                        <Input
                           name="disponibilidade_horarios"
                           value={editFormData.disponibilidade_horarios || ''}
                           onChange={handleInputChange}
@@ -766,7 +765,7 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.disponibilidade_horarios || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Disponível para Dormir no Local</label>
                       {editingSections.experience ? (
@@ -783,11 +782,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.disponivel_dormir_local}</p>
                       )}
                     </div>
-                    
+
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Descrição da Experiência</label>
                       {editingSections.experience ? (
-                        <Textarea 
+                        <Textarea
                           name="descricao_experiencia"
                           value={editFormData.descricao_experiencia || ''}
                           onChange={handleInputChange}
@@ -852,12 +851,12 @@ const CadastrarCuidador = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Referência 1</label>
                       {editingSections.references ? (
-                        <Textarea 
+                        <Textarea
                           name="referencia_1"
                           value={editFormData.referencia_1 || ''}
                           onChange={handleInputChange}
@@ -868,11 +867,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.referencia_1 || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Referência 2</label>
                       {editingSections.references ? (
-                        <Textarea 
+                        <Textarea
                           name="referencia_2"
                           value={editFormData.referencia_2 || ''}
                           onChange={handleInputChange}
@@ -883,11 +882,11 @@ const CadastrarCuidador = () => {
                         <p className="text-gray-900">{candidatoData?.referencia_2 || 'Não informado'}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Referência 3</label>
                       {editingSections.references ? (
-                        <Textarea 
+                        <Textarea
                           name="referencia_3"
                           value={editFormData.referencia_3 || ''}
                           onChange={handleInputChange}

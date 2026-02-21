@@ -47,7 +47,7 @@ const PainelCuidador = () => {
         }
 
         setCandidatoData(data);
-        setEditFormData({...data});
+        setEditFormData({ ...data });
       } catch (error) {
         console.error('Erro ao buscar candidato:', error);
         toast({
@@ -73,7 +73,7 @@ const PainelCuidador = () => {
 
   // Redirect if not authenticated
   if (!user) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Redirect if not a caregiver (no data found)
@@ -97,13 +97,13 @@ const PainelCuidador = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setEditFormData((prev: any) => ({ ...prev, [name]: checked }));
       return;
     }
-    
+
     setEditFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
@@ -117,30 +117,30 @@ const PainelCuidador = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    
+
     try {
       const updateData = {
         ...editFormData,
         ultima_atualizacao: new Date().toISOString(),
         status_candidatura: 'Cadastro completo - Em análise'
       };
-      
+
       const { error } = await supabase
         .from('candidatos_cuidadores_rows')
         .update(updateData)
         .eq('id', candidatoData.id);
-        
+
       if (error) throw error;
-      
-      setCandidatoData({...updateData});
+
+      setCandidatoData({ ...updateData });
       setEditMode(false);
       setHasChanges(false);
-      
+
       toast({
         title: "✅ Dados atualizados com sucesso!",
         description: "Suas informações foram salvas e estão sendo analisadas pela nossa equipe.",
       });
-      
+
     } catch (error) {
       console.error("Erro ao atualizar dados:", error);
       toast({
@@ -154,7 +154,7 @@ const PainelCuidador = () => {
   };
 
   const handleCancel = () => {
-    setEditFormData({...candidatoData});
+    setEditFormData({ ...candidatoData });
     setEditMode(false);
     setHasChanges(false);
   };
@@ -181,17 +181,17 @@ const PainelCuidador = () => {
 
   // Check if registration is complete
   const requiredFields = [
-    'nome', 'email', 'telefone', 'data_nascimento', 'cep', 'endereco', 
-    'cidade', 'escolaridade', 'disponibilidade_horarios', 'cargo', 
+    'nome', 'email', 'telefone', 'data_nascimento', 'cep', 'endereco',
+    'cidade', 'escolaridade', 'disponibilidade_horarios', 'cargo',
     'experiencia', 'referencias'
   ];
-  
-  const isRegistrationComplete = requiredFields.every(field => 
+
+  const isRegistrationComplete = requiredFields.every(field =>
     candidatoData?.[field] && candidatoData[field].trim() !== ''
   );
 
   const completionPercentage = Math.round(
-    (requiredFields.filter(field => 
+    (requiredFields.filter(field =>
       candidatoData?.[field] && candidatoData[field].trim() !== ''
     ).length / requiredFields.length) * 100
   );
@@ -277,7 +277,7 @@ const PainelCuidador = () => {
                     {isRegistrationComplete ? '🎉 Perfil Completo!' : '📝 Complete seu Perfil'}
                   </h3>
                   <p className="text-sm text-gray-700">
-                    {isRegistrationComplete 
+                    {isRegistrationComplete
                       ? 'Parabéns! Seu perfil está completo e sendo analisado pela nossa equipe.'
                       : `Você está quase lá! Faltam apenas ${100 - completionPercentage}% para completar seu perfil profissional.`
                     }
@@ -287,11 +287,10 @@ const PainelCuidador = () => {
               <div className="text-right">
                 <div className="text-2xl font-bold text-gray-800 mb-1">{completionPercentage}%</div>
                 <div className="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-700 rounded-full ${
-                      isRegistrationComplete ? 'bg-green-500' : 
-                      completionPercentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
+                  <div
+                    className={`h-full transition-all duration-700 rounded-full ${isRegistrationComplete ? 'bg-green-500' :
+                        completionPercentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
                     style={{ width: `${completionPercentage}%` }}
                   ></div>
                 </div>
@@ -372,7 +371,7 @@ const PainelCuidador = () => {
               )}
             </Button>
           </div>
-          
+
           {/* Indicador de mudanças */}
           {hasChanges && (
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full animate-bounce">

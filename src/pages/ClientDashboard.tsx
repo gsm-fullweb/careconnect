@@ -9,25 +9,25 @@ import { Search, MessageSquare, User, Star, MapPin, Phone, LogOut, Heart, Filter
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 const ClienteDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  
+
   // Estados principais
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("__all__");
   const [selectedCargo, setSelectedCargo] = useState("__all__");
-  const [cuidadoresEncontrados, setCuidadoresEncontrados] = useState([]);
-  const [cuidadorSelecionado, setCuidadorSelecionado] = useState(null);
+  const [cuidadoresEncontrados, setCuidadoresEncontrados] = useState<any[]>([]);
+  const [cuidadorSelecionado, setCuidadorSelecionado] = useState<any>(null);
   const [buscaRealizada, setBuscaRealizada] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [favoritos, setFavoritos] = useState([]);
-  const [availableCities, setAvailableCities] = useState([]);
-  const [availableCargos, setAvailableCargos] = useState([]);
-  
+  const [favoritos, setFavoritos] = useState<string[]>([]);
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [availableCargos, setAvailableCargos] = useState<string[]>([]);
+
   // Estados para depoimentos
   const [novoDepoimento, setNovoDepoimento] = useState({
     cuidador_id: "",
@@ -35,16 +35,16 @@ const ClienteDashboard = () => {
     texto: "",
     avaliacao: 5
   });
-  const [meusDepoimentos, setMeusDepoimentos] = useState([]);
+  const [meusDepoimentos, setMeusDepoimentos] = useState<any[]>([]);
 
   // Carregar dados iniciais
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
       loadMeusDepoimentos();
       loadFavoritos();
       loadFilterOptions();
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const loadFilterOptions = async () => {
     try {
@@ -95,45 +95,43 @@ const ClienteDashboard = () => {
   const handleBuscarCuidadores = async () => {
     setLoading(true);
     setBuscaRealizada(true);
-    
+
     try {
       console.log('Iniciando busca de cuidadores...');
       console.log('Filtros aplicados:', { searchTerm, selectedCity, selectedCargo });
-      
+
       // Normalizar o termo de busca
       const termoNormalizado = searchTerm?.trim().toLowerCase() || '';
-      
+
       let query = supabase
         .from('candidatos_cuidadores_rows')
         .select('*')
         .eq('status_candidatura', 'Aprovado');
-      
+
       // Filtro nome
       if (termoNormalizado) {
         query = query.ilike('nome', `%${termoNormalizado}%`);
       }
-      
+
       // Filtro cidade (desconsidera se "__all__")
       if (selectedCity && selectedCity !== "__all__") {
         query = query.eq('cidade', selectedCity);
       }
-      
+
       // Filtro cargo (desconsidera se "__all__")
       if (selectedCargo && selectedCargo !== "__all__") {
         query = query.eq('cargo', selectedCargo);
       }
-      
+
       const { data, error } = await query
         .order('nome')
         .limit(100);
-      
-      console.log('Resultado da busca:', { data, error, count: data?.length });
-      
+
       if (error) {
         console.error('Erro na query:', error);
         throw error;
       }
-      
+
       // Mapear os dados para o formato da tabela
       const cuidadoresFormatados = (data || []).map(cuidador => {
         return {
@@ -148,21 +146,20 @@ const ClienteDashboard = () => {
           descricao: cuidador.descricao_experiencia || 'Profissional experiente'
         };
       });
-      
-      console.log('Cuidadores formatados finais:', cuidadoresFormatados);
+
       setCuidadoresEncontrados(cuidadoresFormatados);
-      
+
       const filtrosAplicados = [
         termoNormalizado && `nome: "${termoNormalizado}"`,
         selectedCity && `cidade: "${selectedCity}"`,
         selectedCargo && `cargo: "${selectedCargo}"`
       ].filter(Boolean).join(', ');
-      
+
       toast({
         title: "Busca realizada com sucesso",
         description: `Encontrados ${cuidadoresFormatados.length} cuidador(es)${filtrosAplicados ? ` com filtros: ${filtrosAplicados}` : ''}`,
       });
-      
+
     } catch (error) {
       console.error('Erro ao buscar cuidadores:', error);
       toast({
@@ -182,7 +179,7 @@ const ClienteDashboard = () => {
     setSelectedCargo("__all__");
     setCuidadoresEncontrados([]);
     setBuscaRealizada(false);
-    
+
     toast({
       title: "Filtros limpos",
       description: "Todos os filtros foram removidos. Faça uma nova busca.",
@@ -198,27 +195,27 @@ const ClienteDashboard = () => {
       });
       return;
     }
-    
+
     // Limpar o telefone (remover caracteres não numéricos)
     const telefoneClean = telefone.replace(/\D/g, '');
-    
+
     // Verificar se o telefone tem o formato correto
     let whatsappNumber = telefoneClean;
-    
+
     // Se não começar com 55 (código do Brasil), adicionar
     if (!whatsappNumber.startsWith('55')) {
       whatsappNumber = '55' + whatsappNumber;
     }
-    
+
     const mensagem = `Olá ${nome}, encontrei seu perfil na plataforma CareConnect e gostaria de conversar sobre serviços de cuidado.`;
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-    
+
     window.open(url, '_blank');
   };
 
   const toggleFavorito = async (cuidadorId: string) => {
     const isFavorito = favoritos.includes(cuidadorId);
-    
+
     try {
       if (isFavorito) {
         // Remover dos favoritos
@@ -262,7 +259,7 @@ const ClienteDashboard = () => {
       cuidador_id: cuidador.id,
       cuidador_nome: cuidador.nome
     });
-    
+
     toast({
       title: "Cuidador selecionado",
       description: `${cuidador.nome} foi selecionado para avaliação.`,
@@ -271,7 +268,7 @@ const ClienteDashboard = () => {
 
   const handleSubmitDepoimento = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!cuidadorSelecionado) {
       toast({
         title: "Erro",
@@ -287,7 +284,7 @@ const ClienteDashboard = () => {
       const { error } = await supabase
         .from('testimonials')
         .insert({
-          name: user?.user_metadata?.name || user?.email || 'Cliente',
+          name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Cliente',
           role: 'Cliente',
           content: novoDepoimento.texto,
           rating: novoDepoimento.avaliacao,
@@ -305,7 +302,7 @@ const ClienteDashboard = () => {
 
       setNovoDepoimento({ cuidador_id: "", cuidador_nome: "", texto: "", avaliacao: 5 });
       setCuidadorSelecionado(null);
-      
+
       loadMeusDepoimentos();
     } catch (error) {
       console.error("Erro ao enviar depoimento:", error);
@@ -321,7 +318,7 @@ const ClienteDashboard = () => {
 
   const loadMeusDepoimentos = async () => {
     if (!user?.id) return;
-    
+
     try {
       const { data, error } = await supabase
         .from('testimonials')
@@ -330,13 +327,27 @@ const ClienteDashboard = () => {
         .order('created_at', { ascending: false });
 
       if (error && error.code !== '42P01') throw error;
-      
+
       setMeusDepoimentos(data || []);
     } catch (error) {
       console.error('Erro ao carregar depoimentos:', error);
       setMeusDepoimentos([]);
     }
   };
+
+  // Guard de autenticação
+  if (!authLoading && !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Loading de autenticação
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-12 h-12 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -382,7 +393,7 @@ const ClienteDashboard = () => {
                 onKeyPress={(e) => e.key === 'Enter' && handleBuscarCuidadores()}
               />
             </div>
-            
+
             {/* Segunda linha - Filtros */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -401,7 +412,7 @@ const ClienteDashboard = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Cargo/Especialidade
@@ -419,10 +430,10 @@ const ClienteDashboard = () => {
                 </Select>
               </div>
             </div>
-            
+
             {/* Terceira linha - Botões */}
             <div className="flex gap-4">
-              <Button 
+              <Button
                 onClick={handleBuscarCuidadores}
                 disabled={loading}
                 className="flex-1 md:flex-none"
@@ -430,8 +441,8 @@ const ClienteDashboard = () => {
                 <Search className="w-4 h-4 mr-2" />
                 {loading ? "Buscando..." : "Buscar"}
               </Button>
-              
-              <Button 
+
+              <Button
                 variant="outline"
                 onClick={clearFilters}
                 className="flex items-center gap-2"
@@ -440,7 +451,7 @@ const ClienteDashboard = () => {
                 Limpar Filtros
               </Button>
             </div>
-            
+
             {/* Filtros aplicados */}
             {(searchTerm || (selectedCity && selectedCity !== "__all__") || (selectedCargo && selectedCargo !== "__all__")) && (
               <div className="flex flex-wrap gap-2 pt-2 border-t">
@@ -462,7 +473,7 @@ const ClienteDashboard = () => {
                 )}
               </div>
             )}
-            
+
             <p className="text-sm text-gray-500">
               💡 Dica: Use os filtros para refinar sua busca ou deixe tudo vazio para ver todos os cuidadores
             </p>
@@ -528,7 +539,7 @@ const ClienteDashboard = () => {
                                 >
                                   <Heart className={`w-4 h-4 ${favoritos.includes(cuidador.id) ? 'fill-red-500 text-red-500' : ''}`} />
                                 </Button>
-                                
+
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -537,7 +548,7 @@ const ClienteDashboard = () => {
                                   <Star className="w-4 h-4 mr-1" />
                                   Avaliar
                                 </Button>
-                                
+
                                 <Button
                                   size="sm"
                                   className="bg-green-600 hover:bg-green-700"
@@ -580,7 +591,7 @@ const ClienteDashboard = () => {
                       <p className="font-medium text-blue-900">{cuidadorSelecionado.nome}</p>
                       <p className="text-sm text-blue-700">{cuidadorSelecionado.cidade}</p>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Sua Avaliação
@@ -670,11 +681,10 @@ const ClienteDashboard = () => {
                         </div>
                         <p className="text-xs text-gray-600 mb-2">{depoimento.content}</p>
                         <div className="flex justify-between items-center">
-                          <span className={`text-xs px-2 py-1 rounded ${
-                            depoimento.published 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
+                          <span className={`text-xs px-2 py-1 rounded ${depoimento.published
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                            }`}>
                             {depoimento.published ? '✅ Publicado' : '⏳ Em análise'}
                           </span>
                           <span className="text-xs text-gray-400">

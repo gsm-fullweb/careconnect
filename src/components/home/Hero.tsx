@@ -19,7 +19,7 @@ const Hero = () => {
                 size="lg"
                 className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white text-base"
               >
-                <a href="/plans" target="_self" rel="noopener noreferrer">Encontre um Cuidador</a>
+                <a href="https://careconnect.com.br/plans" target="_self" rel="noopener noreferrer">Encontre um Cuidador</a>
               </Button>
               <Button
                 asChild

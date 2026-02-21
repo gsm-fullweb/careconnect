@@ -18,6 +18,7 @@ import Planos from "./pages/Planos";
 import PreCadastro from "./pages/PreCadastro";
 import CadastrarCuidador from "./pages/CadastrarCuidador";
 import Obrigado from "./pages/Obrigado";
+import LoginPage from "./pages/Login";
 import ClientDashboard from "./pages/ClientDashboard";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
 
@@ -32,6 +33,7 @@ import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import TestimonialsManagement from "./pages/admin/TestimonialsManagement";
 import PartnersManagement from "./pages/admin/PartnersManagement";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 const queryClient = new QueryClient();
 
@@ -58,13 +60,14 @@ const App = () => (
             <Route path="/pre-cadastro" element={<PreCadastro />} />
             <Route path="/cadastrar-cuidador" element={<CadastrarCuidador />} />
             <Route path="/obrigado" element={<Obrigado />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/painel-cuidador" element={<CaregiverDashboard />} />
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
-            
+
             {/* Admin Routes */}
             <Route path="/admin/login" element={<Login />} />
-            
+
             {/* Protected Admin Routes */}
             <Route path="/admin" element={
               <ProtectedRoute>
@@ -79,10 +82,11 @@ const App = () => (
               <Route path="testimonials" element={<TestimonialsManagement />} />
               <Route path="partners" element={<PartnersManagement />} />
             </Route>
-            
+
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ChatbotWidget />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

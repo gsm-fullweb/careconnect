@@ -19,7 +19,7 @@ interface Partner {
   updated_at: string;
 }
 
-const STORAGE_URL = "https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/image/";
+const STORAGE_URL = "https://cxuhdhtfknvwlqkipjmv.supabase.co/storage/v1/object/public/image/";
 
 // ✅ Function: getImageUrl
 // 📌 Description: Constructs the full URL for partner logo images from Supabase storage
