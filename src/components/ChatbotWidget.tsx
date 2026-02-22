@@ -97,7 +97,12 @@ const ChatbotWidget = () => {
                 const ct = response.headers.get("content-type") || "";
                 if (ct.includes("application/json")) {
                     const data = await response.json();
-                    const resposta = data?.output || data?.message || data?.text || data?.reply;
+                    const resposta =
+                        data?.output ||
+                        data?.message ||
+                        data?.text ||
+                        data?.reply ||
+                        (Array.isArray(data) && (data[0]?.output || data[0]?.message || data[0]?.text));
                     if (resposta) welcomeText = resposta;
                 }
             }
@@ -351,8 +356,8 @@ const ChatbotWidget = () => {
                                     >
                                         <div
                                             className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1 ${msg.role === "user"
-                                                    ? "bg-careconnect-blue"
-                                                    : "bg-gradient-to-br from-careconnect-blue to-careconnect-green"
+                                                ? "bg-careconnect-blue"
+                                                : "bg-gradient-to-br from-careconnect-blue to-careconnect-green"
                                                 }`}
                                         >
                                             {msg.role === "user" ? (
@@ -363,8 +368,8 @@ const ChatbotWidget = () => {
                                         </div>
                                         <div
                                             className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${msg.role === "user"
-                                                    ? "bg-careconnect-blue text-white rounded-tr-sm"
-                                                    : "bg-white text-gray-800 shadow-sm border border-gray-100 rounded-tl-sm"
+                                                ? "bg-careconnect-blue text-white rounded-tr-sm"
+                                                : "bg-white text-gray-800 shadow-sm border border-gray-100 rounded-tl-sm"
                                                 }`}
                                             dangerouslySetInnerHTML={{ __html: fmt(msg.content) }}
                                         />
