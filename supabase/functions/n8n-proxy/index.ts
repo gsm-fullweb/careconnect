@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req: Request) => {
-    // Responder ao preflight OPTIONS
     if (req.method === "OPTIONS") {
         return new Response(null, { status: 204, headers: corsHeaders });
     }
@@ -24,14 +23,23 @@ Deno.serve(async (req: Request) => {
     try {
         const body = await req.json();
 
-        // Encaminhar para o n8n (server-to-server — sem CORS)
-        const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
+        // Timeout de 30s para o n8n
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
 
-        // Ler resposta do n8n
+        let n8nResponse: Response;
+        try {
+            n8nResponse = await fetch(N8N_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+                signal: controller.signal,
+            });
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        // Ler resposta do n8n (pode ser JSON ou texto)
         const contentType = n8nResponse.headers.get("content-type") || "";
         let responseData: unknown;
 
@@ -39,21 +47,43 @@ Deno.serve(async (req: Request) => {
             responseData = await n8nResponse.json();
         } else {
             const text = await n8nResponse.text();
+            // Log para debug
+            console.log("n8n status:", n8nResponse.status, "body:", text.slice(0, 200));
+            // Se n8n retornou erro, tenta extrair mensagem
+            if (!n8nResponse.ok) {
+                return new Response(
+                    JSON.stringify({
+                        error: `n8n retornou ${n8nResponse.status}`,
+                        detail: text.slice(0, 300),
+                    }),
+                    {
+                        status: 502,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" },
+                    }
+                );
+            }
             responseData = { output: text };
         }
 
         return new Response(JSON.stringify(responseData), {
-            status: n8nResponse.ok ? 200 : n8nResponse.status,
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error("Erro no proxy n8n:", error);
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("Erro no proxy n8n:", message);
+
+        // Erro de timeout
+        if (message.includes("abort") || message.includes("timed out")) {
+            return new Response(
+                JSON.stringify({ error: "Tempo limite excedido. O agente demorou muito para responder." }),
+                { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+        }
+
         return new Response(
-            JSON.stringify({ error: "Falha ao conectar com o agente. Tente novamente." }),
-            {
-                status: 502,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
+            JSON.stringify({ error: "Falha ao conectar com o agente. Verifique se o workflow n8n está ativo." }),
+            { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
     }
 });
