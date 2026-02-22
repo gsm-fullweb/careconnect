@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, X, Send, Bot, User, Loader2, Phone } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Loader2, Phone, MapPin } from "lucide-react";
 
 interface Message {
     id: string;
@@ -12,6 +12,7 @@ interface Message {
 interface LeadInfo {
     nome: string;
     whatsapp: string;
+    cidade: string;
 }
 
 // Dev: proxy Vite | Prod: Edge Function Supabase (sem CORS)
@@ -25,7 +26,7 @@ const ChatbotWidget = () => {
 
     // Etapa: "lead" = formulário | "chat" = conversa
     const [etapa, setEtapa] = useState<"lead" | "chat">("lead");
-    const [lead, setLead] = useState<LeadInfo>({ nome: "", whatsapp: "" });
+    const [lead, setLead] = useState<LeadInfo>({ nome: "", whatsapp: "", cidade: "" });
     const [leadLoading, setLeadLoading] = useState(false);
     const [leadErrors, setLeadErrors] = useState<Partial<LeadInfo>>({});
 
@@ -59,6 +60,7 @@ const ChatbotWidget = () => {
         if (!lead.nome.trim()) errors.nome = "Informe seu nome";
         const wpp = lead.whatsapp.replace(/\D/g, "");
         if (!wpp || wpp.length < 10) errors.whatsapp = "WhatsApp inválido";
+        if (!lead.cidade.trim()) errors.cidade = "Informe a cidade";
         setLeadErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -85,8 +87,9 @@ const ChatbotWidget = () => {
                     sessionId,
                     leadNome: lead.nome.trim(),
                     leadWhatsapp: lead.whatsapp,
-                    message: `Olá! Meu nome é ${lead.nome.trim()} e meu WhatsApp é ${lead.whatsapp}.`,
-                    chatInput: `Olá! Meu nome é ${lead.nome.trim()} e meu WhatsApp é ${lead.whatsapp}.`,
+                    leadCidade: lead.cidade.trim(),
+                    message: `Olá! Meu nome é ${lead.nome.trim()}, meu WhatsApp é ${lead.whatsapp} e estou em ${lead.cidade.trim()}.`,
+                    chatInput: `Olá! Meu nome é ${lead.nome.trim()}, meu WhatsApp é ${lead.whatsapp} e estou em ${lead.cidade.trim()}.`,
                     timestamp: new Date().toISOString(),
                 }),
             });
@@ -324,6 +327,29 @@ const ChatbotWidget = () => {
                                     </div>
                                     {leadErrors.whatsapp && (
                                         <p className="text-xs text-red-500 mt-1">{leadErrors.whatsapp}</p>
+                                    )}
+                                </div>
+
+                                {/* Cidade */}
+                                <div>
+                                    <label className="text-xs font-semibold text-gray-600 mb-1 block">
+                                        Cidade <span className="text-red-400">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <Input
+                                            value={lead.cidade}
+                                            onChange={(e) => {
+                                                setLead((p) => ({ ...p, cidade: e.target.value }));
+                                                setLeadErrors((p) => ({ ...p, cidade: undefined }));
+                                            }}
+                                            onKeyDown={handleLeadKeyDown}
+                                            placeholder="Ex: São Paulo - SP"
+                                            className={`pl-9 h-10 text-sm rounded-xl border ${leadErrors.cidade ? "border-red-400 focus:ring-red-300" : "border-gray-200"}`}
+                                        />
+                                    </div>
+                                    {leadErrors.cidade && (
+                                        <p className="text-xs text-red-500 mt-1">{leadErrors.cidade}</p>
                                     )}
                                 </div>
 
