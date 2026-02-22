@@ -11,10 +11,10 @@ interface Message {
 }
 
 // Em desenvolvimento usa o proxy Vite (evita CORS).
-// Em produção usa a URL direta (n8n deve ter CORS configurado).
+// Em produção usa a Edge Function Supabase como proxy server-to-server (sem CORS).
 const WEBHOOK_URL = import.meta.env.DEV
     ? "/api/n8n/webhook/mila-site"
-    : "https://n8n-n8n.n1n956.easypanel.host/webhook/mila-site";
+    : "https://dyxkbbojlyppizsgjjxx.supabase.co/functions/v1/n8n-proxy";
 
 const ChatbotWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
