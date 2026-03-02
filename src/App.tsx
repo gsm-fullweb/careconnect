@@ -63,7 +63,6 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/painel-cuidador" element={<CaregiverDashboard />} />
             <Route path="/client-dashboard" element={<ClientDashboard />} />
-            <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<Login />} />

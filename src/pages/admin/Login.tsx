@@ -28,11 +28,11 @@ const Login = () => {
               .select('type, user_role')
               .eq('id', user.id)
               .single();
-              
+
             if (profile?.user_role === 'admin') {
               setShouldRedirect('/admin');
             } else if (profile?.type === 'cuidador') {
-              setShouldRedirect('/caregiver-dashboard');
+              setShouldRedirect('/painel-cuidador');
             } else if (profile?.type === 'cliente') {
               setShouldRedirect('/client-dashboard');
             }
@@ -68,14 +68,14 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       // Use Supabase authentication
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
+
       if (error) {
         throw error;
       }
@@ -83,24 +83,24 @@ const Login = () => {
       if (data.session) {
         // Store the session token
         localStorage.setItem("admin-token", data.session.access_token);
-        
+
         // Get user profile to determine redirect
         const { data: profile } = await supabase
           .from('profiles')
           .select('type, user_role')
           .eq('id', data.user?.id)
           .single();
-          
+
         toast({
           title: "Login successful",
           description: "Welcome to CareConnect",
         });
-        
+
         // Redirect based on user role/type
         if (profile?.user_role === 'admin') {
           navigate("/admin");
         } else if (profile?.type === 'cuidador') {
-          navigate("/caregiver-dashboard");
+          navigate("/painel-cuidador");
         } else if (profile?.type === 'cliente') {
           navigate("/client-dashboard");
         } else {
@@ -127,7 +127,7 @@ const Login = () => {
             <span className="block text-lg text-gray-600 mt-1">Admin Dashboard</span>
           </h1>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -142,7 +142,7 @@ const Login = () => {
               required
             />
           </div>
-          
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -156,22 +156,22 @@ const Login = () => {
               required
             />
           </div>
-          
+
           <div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-careconnect-blue hover:bg-careconnect-blue/90"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </div>
-          
+
           <div className="text-center text-sm text-gray-500">
             <p>Sign in with your Supabase account credentials.</p>
           </div>
         </form>
-        
+
         <div className="mt-8 text-center">
           <a href="/" className="text-careconnect-blue hover:underline">
             &larr; Back to Website

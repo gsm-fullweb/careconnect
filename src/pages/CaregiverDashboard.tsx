@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Edit, Save, X, FileText, ArrowRight, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { User, Edit, Save, X, FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
-import { PersonalInfoSection } from "@/components/caregiver/PersonalInfoSection";
-import { AddressSection } from "@/components/caregiver/AddressSection";
-import { ProfessionalSection } from "@/components/caregiver/ProfessionalSection";
-import { ReferencesSection } from "@/components/caregiver/ReferencesSection";
+import { Accordion } from "@/components/ui/accordion";
+
+// Novas importações
+import PersonalDataSection from "@/components/caregiver-dashboard/PersonalDataSection";
+import AddressSection from "@/components/caregiver-dashboard/AddressSection";
+import CategorySection from "@/components/caregiver-dashboard/CategorySection";
+import { ProfessionalDataSection } from "@/components/caregiver-dashboard/ProfessionalDataSection";
+import ReferencesSection from "@/components/caregiver-dashboard/ReferencesSection";
+import TermsAndDeclarationSection from "@/components/caregiver-dashboard/TermsAndDeclarationSection";
 
 const PainelCuidador = () => {
   const { user } = useAuth();
@@ -21,6 +26,10 @@ const PainelCuidador = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+
+  // States para Termos e Declarações
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [acceptedDeclaration, setAcceptedDeclaration] = useState(true);
 
   useEffect(() => {
     const fetchCandidatoData = async () => {
@@ -95,27 +104,20 @@ const PainelCuidador = () => {
     );
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      setEditFormData((prev: any) => ({ ...prev, [name]: checked }));
-      return;
-    }
-
-    setEditFormData((prev: any) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setEditFormData((prev: any) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCheckboxChange = (name: string, checked: boolean) => {
-    setEditFormData((prev: any) => ({ ...prev, [name]: checked ? 'Sim' : 'Não' }));
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setEditFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
+    if (!acceptedTerms || !acceptedDeclaration) {
+      toast({
+        title: "Atenção",
+        description: "Você precisa aceitar os termos e a declaração para salvar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -219,6 +221,12 @@ const PainelCuidador = () => {
     );
   }
 
+  // Handle boolean mapping for components
+  const formatBooleanStr = (val: string | boolean) => {
+    if (typeof val === 'boolean') return val;
+    return val === 'Sim';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header melhorado */}
@@ -289,7 +297,7 @@ const PainelCuidador = () => {
                 <div className="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-700 rounded-full ${isRegistrationComplete ? 'bg-green-500' :
-                        completionPercentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      completionPercentage >= 50 ? 'bg-yellow-500' : 'bg-red-500'
                       }`}
                     style={{ width: `${completionPercentage}%` }}
                   ></div>
@@ -300,62 +308,93 @@ const PainelCuidador = () => {
         </Card>
       </div>
 
-      {/* Main Content com animações */}
-      <div className="container mx-auto px-4 pb-24 space-y-8">
-        <div className="animate-fade-in">
-          <PersonalInfoSection
-            editMode={editMode}
-            candidatoData={candidatoData}
-            editFormData={editFormData}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
-            handleCheckboxChange={handleCheckboxChange}
-          />
-        </div>
+      {/* Main Content com Sections novas */}
+      <div className="container mx-auto px-4 pb-24 space-y-8 animate-fade-in">
+        <Accordion type="multiple" className="space-y-4" defaultValue={["personal", "category", "address", "professional", "references", "terms"]}>
 
-        <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <PersonalDataSection
+            nome={editFormData?.nome || ''}
+            email={candidatoData?.email || ''}
+            telefone={editFormData?.telefone || ''}
+            cpf={editFormData?.cpf || ''}
+            dataNascimento={editFormData?.data_nascimento || ''}
+            possuiFilhos={formatBooleanStr(editFormData?.possui_filhos)}
+            fumante={formatBooleanStr(editFormData?.fumante)}
+            isEditing={editMode}
+            saving={saving}
+            onInputChange={(field, value) => handleInputChange(field, typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : value)}
+            onEdit={() => setEditMode(true)}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+
+          <CategorySection
+            cargo={editFormData?.cargo || ''}
+            coren={editFormData?.coren || ''}
+            crefito={editFormData?.crefito || ''}
+            crm={editFormData?.crm || ''}
+            isEditing={editMode}
+            saving={saving}
+            onInputChange={handleInputChange}
+            onEdit={() => setEditMode(true)}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+
           <AddressSection
-            editMode={editMode}
-            candidatoData={candidatoData}
-            editFormData={editFormData}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
+            cep={editFormData?.cep || ''}
+            endereco={editFormData?.endereco || ''}
+            estado={editFormData?.estado || ''}
+            cidade={editFormData?.cidade || ''}
+            isEditing={editMode}
+            saving={saving}
+            onInputChange={handleInputChange}
+            onEdit={() => setEditMode(true)}
+            onSave={handleSave}
+            onCancel={handleCancel}
           />
-        </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <ProfessionalSection
-            editMode={editMode}
-            candidatoData={candidatoData}
-            editFormData={editFormData}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
+          <ProfessionalDataSection
+            dados={candidatoData}
+            editData={editFormData}
+            isEditing={editMode}
+            handleInputChange={(field, value) => handleInputChange(field, typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : value)}
           />
-        </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <ReferencesSection
-            editMode={editMode}
-            candidatoData={candidatoData}
-            editFormData={editFormData}
+            dados={candidatoData}
+            editData={editFormData}
+            isEditing={editMode}
             handleInputChange={handleInputChange}
+            onEdit={() => setEditMode(true)}
+            onSave={handleSave}
+            onCancel={handleCancel}
           />
-        </div>
+
+          <TermsAndDeclarationSection
+            acceptedTerms={acceptedTerms}
+            acceptedDeclaration={acceptedDeclaration}
+            isEditing={editMode}
+            onTermsChange={setAcceptedTerms}
+            onDeclarationChange={setAcceptedDeclaration}
+          />
+
+        </Accordion>
       </div>
 
-      {/* Floating Save Button - O destaque criativo! */}
+      {/* Floating Save Button */}
       {editMode && (
         <div className="fixed bottom-6 right-6 z-50">
           <div className={`transition-all duration-300 ${hasChanges ? 'scale-100 opacity-100' : 'scale-95 opacity-70'}`}>
             <Button
               onClick={handleSave}
-              disabled={saving || !hasChanges}
+              disabled={saving || !hasChanges || !acceptedTerms || !acceptedDeclaration}
               className={`
                 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700
                 text-white shadow-2xl text-lg px-8 py-4 rounded-full
                 transform transition-all duration-300 hover:scale-105
                 ${hasChanges ? 'animate-pulse' : ''}
-                ${saving ? 'cursor-not-allowed opacity-50' : 'hover:shadow-3xl'}
+                ${(saving || !acceptedTerms || !acceptedDeclaration) ? 'cursor-not-allowed opacity-50' : 'hover:shadow-3xl'}
               `}
             >
               {saving ? (
