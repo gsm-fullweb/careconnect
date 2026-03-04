@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const N8N_WEBHOOK_URL = "https://n8n-n8n.n1n956.easypanel.host/webhook/mila-site";
+const N8N_WEBHOOK_URL = "https://n8n-n8n.n1n956.easypanel.host/webhook/site";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",

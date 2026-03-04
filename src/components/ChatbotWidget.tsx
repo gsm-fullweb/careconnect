@@ -17,7 +17,7 @@ interface LeadInfo {
 
 // Dev: proxy Vite | Prod: Edge Function Supabase (sem CORS)
 const WEBHOOK_URL = import.meta.env.DEV
-    ? "/api/n8n/webhook/mila-site"
+    ? "/api/n8n/webhook/site"
     : "https://dyxkbbojlyppizsgjjxx.supabase.co/functions/v1/n8n-proxy";
 
 const ChatbotWidget = () => {
