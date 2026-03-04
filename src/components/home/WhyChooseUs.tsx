@@ -26,7 +26,7 @@ export default function WhyChooseUs() {
     },
     {
       icon: <Brain className="w-12 h-12 text-[#6B46C1]" />,
-      title: "Matching Inteligente com IA Mila",
+      title: "Matching Inteligente com IA Encontre um cuidador",
       description: "Sistema que encontra o profissional ideal com base nas suas necessidades",
     },
   ];

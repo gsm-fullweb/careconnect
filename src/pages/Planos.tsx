@@ -49,7 +49,7 @@ const Planos = () => {
           <div className="absolute top-20 left-10 w-96 h-96 bg-blue-100 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-50 rounded-full blur-3xl" />
         </div>
-        
+
         <div className="container-custom mx-auto px-4 py-12 md:py-16 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="max-w-2xl mx-auto lg:mx-0">
@@ -60,41 +60,34 @@ const Planos = () => {
                   em minutos
                 </span>
               </h1>
-              
+
               {/* Subheadline */}
               <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed text-center lg:text-left">
-                Com a <strong className="text-gray-900">Mila</strong>, sua assistente de IA no WhatsApp, você encontra cuidadores qualificados, agenda visitas e acompanha tudo em tempo real.
+                Com o <strong className="text-gray-900">Encontre um cuidador</strong>, sua assistente de IA no WhatsApp, você encontra cuidadores qualificados, agenda visitas e acompanha tudo em tempo real.
               </p>
-              
-              {/* Pricing Highlight - Centralizado */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-5 mb-6 border border-blue-100 shadow-lg max-w-sm mx-auto lg:mx-0">
-                <div className="flex items-center justify-center mb-1">
-                  <span className="text-3xl md:text-4xl font-black text-[#3e8861]">Plano Gratuito</span>
-                </div>
-                <p className="text-xs text-gray-600 text-center">Sem fidelidade • Cancele quando quiser</p>
-              </div>
-              
+
+
+
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 mb-5 justify-center lg:justify-start">
-                <button 
-                  type="button"
-                  onClick={handlePay}
+                <a
+                  href="/pre-cadastro"
                   className="group inline-flex items-center justify-center bg-[#3e8861] text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 hover:bg-[#347553] transition-all duration-300"
                 >
-                  <span>Plano Gratuito</span>
+                  <span>Cadastrar como Cuidador</span>
                   <Sparkles className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
-                </button>
-                <a 
-                  href="https://wa.me/551148633976" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                </a>
+                <a
+                  href="https://wa.me/551148633976"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center bg-white/90 backdrop-blur-sm text-gray-700 font-semibold px-6 py-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300"
                 >
                   <MessageCircle className="mr-2 w-4 h-4 text-[#3e8861]" />
-                  <span>Falar com a Mila</span>
+                  <span>Encontre um cuidador</span>
                 </a>
               </div>
-              
+
               {/* Trust Badges */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-gray-600 text-xs">
                 <div className="flex items-center gap-2">
@@ -111,7 +104,7 @@ const Planos = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Hero Image - Retângulo com fundo azul rotacionado */}
             <div className="flex justify-center lg:justify-end">
               <div className="relative w-full max-w-md">
@@ -170,7 +163,7 @@ const Planos = () => {
               Tudo que você precisa em um só lugar
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              A Mila simplifica cada etapa do processo de encontrar e gerenciar cuidadores
+              O Encontre um cuidador simplifica cada etapa do processo de encontrar e gerenciar cuidadores
             </p>
           </div>
 
@@ -182,7 +175,7 @@ const Planos = () => {
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Assistente IA 24/7</h3>
               <p className="text-gray-600 leading-relaxed">
-                Converse com a Mila a qualquer hora pelo WhatsApp. Ela entende suas necessidades e encontra o cuidador perfeito.
+                Converse com o Encontre um cuidador a qualquer hora pelo WhatsApp. Ele entende suas necessidades e encontra o profissional perfeito.
               </p>
             </div>
 
@@ -222,7 +215,7 @@ const Planos = () => {
         </div>
       </section>
 
-      {/* How it works - Mila 2.0 */}
+      {/* How it works - Encontre um cuidador */}
       <section className="py-12 md:py-16 bg-gray-50 border-t border-gray-200">
         <div className="container-custom mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -249,18 +242,18 @@ const Planos = () => {
             </div>
           </div>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="#assinar" className="inline-flex items-center justify-center bg-[#3e8861] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#347553]">
-              Ativar Mila 2.0
+            <a href="https://wa.me/551148633976" className="inline-flex items-center justify-center bg-[#3e8861] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#347553]">
+              Encontre um cuidador
             </a>
             <a href="https://wa.me/551148633976" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50">
-              Falar no WhatsApp
+              Chama no WhatsApp
             </a>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-     
+
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-white">
@@ -281,18 +274,18 @@ const Planos = () => {
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                Tenha acesso à Mila e aos recursos essenciais da plataforma — sem pagar nada por mês.
-100% gratuito, sem fidelidade e com liberdade total para usar quando quiser.
+                Tenha acesso ao Encontre um cuidador e aos recursos essenciais da plataforma — sem pagar nada por mês.
+                100% gratuito, sem fidelidade e com liberdade total para usar quando quiser.
               </p>
             </details>
 
             <details className="group bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
               <summary className="flex items-center justify-between cursor-pointer font-semibold text-lg text-gray-900">
-                <span>Como a Mila me ajuda a encontrar cuidadores?</span>
+                <span>Como o Encontre um cuidador me ajuda a encontrar cuidadores?</span>
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                A Mila usa inteligência artificial para entender suas necessidades e recomendar os cuidadores mais adequados. Você conversa pelo WhatsApp de forma natural e ela cuida de tudo.
+                O Encontre um cuidador usa inteligência artificial para entender suas necessidades e recomendar os cuidadores mais adequados. Você conversa pelo WhatsApp de forma natural e ele cuida de tudo.
               </p>
             </details>
 
@@ -322,7 +315,7 @@ const Planos = () => {
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-               O acesso à plataforma é gratuito. Os valores dos serviços dos cuidadores são negociados diretamente com eles.
+                O acesso à plataforma é gratuito. Os valores dos serviços dos cuidadores são negociados diretamente com eles.
               </p>
             </details>
 
@@ -337,24 +330,24 @@ const Planos = () => {
             Pronto para encontrar o cuidador ideal?
           </h2>
           <p className="text-xl md:text-2xl mb-8 opacity-95 max-w-2xl mx-auto">
-            Comece agora e tenha a Mila ao seu lado em cada etapa
+            Comece agora e tenha o Encontre um cuidador ao seu lado em cada etapa
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="#assinar" 
+            <a
+              href="https://wa.me/551148633976"
               className="inline-flex items-center justify-center bg-white text-[#3e8861] font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               <span>Começar agora</span>
               <Sparkles className="ml-2 w-5 h-5" />
             </a>
-            <a 
-              href="https://wa.me/551148633976" 
-              target="_blank" 
+            <a
+              href="https://wa.me/551148633976"
+              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white font-semibold px-8 py-4 rounded-xl border border-white/30 hover:bg-white/20 transition-all duration-300"
             >
               <MessageCircle className="mr-2 w-5 h-5" />
-              <span>Tirar dúvidas com a Mila</span>
+              <span>Encontre um cuidador</span>
             </a>
           </div>
         </div>

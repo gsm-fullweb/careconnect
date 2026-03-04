@@ -99,7 +99,7 @@ const ChatbotWidget = () => {
                 }),
             });
 
-            let welcomeText = `Olá, **${lead.nome.trim()}**! 😊 Que bom ter você aqui!\n\nSou a **Mila**, assistente virtual do CareConnect 💚\n\nComo posso ajudar você a encontrar o cuidador ideal para sua família?`;
+            let welcomeText = `Olá, **${lead.nome.trim()}**! 😊 Que bom ter você aqui!\n\nSou o **Encontre um cuidador**, assistente virtual do CareConnect 💚\n\nComo posso ajudar você a encontrar o profissional ideal para sua família?`;
 
             if (response.ok) {
                 const ct = response.headers.get("content-type") || "";
@@ -129,7 +129,7 @@ const ChatbotWidget = () => {
                 {
                     id: "welcome",
                     role: "assistant",
-                    content: `Olá, **${lead.nome.trim()}**! 😊 Bem-vindo ao CareConnect!\n\nSou a **Mila**, sua assistente virtual 💚\n\nComo posso ajudar você a encontrar o cuidador ideal?`,
+                    content: `Olá, **${lead.nome.trim()}**! 😊 Bem-vindo ao CareConnect!\n\nSou o **Encontre um cuidador**, seu assistente virtual 💚\n\nComo posso ajudar você a encontrar o profissional ideal?`,
                 },
             ]);
             setEtapa("chat");
@@ -234,7 +234,7 @@ const ChatbotWidget = () => {
                         className="bg-white rounded-2xl rounded-br-sm shadow-xl border border-gray-100 px-4 py-3 text-left hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 max-w-[220px]"
                     >
                         <p className="text-xs font-bold text-careconnect-blue leading-tight">
-                            🤖 Sou a Mila, IA da CareConnect!
+                            🤖 Sou o Encontre um cuidador, IA da CareConnect!
                         </p>
                         <p className="text-xs text-gray-600 mt-1 leading-snug">
                             Encontre o cuidador ideal para sua família agora 👇
@@ -259,7 +259,7 @@ const ChatbotWidget = () => {
                                 <Bot className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <p className="text-white font-semibold text-sm">Mila</p>
+                                <p className="text-white font-semibold text-sm">Encontre um cuidador</p>
                                 <div className="flex items-center gap-1.5">
                                     <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
                                     <p className="text-white/80 text-xs">Assistente CareConnect</p>
@@ -283,7 +283,7 @@ const ChatbotWidget = () => {
                                 <div className="w-14 h-14 bg-gradient-to-br from-careconnect-blue to-careconnect-green rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
                                     <Bot className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className="text-base font-bold text-gray-800">Olá! Sou a Mila 👋</h3>
+                                <h3 className="text-base font-bold text-gray-800">Olá! Sou o Encontre um cuidador 👋</h3>
                                 <p className="text-sm text-gray-500 mt-1">
                                     Para te ajudar melhor, me conta quem é você?
                                 </p>
@@ -457,7 +457,7 @@ const ChatbotWidget = () => {
                                     </Button>
                                 </div>
                                 <p className="text-center text-[10px] text-gray-400 mt-2">
-                                    Mila — IA do CareConnect • Powered by n8n
+                                    Encontre um cuidador — IA do CareConnect • Powered by n8n
                                 </p>
                             </div>
                         </>
@@ -469,7 +469,7 @@ const ChatbotWidget = () => {
             <button
                 onClick={() => { setIsOpen((prev) => !prev); setShowCta(false); }}
                 className="fixed bottom-4 right-4 z-50 w-16 h-16 rounded-full shadow-xl bg-gradient-to-br from-careconnect-blue to-careconnect-green flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-careconnect-blue/30"
-                aria-label={isOpen ? "Fechar chat" : "Abrir chat com Mila"}
+                aria-label={isOpen ? "Fechar chat" : "Abrir chat com Encontre um cuidador"}
             >
                 {isOpen ? (
                     <X className="w-7 h-7 text-white" />

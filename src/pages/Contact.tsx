@@ -210,7 +210,7 @@ const Contact = () => { // Alterado de export default function Contato() para co
       <section className="py-16 md:py-20 bg-[#6B46C1] text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Prefere falar diretamente com a Mila?
+            Prefere falar diretamente com o Encontre um cuidador?
           </h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
             Nossa assistente virtual está disponível 24/7 para ajudar você a encontrar o cuidador ideal
@@ -225,7 +225,7 @@ const Contact = () => { // Alterado de export default function Contato() para co
               Buscar Cuidadores
             </Link>
           </Button>
-         
+
         </div>
       </section>
     </Layout>

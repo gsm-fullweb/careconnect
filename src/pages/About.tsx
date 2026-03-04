@@ -42,7 +42,7 @@ const About = () => {
       image: "https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//member-2.jpg",
       name: "Richard Portela",
       title: "Desenvolvedor",
-      description: "Richard Portela é o desenvolvedor responsável por dar vida à plataforma CareConnect, com foco na implementação da assistente virtual IA Mila, que torna o agendamento de cuidadores mais rápido e inteligente. Combinando tecnologia e empatia para criar soluções modernas, funcionais e acessíveis, sendo peça-chave na transformação digital do cuidado com idosos.",
+      description: "Richard Portela é o desenvolvedor responsável por dar vida à plataforma CareConnect, com foco na implementação da assistente virtual IA Encontre um cuidador, que torna o agendamento de cuidadores mais rápido e inteligente. Combinando tecnologia e empatia para criar soluções modernas, funcionais e acessíveis, sendo peça-chave na transformação digital do cuidado com idosos.",
     },
     {
       image: "https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//member-3.jpg",
@@ -105,7 +105,7 @@ const About = () => {
                   className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300"
                   size="lg"
                 >
-                  <a href="https://careconnect.com.br/plans" target="_self">
+                  <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_self">
                     Encontrar cuidadores
                   </a>
                 </Button>
@@ -270,9 +270,9 @@ const About = () => {
       <section className="py-20 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
         <div className="container mx-auto px-4 max-w-7xl text-center relative z-10">
-        <h2 className="text-white text-3xl md:text-5xl from-blue-600 mb-6">
-              Experimente o futuro do cuidado para idosos
-        </h2>
+          <h2 className="text-white text-3xl md:text-5xl from-blue-600 mb-6">
+            Experimente o futuro do cuidado para idosos
+          </h2>
           <p className="text-xl mb-10 max-w-3xl mx-auto opacity-90">
             Comece agora mesmo encontrando cuidadores qualificados ou junte-se à nossa equipe de profissionais.
           </p>
@@ -291,8 +291,8 @@ const About = () => {
               size="lg"
               className="bg-green-600 text-white hover:bg-green-700 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <a href="https://careconnect.com.br/plans" target="_self">
-                Ver Planos Disponíveis
+              <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_self">
+                Encontrar cuidadores
               </a>
             </Button>
           </div>

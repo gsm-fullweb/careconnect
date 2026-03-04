@@ -28,12 +28,12 @@ function Testimonials() {
           .select('*')
           .eq('published', true)
           .order('created_at', { ascending: false });
-        
+
         if (error) {
           console.error('Erro ao buscar depoimentos:', error);
           return;
         }
-        
+
         console.log('Depoimentos encontrados:', data);
         setTestimonials(data || []);
       } catch (error) {
@@ -71,17 +71,17 @@ function Testimonials() {
     if (!avatarUrl) {
       return 'https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//avatar-1.png'; // Avatar padrão
     }
-    
+
     // Se já é uma URL completa, retorna como está
     if (avatarUrl.startsWith('http')) {
       return avatarUrl;
     }
-    
+
     // Se é um nome de arquivo, constrói a URL do Supabase Storage
     const { data } = supabase.storage
       .from('avatars')
       .getPublicUrl(avatarUrl);
-    
+
     return data.publicUrl;
   };
 
@@ -103,10 +103,10 @@ function Testimonials() {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Esqueça a complicação dos apps. <span className="text-[#6B46C1]">Com a Mila</span>, você encontra o cuidador ideal em poucos cliques
+              Esqueça a complicação dos apps. <span className="text-[#6B46C1]">Com o Encontre um cuidador</span>, você encontra o cuidador ideal em poucos cliques
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Sem baixar ou descobrir novos aplicativos. O CareConnect organiza tudo por meio do seu aplicativo de mensagens. Basta adicionar o número da Mila!
+              Sem baixar ou descobrir novos aplicativos. O CareConnect organiza tudo por meio do seu aplicativo de mensagens. Basta adicionar o Encontre um cuidador!
             </p>
           </div>
         </div>
@@ -119,10 +119,10 @@ function Testimonials() {
       <div className="container-custom">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Esqueça a complicação dos apps. <span className="text-[#6B46C1]">Com a Mila</span>, você encontra o cuidador ideal em poucos cliques
+            Esqueça a complicação dos apps. <span className="text-[#6B46C1]">Com o Encontre um cuidador</span>, você encontra o cuidador ideal em poucos cliques
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Sem baixar ou descobrir novos aplicativos. O CareConnect organiza tudo por meio do seu aplicativo de mensagens. Basta adicionar o número da Mila!
+            Sem baixar ou descobrir novos aplicativos. O CareConnect organiza tudo por meio do seu aplicativo de mensagens. Basta adicionar o Encontre um cuidador!
           </p>
         </div>
 
@@ -223,9 +223,8 @@ function Testimonials() {
               <button
                 key={index}
                 onClick={() => setCurrentGroup(index)}
-                className={`w-3 h-3 rounded-full ${
-                  index === currentGroup ? "bg-[#6B46C1]" : "bg-gray-300"
-                }`}
+                className={`w-3 h-3 rounded-full ${index === currentGroup ? "bg-[#6B46C1]" : "bg-gray-300"
+                  }`}
                 aria-label={`Ver grupo de depoimentos ${index + 1}`}
               />
             ))}

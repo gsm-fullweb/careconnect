@@ -8,7 +8,7 @@ export default function HowItWorks() {
     {
       number: "1",
       title: "Encontre Cuidadores",
-      description: "Mande uma mensagem para a Mila, sua assistente virtual. Ela vai entender suas necessidades e ajudar a encontrar um(a) cuidador(a) qualificado(a) que atenda aos seus requisitos específicos, localização e disponibilidade.",
+      description: "Mande uma mensagem para o Encontre um cuidador, seu assistente virtual. Ele vai entender suas necessidades e ajudar a encontrar um(a) cuidador(a) qualificado(a) que atenda aos seus requisitos específicos, localização e disponibilidade.",
     },
     {
       number: "2",
@@ -28,31 +28,31 @@ export default function HowItWorks() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Como funciona a busca de cuidador com a Mila?
+              Como funciona a busca de cuidador com o Encontre um cuidador?
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-              Conecte-se com a Mila e encontre o cuidador perfeito de forma rápida, segura e sem estresse!
+              Conecte-se com o Encontre um cuidador e encontre o profissional perfeito de forma rápida, segura e sem estresse!
             </p>
 
             <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-xl shadow">
                 <h3 className="font-bold text-xl mb-2">Busca sem estresse</h3>
                 <p className="text-gray-600">
-                  A Mila faz a busca para você por meio do WhatsApp, tudo se torna mais simples e rápido. Esqueça formulários longos e repetitivos.
+                  O Encontre um cuidador faz a busca para você por meio do WhatsApp, tudo se torna mais simples e rápido. Esqueça formulários longos e repetitivos.
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow">
                 <h3 className="font-bold text-xl mb-2">Peça com facilidade</h3>
                 <p className="text-gray-600">
-                  Basta enviar uma mensagem de voz ou texto pelo WhatsApp solicitando um cuidador. A Mila cuida do resto e encontra o profissional ideal para você.
+                  Basta enviar uma mensagem de voz ou texto pelo WhatsApp solicitando um cuidador. O Encontre um cuidador cuida do resto e encontra o profissional ideal para você.
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow">
                 <h3 className="font-bold text-xl mb-2">Histórico organizado</h3>
                 <p className="text-gray-600">
-                  A Mila mantém um resumo dos seus agendamentos para que você tenha tudo sob controle, sem precisar buscar informações manualmente.
+                  O Encontre um cuidador mantém um resumo dos seus agendamentos para que você tenha tudo sob controle, sem precisar buscar informações manualmente.
                 </p>
               </div>
 

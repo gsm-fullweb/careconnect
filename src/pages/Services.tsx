@@ -210,7 +210,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </div>
               <h3 className="text-xl font-bold mb-2">Entre em Contato</h3>
               <p className="text-gray-600">
-                Fale com a Mila pelo WhatsApp e informe as necessidades específicas de cuidado para seu familiar
+                Fale com o Encontre um cuidador pelo WhatsApp e informe as necessidades específicas de cuidado para seu familiar
               </p>
             </div>
             <div className="text-center">
@@ -219,7 +219,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
               </div>
               <h3 className="text-xl font-bold mb-2">Receba Indicações</h3>
               <p className="text-gray-600">
-                Nossa IA Mila selecionará os melhores cuidadores de acordo com as necessidades informadas
+                Nossa IA Encontre um cuidador selecionará os melhores cuidadores de acordo com as necessidades informadas
               </p>
             </div>
             <div className="text-center">
@@ -234,7 +234,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
           </div>
 
           <div className="mt-12 text-center">
-            
+
           </div>
         </div>
       </section>
@@ -294,7 +294,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
             Pronto para encontrar o cuidador ideal?
           </h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Converse com a Mila e descubra como podemos ajudar a sua família a encontrar o melhor cuidado
+            Converse com o Encontre um cuidador e descubra como podemos ajudar a sua família a encontrar o melhor cuidado
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -306,7 +306,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
                 Buscar Cuidadores
               </Link>
             </Button>
-            
+
           </div>
         </div>
       </section>
