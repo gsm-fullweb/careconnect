@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Send, Bot, User, Loader2, Phone, MapPin } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
     id: string;
@@ -15,10 +16,11 @@ interface LeadInfo {
     cidade: string;
 }
 
-// Dev: proxy Vite | Prod: Edge Function Supabase (sem CORS)
 const WEBHOOK_URL = import.meta.env.DEV
     ? "/api/n8n/webhook/site"
     : "https://dyxkbbojlyppizsgjjxx.supabase.co/functions/v1/n8n-proxy";
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5eGtiYm9qbHlwcGl6c2dqanh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNzQ2NjAsImV4cCI6MjA2MzY1MDY2MH0.47pGkZXkqZoAsjVHhwSQPLEcGY99hoiDO-6LdCG-4K4";
 
 const ChatbotWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +84,10 @@ const ChatbotWidget = () => {
             // Enviar dados iniciais do lead para o n8n
             const response = await fetch(WEBHOOK_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                },
                 body: JSON.stringify({
                     sessionId,
                     leadNome: lead.nome.trim(),
@@ -150,7 +155,10 @@ const ChatbotWidget = () => {
         try {
             const response = await fetch(WEBHOOK_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                },
                 body: JSON.stringify({
                     sessionId,
                     leadNome: lead.nome.trim(),
