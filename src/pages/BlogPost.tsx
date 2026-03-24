@@ -138,40 +138,80 @@ const BlogPost = () => {
                 )}
                 
                 {/* Article Body */}
+                <style dangerouslySetInnerHTML={{__html: `
+                  .g1-article-format {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                    color: #333333 !important;
+                    font-size: 20px !important;
+                    line-height: 32px !important;
+                    word-wrap: break-word;
+                  }
+                  .g1-article-format p, 
+                  .g1-article-format div {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                    color: #333333 !important;
+                    font-size: 20px !important;
+                    line-height: 1.6 !important;
+                    margin-bottom: 28px !important;
+                  }
+                  .g1-article-format h1,
+                  .g1-article-format h2,
+                  .g1-article-format h3,
+                  .g1-article-format h4 {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                    color: #222222 !important;
+                    font-weight: 700 !important;
+                    clear: both;
+                  }
+                  .g1-article-format h2 {
+                    font-size: 32px !important;
+                    line-height: 38px !important;
+                    margin-top: 48px !important;
+                    margin-bottom: 24px !important;
+                  }
+                  .g1-article-format h3 {
+                    font-size: 24px !important;
+                    line-height: 30px !important;
+                    margin-top: 32px !important;
+                    margin-bottom: 16px !important;
+                  }
+                  .g1-article-format a {
+                    color: #c00 !important; /* G1 Link Red */
+                    font-weight: bold !important;
+                    text-decoration: none !important;
+                  }
+                  .g1-article-format a:hover {
+                    text-decoration: underline !important;
+                  }
+                  .g1-article-format ul, 
+                  .g1-article-format ol {
+                    margin-bottom: 28px !important;
+                    padding-left: 40px !important;
+                  }
+                  .g1-article-format li {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                    font-size: 20px !important;
+                    line-height: 32px !important;
+                    color: #333333 !important;
+                    margin-bottom: 12px !important;
+                  }
+                  .g1-article-format strong,
+                  .g1-article-format b {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+                    color: #222222 !important;
+                    font-weight: bold !important;
+                  }
+                  .g1-article-format img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    margin-bottom: 28px !important;
+                    border-radius: 4px;
+                  }
+                `}} />
+                
+                {/* Article Body */}
                 <div 
-                  className={`
-                    prose max-w-none 
-                    prose-a:text-careconnect-green hover:prose-a:text-careconnect-green/80
-                    
-                    prose-p:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] 
-                    prose-p:text-[20px] 
-                    prose-p:leading-[32px] 
-                    prose-p:text-[#333333] 
-                    prose-p:mb-[28px]
-                    
-                    prose-li:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] 
-                    prose-li:text-[20px] 
-                    prose-li:leading-[32px] 
-                    prose-li:text-[#333333]
-                    prose-li:mb-[12px]
-                    
-                    prose-headings:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif]
-                    prose-headings:font-bold
-                    prose-headings:text-[#222222]
-                    
-                    prose-h2:text-[32px] 
-                    prose-h2:leading-[36px] 
-                    prose-h2:mt-[48px] 
-                    prose-h2:mb-[24px]
-                    
-                    prose-h3:text-[24px] 
-                    prose-h3:leading-[30px] 
-                    prose-h3:mt-[32px] 
-                    prose-h3:mb-[16px]
-                    
-                    prose-strong:font-bold
-                    prose-strong:text-[#222222]
-                  `}
+                  className="g1-article-format"
                   dangerouslySetInnerHTML={{ __html: marked.parse(post.content || "", { async: false }) as string }}
                 />
                 
