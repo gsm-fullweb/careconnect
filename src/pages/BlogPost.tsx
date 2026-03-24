@@ -139,7 +139,39 @@ const BlogPost = () => {
                 
                 {/* Article Body */}
                 <div 
-                  className="prose prose-lg max-w-none prose-headings:text-careconnect-blue prose-a:text-careconnect-green hover:prose-a:text-careconnect-green/80"
+                  className={`
+                    prose max-w-none 
+                    prose-a:text-careconnect-green hover:prose-a:text-careconnect-green/80
+                    
+                    prose-p:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] 
+                    prose-p:text-[20px] 
+                    prose-p:leading-[32px] 
+                    prose-p:text-[#333333] 
+                    prose-p:mb-[28px]
+                    
+                    prose-li:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] 
+                    prose-li:text-[20px] 
+                    prose-li:leading-[32px] 
+                    prose-li:text-[#333333]
+                    prose-li:mb-[12px]
+                    
+                    prose-headings:font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif]
+                    prose-headings:font-bold
+                    prose-headings:text-[#222222]
+                    
+                    prose-h2:text-[32px] 
+                    prose-h2:leading-[36px] 
+                    prose-h2:mt-[48px] 
+                    prose-h2:mb-[24px]
+                    
+                    prose-h3:text-[24px] 
+                    prose-h3:leading-[30px] 
+                    prose-h3:mt-[32px] 
+                    prose-h3:mb-[16px]
+                    
+                    prose-strong:font-bold
+                    prose-strong:text-[#222222]
+                  `}
                   dangerouslySetInnerHTML={{ __html: marked.parse(post.content || "", { async: false }) as string }}
                 />
                 
