@@ -133,7 +133,7 @@ const BlogManagement = () => {
               id="keyword"
               name="keyword"
               className="flex-1 border border-gray-300 px-4 py-2 rounded-md w-full max-w-md"
-              placeholder="Digite a palavra-chave (Ex: Quando a família deve contratar um cuidador)"
+              placeholder="Digite o tema (Ex: Sinais de que um idoso em Mogi das Cruzes precisa de ajuda)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               required
