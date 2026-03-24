@@ -132,6 +132,8 @@ const BlogPost = () => {
                     <img
                       src={post.cover_image}
                       alt={post.title}
+                      fetchPriority="high"
+                      decoding="sync"
                       className="w-full h-auto max-h-[500px] object-cover"
                     />
                   </div>
@@ -261,6 +263,8 @@ const BlogPost = () => {
                               <img
                                 src={recentItem.cover_image}
                                 alt={recentItem.title}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                               />
                             </div>
