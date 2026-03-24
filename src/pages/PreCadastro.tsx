@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { useNavigate } from "react-router-dom";
+import { RefreshCw, User, CheckCircle } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -28,24 +29,17 @@ const formSchema = z.object({
   }),
   whatsapp: z.string().min(10, {
     message: "WhatsApp deve ter pelo menos 10 dígitos.",
-  }).regex(/^\(\d{2}\)\s\d{4,5}-\d{4}$|^\d{10,11}$/, {
-    message: "WhatsApp deve estar no formato (11) 99999-9999 ou apenas números.",
   }),
   password: z.string().min(6, {
     message: "Senha deve ter pelo menos 6 caracteres.",
   }),
-  confirmPassword: z.string().min(6, {
-    message: "Confirmação de senha deve ter pelo menos 6 caracteres.",
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Senhas não coincidem.",
-  path: ["confirmPassword"],
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function PreCadastro() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<FormData>({
@@ -55,7 +49,6 @@ export default function PreCadastro() {
       email: "",
       whatsapp: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -125,16 +118,25 @@ export default function PreCadastro() {
           nome: data.name,
           email: data.email.toLowerCase().trim(),
           telefone: data.whatsapp,
-          data_nascimento: '', // Será preenchido posteriormente
-          fumante: 'Não',
-          escolaridade: '',
-          possui_experiencia: 'Não',
-          disponivel_dormir_local: 'Não',
+          data_nascimento: "1900-01-01",
+          fumante: "Não",
+          escolaridade: "Não informado",
+          possui_experiencia: "Não",
+          disponivel_dormir_local: "Não",
           status_candidatura: 'Em análise',
           cidade: '',
-          endereco: '',
-          cep: '',
+          endereco: "Não informado",
+          cep: "00000-000",
           possui_filhos: false,
+          cursos: "",
+          experiencia: "",
+          perfil_profissional: "",
+          descricao_experiencia: "",
+          disponibilidade_horarios: "A combinar",
+          descricao: "",
+          desconfortos_atividades: "",
+          Declaracao: "Aceito",
+          ativo: "Sim",
           data_cadastro: new Date().toISOString().split('T')[0]
         })
         .select()
@@ -142,22 +144,15 @@ export default function PreCadastro() {
 
       if (candidateError) {
         console.error("Erro ao criar registro do candidato:", candidateError);
-        if (candidateError.code === '23505') {
-          toast.error("Já existe um cadastro com este email.");
-        } else {
-          toast.error("Erro ao criar registro. Tente novamente.");
+        // If it's a conflict but auth succeeded, we should still proceed or handle it
+        if (candidateError.code !== '23505') {
+          toast.error("Sua conta foi criada, mas houve um erro ao salvar seus dados profissionais. Por favor, complete seu perfil após o login.");
         }
-        return;
       }
 
       console.log("Candidato criado:", candidateData);
-
-      toast.success("Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.");
-      
-      // Redirecionar para login após 3 segundos
-      setTimeout(() => {
-        navigate("/admin/login");
-      }, 3000);
+      setIsSuccess(true);
+      toast.success("Cadastro realizado com sucesso!");
 
     } catch (error) {
       console.error("Erro no cadastro:", error);
@@ -167,22 +162,63 @@ export default function PreCadastro() {
     }
   };
 
+  if (isSuccess) {
+    return (
+      <Layout>
+        <section className="py-12 md:py-20 bg-gradient-to-br from-primary/10 via-white to-primary/5 min-h-screen flex items-center">
+          <div className="container mx-auto px-4 max-w-lg text-center">
+            <Card className="border-2 border-green-100 shadow-2xl overflow-hidden">
+              <div className="bg-green-500 h-2 w-full" />
+              <CardContent className="pt-10 pb-10">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Cadastro Concluído!</h2>
+                <p className="text-gray-600 text-lg mb-8">
+                  Sua conta foi criada com sucesso. Enviamos um link de confirmação para o seu email. 
+                  Por favor, verifique sua caixa de entrada.
+                </p>
+                
+                <div className="space-y-4">
+                  <Button 
+                    onClick={() => navigate("/admin/login")} 
+                    className="w-full bg-primary hover:bg-primary/90 text-lg py-6"
+                  >
+                    Acessar meu Painel
+                  </Button>
+                  <p className="text-sm text-gray-500">
+                    Você será redirecionado para a página de login onde poderá acessar sua área exclusiva.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-      <section className="py-12 md:py-20 bg-primary/5 min-h-screen flex items-center">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-primary/5 via-white to-primary/10 min-h-screen flex items-center">
         <div className="container mx-auto px-4 max-w-md">
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold">
-                Cadastro de Acesso - Cuidador
+          <Card className="border-none shadow-2xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="text-center pb-2">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary">
+                <User className="w-8 h-8" />
+              </div>
+              <CardTitle className="text-3xl font-bold text-gray-900">
+                Seja um Cuidador
               </CardTitle>
-              <p className="text-gray-600">
-                Crie sua conta para acessar a área do cuidador
+              <p className="text-gray-500 mt-2">
+                Cadastre-se para encontrar as melhores oportunidades.
               </p>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                   <FormField
                     control={form.control}
                     name="name"
@@ -191,7 +227,8 @@ export default function PreCadastro() {
                         <FormLabel>Nome Completo</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="Digite seu nome completo" 
+                            placeholder="Seu nome completo" 
+                            className="bg-gray-50/50"
                             {...field} 
                           />
                         </FormControl>
@@ -210,6 +247,7 @@ export default function PreCadastro() {
                           <Input 
                             type="email" 
                             placeholder="seu@email.com" 
+                            className="bg-gray-50/50"
                             {...field} 
                           />
                         </FormControl>
@@ -227,6 +265,7 @@ export default function PreCadastro() {
                         <FormControl>
                           <Input 
                             placeholder="(11) 99999-9999" 
+                            className="bg-gray-50/50"
                             {...field} 
                           />
                         </FormControl>
@@ -244,7 +283,8 @@ export default function PreCadastro() {
                         <FormControl>
                           <Input 
                             type="password" 
-                            placeholder="Digite uma senha segura" 
+                            placeholder="Mínimo 6 caracteres" 
+                            className="bg-gray-50/50"
                             {...field} 
                           />
                         </FormControl>
@@ -253,45 +293,28 @@ export default function PreCadastro() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirmar Senha</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="Repita a senha" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <p className="text-sm text-green-800">
-                      <strong>📱 WhatsApp:</strong> Você receberá informações importantes 
-                      sobre sua candidatura no WhatsApp informado.
-                    </p>
-                  </div>
-
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-sm text-blue-800">
-                      <strong>🔐 Acesso:</strong> Após criar sua conta, você poderá 
-                      fazer login e acessar sua área do cuidador para completar 
-                      suas informações profissionais.
+                  <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 flex gap-3">
+                    <div className="bg-primary/20 p-2 rounded-lg h-fit">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      Ao se cadastrar, você concorda com nossos termos. Você receberá notificações sobre vagas via WhatsApp.
                     </p>
                   </div>
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90"
+                    className="w-full bg-primary hover:bg-primary/90 py-6 text-lg font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Criando Conta..." : "Criar Conta de Acesso"}
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        Criando Conta...
+                      </div>
+                    ) : "Começar Agora"}
                   </Button>
                 </form>
               </Form>

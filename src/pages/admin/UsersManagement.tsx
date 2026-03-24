@@ -27,7 +27,7 @@ type CandidatoCuidador = {
   cargo: string | null;
   data_nascimento: string;
   fumante: string;
-  possui_filhos: string;
+  possui_filhos: boolean;
   escolaridade: string;
   cursos: string | null;
   possui_experiencia: string;
@@ -180,6 +180,77 @@ const UsersManagement = () => {
   const handleViewDetails = (user: CandidatoCuidador) => {
     setSelectedUser(user);
     setIsDetailsModalOpen(true);
+  };
+
+  const [newCandidate, setNewCandidate] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    cidade: "",
+    status_candidatura: "Em análise"
+  });
+
+  const handleAddCandidate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('candidatos_cuidadores_rows')
+        .insert({
+          nome: newCandidate.nome,
+          email: newCandidate.email.toLowerCase().trim(),
+          telefone: newCandidate.telefone,
+          cidade: newCandidate.cidade,
+          status_candidatura: newCandidate.status_candidatura,
+          // Mandatory fields at DB level (some might be missing defaults in Postgres)
+          data_nascimento: "1900-01-01",
+          fumante: "Não",
+          escolaridade: "Não informado",
+          possui_experiencia: "Não",
+          disponivel_dormir_local: "Não",
+          endereco: "Não informado",
+          cep: "00000-000",
+          possui_filhos: false,
+          cursos: "",
+          experiencia: "",
+          perfil_profissional: "",
+          descricao_experiencia: "",
+          disponibilidade_horarios: "A combinar",
+          descricao: "",
+          desconfortos_atividades: "",
+          Declaracao: "Aceito",
+          ativo: "Sim"
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setUsers(prev => [data, ...prev]);
+      setIsAddUserModalOpen(false);
+      setNewCandidate({
+        nome: "",
+        email: "",
+        telefone: "",
+        cidade: "",
+        status_candidatura: "Em análise"
+      });
+
+      toast({
+        title: "Candidato adicionado",
+        description: "O novo candidato foi cadastrado com sucesso.",
+      });
+    } catch (error: any) {
+      console.error('Erro ao adicionar candidato:', error);
+      toast({
+        title: "Erro ao adicionar",
+        description: error.message || "Não foi possível adicionar o candidato.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpdateUser = (updatedUser: CandidatoCuidador) => {
@@ -528,38 +599,49 @@ const UsersManagement = () => {
           <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-4">Adicionar Novo Candidato</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                toast({
-                  title: "Funcionalidade em desenvolvimento",
-                  description: "A adição de novos candidatos via painel administrativo está em desenvolvimento.",
-                });
-                setIsAddUserModalOpen(false);
-              }}>
+              <form onSubmit={handleAddCandidate}>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nome Completo
                     </label>
-                    <Input required />
+                    <Input 
+                      required 
+                      value={newCandidate.nome}
+                      onChange={(e) => setNewCandidate({...newCandidate, nome: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email
                     </label>
-                    <Input type="email" required />
+                    <Input 
+                      type="email" 
+                      required 
+                      value={newCandidate.email}
+                      onChange={(e) => setNewCandidate({...newCandidate, email: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Telefone
                     </label>
-                    <Input type="tel" required />
+                    <Input 
+                      type="tel" 
+                      required 
+                      value={newCandidate.telefone}
+                      onChange={(e) => setNewCandidate({...newCandidate, telefone: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Cidade
                     </label>
-                    <Input required />
+                    <Input 
+                      required 
+                      value={newCandidate.cidade}
+                      onChange={(e) => setNewCandidate({...newCandidate, cidade: e.target.value})}
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -567,6 +649,8 @@ const UsersManagement = () => {
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-careconnect-blue"
+                      value={newCandidate.status_candidatura}
+                      onChange={(e) => setNewCandidate({...newCandidate, status_candidatura: e.target.value})}
                     >
                       <option value="Em análise">Em análise</option>
                       <option value="Aprovado">Aprovado</option>
@@ -579,14 +663,16 @@ const UsersManagement = () => {
                     type="button" 
                     variant="outline"
                     onClick={() => setIsAddUserModalOpen(false)}
+                    disabled={loading}
                   >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
                     className="bg-careconnect-blue hover:bg-careconnect-blue/90"
+                    disabled={loading}
                   >
-                    Adicionar Candidato
+                    {loading ? "Adicionando..." : "Adicionar Candidato"}
                   </Button>
                 </div>
               </form>

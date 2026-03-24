@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function BlogSection() {
   const articles = [
@@ -44,16 +43,15 @@ export default function BlogSection() {
           {articles.map((article) => (
             <Card key={article.id} className="overflow-hidden">
               <div className="relative h-48 w-full">
-                <Image
+                <img
                   src={article.image}
                   alt={article.title}
-                  fill
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                 />
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-3">
-                  <Link href={`/blog/${article.slug}`} className="hover:text-primary transition-colors">
+                  <Link to={`/blog/${article.slug}`} className="hover:text-primary transition-colors">
                     {article.title}
                   </Link>
                 </h3>
@@ -63,7 +61,7 @@ export default function BlogSection() {
                   variant="outline"
                   className="text-primary border-primary hover:bg-primary/10"
                 >
-                  <Link href="https://blog.careconnect.com.br/" target="_blank" rel="noopener noreferrer">Veja mais!</Link>
+                  <Link to="/blog">Veja mais!</Link>
                 </Button>
               </div>
             </Card>

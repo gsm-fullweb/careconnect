@@ -38,9 +38,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="http://blog.careconnect.com.br/" className="text-gray-300 hover:text-white">
+                <Link to="/blog" className="text-gray-300 hover:text-white">
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-gray-300 hover:text-white">

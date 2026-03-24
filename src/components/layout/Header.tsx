@@ -43,9 +43,9 @@ const Header = () => {
           <Link to="/contact" className="text-white hover:text-gray-200 font-medium transition-colors">
             Contato
           </Link>
-          <a href="https://blog.careconnect.com.br/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gray-200 font-medium transition-colors">
+          <Link to="/blog" className="text-white hover:text-gray-200 font-medium transition-colors">
             Blog
-          </a>
+          </Link>
         
         </nav>
 
