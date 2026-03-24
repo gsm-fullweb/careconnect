@@ -8,7 +8,7 @@ const corsHeaders = {
 
 interface AIRequest {
   text: string;
-  action: "grammar" | "seo" | "links";
+  action: "grammar" | "seo" | "links" | "generate";
 }
 
 Deno.serve(async (req) => {
@@ -49,6 +49,9 @@ Deno.serve(async (req) => {
       userPrompt = `Melhore o SEO (Copywriting e Search Engine Optimization) do seguinte texto. Foque em Mogi das Cruzes e no nicho de Cuidadores de Idosos. Você DEVE retornar apenas HTML. Texto:\n\n${text}`;
     } else if (action === "links") {
       userPrompt = `No seguinte texto, encontre espaços naturais (ou crie pequenas inserções lógicas de 1 ou 2 palavras relacionadas) e sugira links. Formate os links com tags HTML: <a href="URL_AQUI">âncora da vez</a>. Substitua URL_AQUI por "https://careconnect.com.br/planos" se recomendar checar planos ou "https://careconnect.com.br/contact" se for para falar com consultor. Adicione o texto com os links injetados e, no final, cite 1 referência de fonte confiável externa (organizações de saúde) caso faça sentido para o contexto. Retorne APENAS HTML puríssimo. Texto:\n\n${text}`;
+    } else if (action === "generate") {
+      systemPrompt = "Você é um Copywriter Especialista da CareConnect, uma agência de Cuidadores de Idosos líder de mercado. Crie um artigo de Blog persuasivo e informativo que crie autoridade para a agência. Você DEVE retornar EXCLUSIVAMENTE código HTML válido e direto ao ponto (usando <h2> com palavras chaves, <p>, <ul> e <strong>). NUNCA USE MARKDOWN. Não escreva título de nível 1 <h1>. Nunca use ```html.";
+      userPrompt = `Por favor, rediga uma reportagem completa, aprofundada e muito humana sobre o seguinte tema ou palavra-chave: "${text}". O texto deve ter no mínimo 4 parágrafos robustos, usar subtítulos <h2> naturais para separar as ideias, usar listas (bullets) se houverem dicas, e focar 100% no bem-estar do idoso e alívio para a família (Sendo CareConnect a solução ideal). Retorne somente o HTML formatado.`;
     }
 
     // Chama a API da OpenAI

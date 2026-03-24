@@ -74,14 +74,14 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
     }
   };
 
-  const handleAiAction = async (action: "grammar" | "seo" | "links") => {
+  const handleAiAction = async (action: "grammar" | "seo" | "links" | "generate") => {
     if (!editorRef.current) return;
     const currentHtml = editorRef.current.innerHTML;
     
-    if (!currentHtml || currentHtml.trim() === "") {
+    if (!currentHtml || currentHtml.trim() === "" || currentHtml === "<br>") {
       toast({
         title: "Texto vazio",
-        description: "Digite algum texto primeiro para o Assistente analisar.",
+        description: action === "generate" ? "Digite o tema ou palavra-chave na caixa primeiro (ex: Cuidadores SP) para a IA criar a matéria." : "Digite algum texto primeiro para o Assistente analisar.",
         variant: "destructive",
       });
       return;
@@ -322,6 +322,9 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => handleAiAction("generate")} className="cursor-pointer font-bold text-careconnect-green">
+                🪄 Escrever Matéria do Zero
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleAiAction("grammar")} className="cursor-pointer">
                 ✨ Corrigir Ortografia/Gramática
               </DropdownMenuItem>
