@@ -39,16 +39,16 @@ Deno.serve(async (req) => {
     }
 
     // Cria os prompts específicos baseados na ação selecionada
-    let systemPrompt = "Você é um excelente assessor editorial e de SEO especializado na área de assistência em saúde (CareConnect). Você deve APENAS retornar o texto formatado e com marcações Markdown adequadas. Não faça comentários extras na sua resposta. NUNCA saia do escopo do texto fornecido.";
+    let systemPrompt = "Você é um excelente assessor editorial e SEO especializado em saúde (CareConnect). Você DEVE retornar EXCLUSIVAMENTE código HTML válido (usando <p>, <h2>, <ul>, <strong>). NUNCA USE MARKDOWN (como ## ou **). Não inclua blocos de código como ```html. Retorne apenas o HTML puro. Mantenha os pulos de linha.";
     let userPrompt = text;
 
     if (action === "grammar") {
-      userPrompt = `Realize a correção ortográfica, de concordância e de clareza (gramática) do texto a seguir. Mantenha as quebras de linha existentes e os cabeçalhos. Texto original:\n\n${text}`;
+      userPrompt = `Realize a correção ortográfica, de concordância e de clareza do texto HTML a seguir. Mantenha estruturado em HTML. Texto original:\n\n${text}`;
     } else if (action === "seo") {
-      systemPrompt += " No seu trabalho de SEO, expanda acrônimos relevantes, destaque com negrito as palavras-chave principais, certifique-se de que existem tópicos (## ou ###) lógicos para facilitar a leitura dinámica.";
-      userPrompt = `Melhore o SEO (Search Engine Optimization) do seguinte texto. Preserve o contexto original, mas torne-o mais cativante para as buscas do Google no nicho de Cuidado de Idosos e Assistência Domiciliar. Texto original:\n\n${text}`;
+      systemPrompt += " No seu trabalho de SEO, garanta que existam tags <h2> naturais com palavras-chave relevantes, e envolva termos essenciais de busca em <strong>.";
+      userPrompt = `Melhore o SEO (Copywriting e Search Engine Optimization) do seguinte texto. Foque em Mogi das Cruzes e no nicho de Cuidadores de Idosos. Você DEVE retornar apenas HTML. Texto:\n\n${text}`;
     } else if (action === "links") {
-      userPrompt = `No seguinte texto, encontre espaços naturais (ou crie pequenas inserções lógicas de 1 ou 2 palavras relacionadas) e sugira links. Formate os links com o padrão markdown: [âncora da vez](URL_AQUI). Substitua URL_AQUI por "https://careconnect.com.br/planos" se recomendar checar planos ou "https://careconnect.com.br/contact" se for para falar com consultor. Adicione o texto com os links injetados e, no final, cite 1 referência de fonte confiável externa (organizações de saúde) caso faça sentido para o contexto. Texto:\n\n${text}`;
+      userPrompt = `No seguinte texto, encontre espaços naturais (ou crie pequenas inserções lógicas de 1 ou 2 palavras relacionadas) e sugira links. Formate os links com tags HTML: <a href="URL_AQUI">âncora da vez</a>. Substitua URL_AQUI por "https://careconnect.com.br/planos" se recomendar checar planos ou "https://careconnect.com.br/contact" se for para falar com consultor. Adicione o texto com os links injetados e, no final, cite 1 referência de fonte confiável externa (organizações de saúde) caso faça sentido para o contexto. Retorne APENAS HTML puríssimo. Texto:\n\n${text}`;
     }
 
     // Chama a API da OpenAI
