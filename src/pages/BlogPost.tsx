@@ -6,6 +6,9 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { marked } from "marked";
+
+marked.use({ breaks: true, gfm: true });
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -137,7 +140,7 @@ const BlogPost = () => {
                 {/* Article Body */}
                 <div 
                   className="prose prose-lg max-w-none prose-headings:text-careconnect-blue prose-a:text-careconnect-green hover:prose-a:text-careconnect-green/80"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
+                  dangerouslySetInnerHTML={{ __html: marked.parse(post.content || "", { async: false }) as string }}
                 />
                 
                 {/* Share and Navigate */}
