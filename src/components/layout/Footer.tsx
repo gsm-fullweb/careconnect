@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center">
               <img 
-                src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//logo-careconnect.png" 
+                src="/images/logo-careconnect.png" 
                 alt="CareConnect Logo" 
                 className="w-32 h-10 md:w-40 md:h-12 object-contain"
               />

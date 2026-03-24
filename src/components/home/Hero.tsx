@@ -34,7 +34,7 @@ const Hero = () => {
           <div className="order-1 md:order-2 flex justify-center">
             <div className="relative w-full max-w-md aspect-square rounded-full overflow-hidden">
               <img
-                src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//hero-image.jpg"
+                src="/images/hero-image.jpg"
                 alt="Cuidador e pessoa idosa juntos"
                 className="object-cover w-full h-full"
               />
