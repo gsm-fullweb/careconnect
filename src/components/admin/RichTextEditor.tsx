@@ -33,6 +33,16 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+  
+  const lastHtmlRef = useRef(value);
+
+  // Sincroniza o valor externo (Ex: quando a API carrega o post) sem sobrepor as edições do input
+  React.useEffect(() => {
+    if (editorRef.current && value !== lastHtmlRef.current) {
+      editorRef.current.innerHTML = value;
+      lastHtmlRef.current = value;
+    }
+  }, [value]);
 
   const formatDoc = (command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -41,7 +51,11 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
 
   const updateEditorContent = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const html = editorRef.current.innerHTML;
+      if (html !== lastHtmlRef.current) {
+        lastHtmlRef.current = html;
+        onChange(html);
+      }
     }
   };
 
@@ -260,7 +274,6 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
         ref={editorRef}
         contentEditable
         className="p-4 min-h-[200px] focus:outline-none"
-        dangerouslySetInnerHTML={{ __html: value }}
         onInput={updateEditorContent}
         onBlur={updateEditorContent}
       />
