@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Plus, Edit, Trash2 } from "lucide-react";
@@ -18,6 +18,9 @@ interface Post {
 const BlogManagement = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [keyword, setKeyword] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const fetchPosts = async () => {
@@ -53,6 +56,58 @@ const BlogManagement = () => {
     fetchPosts();
   }, []);
 
+  const handleGenerateAiPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keyword.trim()) return;
+
+    try {
+      setIsGenerating(true);
+      toast({ title: "Gerando matéria...", description: "A IA está escrevendo o seu artigo. Isso pode levar alguns segundos." });
+
+      // Chama a edge function que acabamos de criar via OpenAI
+      const { data: aiData, error: aiError } = await supabase.functions.invoke("blog-ai-assistant", {
+        body: { text: keyword, action: "generate" },
+      });
+
+      if (aiError) throw new Error(aiError.message);
+      if (aiData?.error) throw new Error(aiData.error);
+
+      const generatedHtml = aiData?.improvedText || "";
+      
+      const slug = keyword
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, "") // remove acentos
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '') + '-' + Math.floor(Math.random() * 1000);
+
+      // Cria o Rascunho no Banco de Dados
+      const { data: insertData, error: insertError } = await supabase
+        .from("blog_posts")
+        .insert({
+          title: keyword,
+          slug: slug,
+          content: generatedHtml,
+          published: false,
+          excerpt: "Matéria gerada por Inteligência Artificial."
+        })
+        .select("id")
+        .single();
+
+      if (insertError) throw insertError;
+
+      toast({ title: "Sucesso!", description: "Matéria criada com sucesso! Redirecionando para revisão..." });
+      
+      // Envia o usuário imediatamente para o post criado para revisar e publicar
+      navigate(`/admin/blog/edit/${insertData.id}`);
+
+    } catch (err: any) {
+      toast({ title: "Erro na IA", description: err.message || "Tente novamente mais tarde.", variant: "destructive" });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -66,30 +121,42 @@ const BlogManagement = () => {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
-        <h2 className="text-lg font-medium mb-4">Crie uma postagem do WordPress com IA</h2>
+        <h2 className="text-lg font-medium mb-4">✨ Crie uma Postagem do Blog com IA</h2>
         <form
           className="space-y-4"
-          method="POST"
-          action="https://n8n-n8n.n1n956.easypanel.host/webhook/blog"
+          onSubmit={handleGenerateAiPost}
         >
           <div className="flex flex-col md:flex-row items-center gap-3">
-            <label htmlFor="keyword" className="sr-only">Palavra-chave</label>
+            <label htmlFor="keyword" className="sr-only">Palavra-chave/Tema</label>
             <input
               type="text"
               id="keyword"
               name="keyword"
               className="flex-1 border border-gray-300 px-4 py-2 rounded-md w-full max-w-md"
-              placeholder="Digite a palavra-chave da postagem"
+              placeholder="Digite a palavra-chave (Ex: Quando a família deve contratar um cuidador)"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
               required
+              disabled={isGenerating}
             />
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded-md min-w-[180px] flex items-center justify-center"
+              disabled={isGenerating}
+              className="bg-careconnect-green hover:bg-careconnect-green/90 transition-colors text-white px-4 py-2 rounded-md min-w-[180px] flex items-center justify-center font-medium"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 512 512" className="mr-2">
-                <path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z"></path>
-              </svg>
-              Criar matéria agora
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Escrevendo...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 512 512" className="mr-2" fill="currentColor">
+                    <path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z"></path>
+                  </svg>
+                  Criar matéria agora
+                </>
+              )}
             </button>
           </div>
         </form>
