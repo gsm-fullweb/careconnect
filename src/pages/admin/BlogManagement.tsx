@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Post {
   id: string;
@@ -34,13 +36,34 @@ const BlogManagement = () => {
     }
   };
 
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm("Tem certeza que deseja excluir este post?")) return;
+
+    try {
+      const { error } = await supabase.from("blog_posts").delete().eq("id", postId);
+      if (error) throw error;
+      setPosts(posts.filter(post => post.id !== postId));
+      toast({ title: "Sucesso", description: "Post excluído com sucesso." });
+    } catch {
+      toast({ title: "Erro", description: "Falha ao excluir post", variant: "destructive" });
+    }
+  };
+
   useEffect(() => {
     fetchPosts();
   }, []);
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-semibold text-gray-900 mb-6">Gerenciamento de Blog</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-gray-900">Gerenciamento de Blog</h1>
+        <Button asChild>
+          <Link to="/admin/blog/edit/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Post Manual
+          </Link>
+        </Button>
+      </div>
 
       <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
         <h2 className="text-lg font-medium mb-4">Crie uma postagem do WordPress com IA</h2>
@@ -84,10 +107,27 @@ const BlogManagement = () => {
         ) : (
           <ul className="divide-y divide-gray-200">
             {posts.map((post) => (
-              <li key={post.id} className="p-4">
-                <div className="font-bold text-gray-900">{post.title}</div>
-                <div className="text-gray-600 text-sm">{post.excerpt}</div>
-                <div className="text-xs text-gray-400 mt-1">{new Date(post.created_at).toLocaleDateString("pt-BR")}</div>
+              <li key={post.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="font-bold text-gray-900">{post.title}</div>
+                  <div className="text-gray-600 text-sm">{post.excerpt}</div>
+                  <div className="text-xs text-gray-400 mt-1 flex gap-2 items-center">
+                    <span>{new Date(post.created_at).toLocaleDateString("pt-BR")}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${post.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {post.published ? 'Publicado' : 'Rascunho'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon" asChild>
+                    <Link to={`/admin/blog/edit/${post.id}`}>
+                      <Edit className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="destructive" size="icon" onClick={() => handleDelete(post.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
