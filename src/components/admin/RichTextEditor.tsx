@@ -43,12 +43,19 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
   const [linkUrl, setLinkUrl] = useState("");
   
   const lastHtmlRef = useRef(value);
+  const isInitialized = useRef(false);
 
   // Sincroniza o valor externo (Ex: quando a API carrega o post) sem sobrepor as edições do input
   React.useEffect(() => {
-    if (editorRef.current && value !== lastHtmlRef.current) {
-      editorRef.current.innerHTML = value;
-      lastHtmlRef.current = value;
+    if (editorRef.current) {
+      if (!isInitialized.current) {
+        editorRef.current.innerHTML = value || "";
+        lastHtmlRef.current = value;
+        isInitialized.current = true;
+      } else if (value !== lastHtmlRef.current) {
+        editorRef.current.innerHTML = value || "";
+        lastHtmlRef.current = value;
+      }
     }
   }, [value]);
 
