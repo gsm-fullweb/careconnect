@@ -15,10 +15,17 @@ import {
   Unlink, 
   Image as ImageIcon,
   Upload,
-  Trash
+  Trash,
+  Wand2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface RichTextEditorProps {
   value: string;
@@ -31,6 +38,7 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   
@@ -56,6 +64,47 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
         lastHtmlRef.current = html;
         onChange(html);
       }
+    }
+  };
+
+  const handleAiAction = async (action: "grammar" | "seo" | "links") => {
+    if (!editorRef.current) return;
+    const currentHtml = editorRef.current.innerHTML;
+    
+    if (!currentHtml || currentHtml.trim() === "") {
+      toast({
+        title: "Texto vazio",
+        description: "Digite algum texto primeiro para o Assistente analisar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsAiLoading(true);
+      const { data, error } = await supabase.functions.invoke("blog-ai-assistant", {
+        body: { text: currentHtml, action },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.improvedText) {
+        editorRef.current.innerHTML = data.improvedText.trim();
+        updateEditorContent();
+        toast({
+          title: "Texto melhorado!",
+          description: "O Assistente de IA acabou de aplicar as melhorias.",
+        });
+      }
+    } catch (err: any) {
+      toast({
+        title: "Erro no Assistente",
+        description: err.message || "Verifique se a OPENAI_API_KEY está configurada no Supabase.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAiLoading(false);
     }
   };
 
@@ -247,6 +296,37 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
           accept="image/*"
           className="hidden"
         />
+        
+        <div className="ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100 font-medium"
+                disabled={isAiLoading}
+              >
+                {isAiLoading ? (
+                  <div className="h-4 w-4 mr-2 border-2 border-t-transparent border-violet-700 rounded-full animate-spin"></div>
+                ) : (
+                  <Wand2 size={16} className="mr-2" />
+                )}
+                {isAiLoading ? "Pensando..." : "Assistente Especial"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => handleAiAction("grammar")} className="cursor-pointer">
+                ✨ Corrigir Ortografia/Gramática
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAiAction("seo")} className="cursor-pointer">
+                🚀 Otimizar para Resultados (SEO)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAiAction("links")} className="cursor-pointer">
+                🔗 Sugerir Links de Venda
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       
       {showLinkInput && (
