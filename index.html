@@ -8,9 +8,20 @@
     <meta name="author" content="CareConnect" />
 
     <!-- Preconnect para origens críticas (elimina latência de DNS) -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://dyxkbbojlyppizsgjjxx.supabase.co" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GYZ36MKT4N"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-GYZ36MKT4N');
+    </script>
 
     <!-- Google Fonts com display=swap (evita FOIT / bloqueio de renderização) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

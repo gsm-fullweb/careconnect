@@ -50,8 +50,25 @@ Deno.serve(async (req) => {
     } else if (action === "links") {
       userPrompt = `No seguinte texto, encontre espaços naturais (ou crie pequenas inserções lógicas de 1 ou 2 palavras relacionadas) e sugira links. Formate os links com tags HTML: <a href="URL_AQUI">âncora da vez</a>. Substitua URL_AQUI por "https://careconnect.com.br/planos" se recomendar checar planos ou "https://careconnect.com.br/contact" se for para falar com consultor. Adicione o texto com os links injetados e, no final, cite 1 referência de fonte confiável externa (organizações de saúde) caso faça sentido para o contexto. Retorne APENAS HTML puríssimo. Texto:\n\n${text}`;
     } else if (action === "generate") {
-      systemPrompt = "Você é um Copywriter Especialista da CareConnect, uma agência de Cuidadores de Idosos líder de mercado. Crie um artigo de Blog persuasivo e informativo que crie autoridade para a agência. Você DEVE retornar EXCLUSIVAMENTE código HTML válido e direto ao ponto (usando <h2> com palavras chaves, <p>, <ul> e <strong>). NUNCA USE MARKDOWN. Não escreva título de nível 1 <h1>. Nunca use ```html.";
-      userPrompt = `Por favor, rediga uma reportagem completa, aprofundada e muito humana sobre o seguinte tema ou palavra-chave: "${text}". O texto deve ter no mínimo 4 parágrafos robustos, usar subtítulos <h2> naturais para separar as ideias, usar listas (bullets) se houverem dicas, e focar 100% no bem-estar do idoso e alívio para a família (Sendo CareConnect a solução ideal). Retorne somente o HTML formatado.`;
+      systemPrompt = `Você é um Redator Chefe e Especialista em SEO da CareConnect, a maior agência de Cuidadores de Idosos do país. 
+Sua missão é criar reportagens PROFUNDAS, HUMANAS e EXTENSAS (mínimo de 1000 palavras).
+Você deve SEMPRE incluir no texto a "Mila, a inteligência artificial do CareConnect", que ajuda as famílias a encontrarem cuidadores via WhatsApp.
+Sempre que possível, cite o contexto local de Mogi das Cruzes e região do Alto Tietê como centro de excelência.
+Use uma estrutura rica:
+1. Introdução empática.
+2. Pelo menos 5 a 7 subtítulos <h2> abordando diferentes ângulos do problema.
+3. Listas com bullets <ul> e <li> para dicas práticas.
+4. Uso estratégico de <strong> para termos chave.
+5. Uma seção final com uma lista de "Referências e Fontes Sugeridas" no estilo científico/jornalístico.
+6. Tom de voz: Autoritário, mas extremamente acolhedor.
+
+REGRAS CRÍTICAS:
+- Retorne APENAS HTML puríssimo.
+- NUNCA use Markdown (### ou **).
+- NUNCA use envoltorios como \`\`\`html.
+- NÃO use <h1> (o título principal é gerado pelo sistema).`;
+      
+      userPrompt = `Escreva um artigo de blog completo, de alta autoridade e com mais de 1000 palavras sobre o tema: "${text}". O texto deve ser tão detalhado e rico quanto uma reportagem de capa do G1, focado em ajudar famílias que estão passando por este desafio agora. Lembre-se de mencionar a Mila (IA do CareConnect) como solução facilitadora.`;
     }
 
     // Chama a API da OpenAI
