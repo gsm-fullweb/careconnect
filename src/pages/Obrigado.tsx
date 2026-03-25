@@ -1,195 +1,96 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Copy, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { CheckCircle, Heart, Star, Shield, ArrowRight, Sparkles } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export default function Obrigado() {
-  const [credentials, setCredentials] = useState<{
-    email: string;
-    password: string;
-    name: string;
-  } | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [name, setName] = useState("Cuidador");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Recuperar credenciais do localStorage
     const fallbackUser = localStorage.getItem('fallback_user');
     if (fallbackUser) {
       const userData = JSON.parse(fallbackUser);
-      setCredentials({
-        email: userData.email,
-        password: userData.password,
-        name: userData.name
-      });
-      
-      // Limpar do localStorage após 5 minutos por segurança
-      setTimeout(() => {
-        localStorage.removeItem('fallback_user');
-      }, 300000); // 5 minutos
-    } else {
-      // Se não há credenciais, redirecionar para home
-      window.location.href = "/";
+      setName(userData.name || "Cuidador");
     }
   }, []);
 
-  const copyToClipboard = (text: string, type: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(`${type} copiado para a área de transferência!`);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const handleGoToLogin = () => {
-    // Redirecionar para o painel do cuidador
-    window.location.href = "/painel-cuidador";
-  };
-
-  if (!credentials) {
-    return (
-      <Layout>
-        <div className="py-12 md:py-20 bg-primary/5 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Carregando...</h1>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
-      <section className="py-12 md:py-20 bg-primary/5 min-h-screen flex items-center">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <CheckCircle className="w-16 h-16 text-green-500" />
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center py-12 md:py-20">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          
+          <div className="mb-8 animate-bounce">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-4 shadow-inner">
+              <CheckCircle className="w-12 h-12 text-green-500" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-green-600">
-              Cadastro Realizado com Sucesso!
+          </div>
+
+          <div className="space-y-6 mb-12">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-blue-900 tracking-tight">
+              Parabéns, {name.split(' ')[0]}! <br/>
+              <span className="text-careconnect-blue">Você agora é Care Connect!</span>
             </h1>
-            <p className="text-lg text-gray-600">
-              Olá <strong>{credentials.name}</strong>, seu cadastro foi concluído e está em análise.
+            
+            <p className="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Sua jornada para transformar vidas e encontrar as melhores oportunidades profissionais começa <span className="font-bold text-blue-900">agora</span>.
             </p>
           </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-xl text-center">
-                Suas Credenciais de Acesso
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert className="border-blue-200 bg-blue-50">
-                <AlertDescription className="text-blue-800">
-                  <strong>⚠️ Importante:</strong> Anote essas credenciais em local seguro. 
-                  Esta é a única vez que a senha será exibida.
-                </AlertDescription>
-              </Alert>
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <Card className="border-none shadow-md bg-white hover:shadow-xl transition-shadow border-t-4 border-blue-400">
+              <CardContent className="pt-6">
+                <Heart className="w-8 h-8 text-red-500 mx-auto mb-3" />
+                <h3 className="font-bold text-lg mb-2">Valorização</h3>
+                <p className="text-sm text-gray-500 italic">"Cuidar é a forma mais nobre de amar."</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-none shadow-md bg-white hover:shadow-xl transition-shadow border-t-4 border-yellow-400">
+              <CardContent className="pt-6">
+                <Star className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
+                <h3 className="font-bold text-lg mb-2">Perspectiva</h3>
+                <p className="text-sm text-gray-500 italic">Novas chances de brilhar a cada dia.</p>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email de Acesso:
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 p-3 bg-white border rounded font-mono text-sm">
-                      {credentials.email}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(credentials.email, "Email")}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Senha Temporária:
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 p-3 bg-white border rounded font-mono text-sm">
-                      {showPassword ? credentials.password : "••••••••••••"}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(credentials.password, "Senha")}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <Alert className="border-orange-200 bg-orange-50">
-                <AlertDescription className="text-orange-800">
-                  <strong>🔐 Segurança:</strong> Esta é uma senha temporária de primeiro acesso. 
-                  <strong> Você DEVE alterá-la assim que fizer o primeiro login</strong> para garantir a segurança da sua conta.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <h3 className="text-lg font-semibold">Próximos Passos:</h3>
-                <div className="text-left space-y-2 max-w-md mx-auto">
-                  <div className="flex items-start gap-2">
-                    <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</span>
-                    <span className="text-sm">Guarde suas credenciais em local seguro</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</span>
-                    <span className="text-sm">Acesse seu painel com as credenciais fornecidas</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</span>
-                    <span className="text-sm">Altere sua senha no primeiro acesso</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</span>
-                    <span className="text-sm">Aguarde a análise do seu cadastro por nossa equipe</span>
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <Button 
-                    onClick={handleGoToLogin}
-                    className="bg-primary hover:bg-primary/90"
-                    size="lg"
-                  >
-                    Acessar Meu Painel
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-center mt-6 text-sm text-gray-600">
-            <p>
-              Dúvidas? Entre em contato conosco através do nosso 
-              <a href="/contact" className="text-primary hover:underline ml-1">
-                formulário de contato
-              </a>
-            </p>
+            <Card className="border-none shadow-md bg-white hover:shadow-xl transition-shadow border-t-4 border-green-400">
+              <CardContent className="pt-6">
+                <Shield className="w-8 h-8 text-green-500 mx-auto mb-3" />
+                <h3 className="font-bold text-lg mb-2">Segurança</h3>
+                <p className="text-sm text-gray-500 italic">Estamos com você em cada passo.</p>
+              </CardContent>
+            </Card>
           </div>
+
+          <div className="bg-white p-8 rounded-3xl shadow-2xl border border-blue-100 mb-10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Sparkles className="w-20 h-20 text-blue-900" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">Sua conta está sendo preparada!</h2>
+            <p className="text-gray-600 mb-8">
+              Enviamos todos os detalhes para o seu e-mail. Nossa equipe de seleção irá analisar seu perfil com muito carinho para conectá-lo às famílias ideais.
+            </p>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <Button 
+                onClick={() => navigate("/client-dashboard")}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-7 text-lg rounded-full shadow-lg hover:shadow-blue-200 transition-all flex items-center gap-2"
+              >
+                Explorar Meu Dashboard <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="text-gray-500 text-sm">
+            <p>Precisa de ajuda agora? <a href="/contact" className="text-blue-600 font-bold hover:underline">Fale com a gente no suporte.</a></p>
+          </div>
+
         </div>
       </section>
     </Layout>

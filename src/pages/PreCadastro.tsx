@@ -54,7 +54,6 @@ const STEPS = [
 export default function PreCadastro() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<FormData>({
@@ -141,7 +140,16 @@ export default function PreCadastro() {
         options: { data: { name: data.name, whatsapp: data.whatsapp } },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        // Trata erro de usuário já cadastrado como um fluxo positivo de boas-vindas
+        if (authError.message.toLowerCase().includes("user already registered") || 
+            authError.message.toLowerCase().includes("usuário já cadastrado")) {
+          localStorage.setItem('fallback_user', JSON.stringify({ name: data.name, email: data.email }));
+          navigate("/obrigado");
+          return;
+        }
+        throw authError;
+      }
 
       // 2. Insert into candidatos_cuidadores_rows
       const { error: dbError } = await supabase.from("candidatos_cuidadores_rows").insert({
@@ -161,7 +169,6 @@ export default function PreCadastro() {
         status_candidatura: "Em análise",
         ativo: "Sim",
         data_cadastro: new Date().toISOString().split("T")[0],
-        // Campos obrigatórios do banco de dados com valores padrão
         cursos: "Não informado",
         referencias: "Não informado",
         perfil_profissional: "Candidato via site",
@@ -172,9 +179,18 @@ export default function PreCadastro() {
         experiencia: "Não detalhado"
       });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        // Se já existe na tabela de candidatos mas não deu erro no auth, também consideramos sucesso
+        if (dbError.message.includes("duplicate key")) {
+          localStorage.setItem('fallback_user', JSON.stringify({ name: data.name, email: data.email }));
+          navigate("/obrigado");
+          return;
+        }
+        throw dbError;
+      }
 
-      setIsSuccess(true);
+      localStorage.setItem('fallback_user', JSON.stringify({ name: data.name, email: data.email }));
+      navigate("/obrigado");
     } catch (err: any) {
       toast.error(err.message || "Erro ao realizar cadastro.");
     } finally {
@@ -182,22 +198,7 @@ export default function PreCadastro() {
     }
   };
 
-  if (isSuccess) {
-    return (
-      <Layout>
-        <div className="min-h-[80vh] flex items-center justify-center container px-4">
-          <Card className="max-w-md w-full text-center p-8 border-t-4 border-green-500 shadow-xl">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Quase lá!</h2>
-            <p className="text-gray-600 mb-6">Enviamos um email de confirmação para {form.getValues("email")}.</p>
-            <Button onClick={() => navigate("/client-dashboard")} className="w-full bg-primary py-6">
-              Ir para o Dashboard
-            </Button>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
+
 
   return (
     <Layout>
