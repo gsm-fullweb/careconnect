@@ -187,6 +187,8 @@ const UsersManagement = () => {
     email: "",
     telefone: "",
     cidade: "",
+    cargo: "cuidador",
+    endereco: "",
     status_candidatura: "Em análise"
   });
 
@@ -203,13 +205,13 @@ const UsersManagement = () => {
           telefone: newCandidate.telefone,
           cidade: newCandidate.cidade,
           status_candidatura: newCandidate.status_candidatura,
-          // Mandatory fields at DB level (some might be missing defaults in Postgres)
-          data_nascimento: "1900-01-01",
+          cargo: newCandidate.cargo,
+          data_nascimento: "1990-01-01",
           fumante: "Não",
           escolaridade: "Não informado",
-          possui_experiencia: "Não",
-          disponivel_dormir_local: "Não",
-          endereco: "Não informado",
+          possui_experiencia: "Sim",
+          disponivel_dormir_local: "Sim",
+          endereco: newCandidate.endereco || "Não informado",
           cep: "00000-000",
           possui_filhos: false,
           cursos: "",
@@ -218,7 +220,7 @@ const UsersManagement = () => {
           descricao_experiencia: "",
           disponibilidade_horarios: "A combinar",
           desconfortos_atividades: "",
-          referencias: "",
+          referencias: "Em análise pelo administrador",
           Declaracao: "Aceito",
           ativo: "Sim"
         })
@@ -234,6 +236,8 @@ const UsersManagement = () => {
         email: "",
         telefone: "",
         cidade: "",
+        cargo: "cuidador",
+        endereco: "",
         status_candidatura: "Em análise"
       });
 
@@ -633,19 +637,46 @@ const UsersManagement = () => {
                       onChange={(e) => setNewCandidate({...newCandidate, telefone: e.target.value})}
                     />
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cidade
+                      </label>
+                      <Input 
+                        required 
+                        value={newCandidate.cidade}
+                        onChange={(e) => setNewCandidate({...newCandidate, cidade: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cargo
+                      </label>
+                      <select
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-careconnect-blue"
+                        value={newCandidate.cargo}
+                        onChange={(e) => setNewCandidate({...newCandidate, cargo: e.target.value})}
+                      >
+                        <option value="cuidador">Cuidador</option>
+                        <option value="enfermeiro">Enfermeiro</option>
+                        <option value="tecnico_enfermagem">Técnico de Enfermagem</option>
+                        <option value="fisioterapeuta">Fisioterapeuta</option>
+                      </select>
+                    </div>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Cidade
+                      Endereço (Opcional)
                     </label>
                     <Input 
-                      required 
-                      value={newCandidate.cidade}
-                      onChange={(e) => setNewCandidate({...newCandidate, cidade: e.target.value})}
+                      value={newCandidate.endereco}
+                      onChange={(e) => setNewCandidate({...newCandidate, endereco: e.target.value})}
+                      placeholder="Ex: Rua das Flores, 123"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
+                      Status da Candidatura
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-careconnect-blue"
