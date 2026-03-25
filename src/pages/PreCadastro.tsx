@@ -1,11 +1,11 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Form,
   FormControl,
@@ -18,26 +18,41 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { useNavigate } from "react-router-dom";
-import { RefreshCw, User, CheckCircle } from "lucide-react";
+import { 
+  RefreshCw, User, CheckCircle, ArrowRight, ArrowLeft, 
+  MapPin, Briefcase, Heart, GraduationCap, Lock, Mail, Phone, Calendar
+} from "lucide-react";
 
+// ─── Schema de validação completo ───────────────────────────────────────────
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Nome deve ter pelo menos 2 caracteres.",
-  }),
-  email: z.string().email({
-    message: "Email inválido.",
-  }),
-  whatsapp: z.string().min(10, {
-    message: "WhatsApp deve ter pelo menos 10 dígitos.",
-  }),
-  password: z.string().min(6, {
-    message: "Senha deve ter pelo menos 6 caracteres.",
-  }),
+  name: z.string().min(3, { message: "Nome completo é necessário." }),
+  email: z.string().email({ message: "Email inválido." }),
+  whatsapp: z.string().min(10, { message: "Mínimo 10 dígitos." }),
+  password: z.string().min(6, { message: "Senha deve ter 6+ caracteres." }),
+  birth_date: z.string().min(1, { message: "Data de nascimento é obrigatória." }),
+  cep: z.string().min(8, { message: "CEP inválido." }),
+  city: z.string().min(2, { message: "Cidade é necessária." }),
+  address: z.string().min(5, { message: "Endereço completo é necessário." }),
+  education: z.string().min(1, { message: "Selecione sua escolaridade." }),
+  role: z.string().min(2, { message: "Informe seu cargo principal." }),
+  has_experience: z.string(),
+  sleep_on_site: z.string(),
+  is_smoker: z.string(),
+  has_kids: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
+const STEPS = [
+  { id: "personal", title: "Quem é você?", icon: User },
+  { id: "account", title: "Acesso e Contato", icon: Lock },
+  { id: "location", title: "Onde você atua?", icon: MapPin },
+  { id: "professional", title: "Sua Formação", icon: GraduationCap },
+  { id: "preferences", title: "Disponibilidade", icon: Heart },
+];
+
 export default function PreCadastro() {
+  const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
@@ -49,114 +64,110 @@ export default function PreCadastro() {
       email: "",
       whatsapp: "",
       password: "",
+      birth_date: "",
+      cep: "",
+      city: "",
+      address: "",
+      education: "Ensino Médio",
+      role: "Cuidador",
+      has_experience: "Sim",
+      sleep_on_site: "Não",
+      is_smoker: "Não",
+      has_kids: false,
     },
   });
 
-  const sendToWebhook = async (data: FormData) => {
-    try {
-      console.log("Enviando dados para webhook:", data);
-      
-      await fetch("https://n8n-n8n.n1n956.easypanel.host/webhook/sdr-youtube", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "no-cors",
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          whatsapp: data.whatsapp,
-          timestamp: new Date().toISOString(),
-          source: "cadastro-cuidador-acesso",
-        }),
-      });
+  const progress = ((currentStep + 1) / STEPS.length) * 100;
 
-      console.log("Dados enviados para webhook com sucesso");
-      return true;
-    } catch (error) {
-      console.error("Erro ao enviar para webhook:", error);
-      return false;
+  // ─── CEP Auto-fill ────────────────────────────────────────────────────────
+  const cepValue = form.watch("cep");
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const cleanCep = cepValue?.replace(/\D/g, "");
+      if (cleanCep?.length === 8) {
+        try {
+          const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+          const data = await response.json();
+          if (!data.erro) {
+            form.setValue("city", data.localidade);
+            form.setValue("address", `${data.logradouro}, ${data.bairro}`);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar CEP:", error);
+        }
+      }
+    };
+    fetchAddress();
+  }, [cepValue, form]);
+
+  // ─── Lógica de navegação ──────────────────────────────────────────────────
+  const nextStep = async () => {
+    const fields = getFieldsForStep(currentStep);
+    const isValid = await form.trigger(fields as any);
+    if (isValid) {
+      if (currentStep < STEPS.length - 1) {
+        setCurrentStep(prev => prev + 1);
+        window.scrollTo(0, 0);
+      } else {
+        form.handleSubmit(onSubmit)();
+      }
     }
   };
 
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(0, prev - 1));
+    window.scrollTo(0, 0);
+  };
+
+  const getFieldsForStep = (step: number) => {
+    switch (step) {
+      case 0: return ["name", "birth_date"];
+      case 1: return ["email", "whatsapp", "password"];
+      case 2: return ["cep", "city", "address"];
+      case 3: return ["education", "role"];
+      case 4: return ["has_experience", "sleep_on_site", "is_smoker"];
+      default: return [];
+    }
+  };
+
+  // ─── Submissão Final ──────────────────────────────────────────────────────
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
-    console.log("Iniciando cadastro de acesso para:", data.email);
-
     try {
-      // Primeiro, enviar para o webhook
-      await sendToWebhook(data);
-
-      // Criar usuário no Supabase Auth
+      // 1. Auth SignUp
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email.toLowerCase().trim(),
         password: data.password,
-        options: {
-          data: {
-            name: data.name,
-            whatsapp: data.whatsapp,
-          }
-        }
+        options: { data: { name: data.name, whatsapp: data.whatsapp } },
       });
 
-      if (authError) {
-        console.error("Erro ao criar usuário:", authError);
-        if (authError.message.includes('already registered')) {
-          toast.error("Este email já está cadastrado no sistema.");
-        } else {
-          toast.error("Erro ao criar conta. Tente novamente.");
-        }
-        return;
-      }
+      if (authError) throw authError;
 
-      console.log("Usuário criado no auth:", authData);
+      // 2. Insert into candidatos_cuidadores_rows
+      const { error: dbError } = await supabase.from("candidatos_cuidadores_rows").insert({
+        nome: data.name,
+        email: data.email,
+        telefone: data.whatsapp,
+        data_nascimento: data.birth_date,
+        cep: data.cep,
+        cidade: data.city,
+        endereco: data.address,
+        escolaridade: data.education,
+        cargo: data.role,
+        possui_experiencia: data.has_experience,
+        disponivel_dormir_local: data.sleep_on_site,
+        fumante: data.is_smoker,
+        possui_filhos: data.has_kids,
+        status_candidatura: "Em análise",
+        ativo: "Sim",
+        data_cadastro: new Date().toISOString().split("T")[0],
+      });
 
-      // Criar registro na tabela de candidatos
-      const { data: candidateData, error: candidateError } = await supabase
-        .from('candidatos_cuidadores_rows')
-        .insert({
-          nome: data.name,
-          email: data.email.toLowerCase().trim(),
-          telefone: data.whatsapp,
-          data_nascimento: "1900-01-01",
-          fumante: "Não",
-          escolaridade: "Não informado",
-          possui_experiencia: "Não",
-          disponivel_dormir_local: "Não",
-          status_candidatura: 'Em análise',
-          cidade: '',
-          endereco: "Não informado",
-          cep: "00000-000",
-          possui_filhos: false,
-          cursos: "",
-          experiencia: "",
-          perfil_profissional: "",
-          descricao_experiencia: "",
-          disponibilidade_horarios: "A combinar",
-          descricao: "",
-          desconfortos_atividades: "",
-          Declaracao: "Aceito",
-          ativo: "Sim",
-          data_cadastro: new Date().toISOString().split('T')[0]
-        })
-        .select()
-        .single();
+      if (dbError) throw dbError;
 
-      if (candidateError) {
-        console.error("Erro ao criar registro do candidato:", candidateError);
-        // If it's a conflict but auth succeeded, we should still proceed or handle it
-        if (candidateError.code !== '23505') {
-          toast.error("Sua conta foi criada, mas houve um erro ao salvar seus dados profissionais. Por favor, complete seu perfil após o login.");
-        }
-      }
-
-      console.log("Candidato criado:", candidateData);
       setIsSuccess(true);
-      toast.success("Cadastro realizado com sucesso!");
-
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
-      toast.error("Erro ao processar cadastro. Tente novamente.");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao realizar cadastro.");
     } finally {
       setIsSubmitting(false);
     }
@@ -165,172 +176,292 @@ export default function PreCadastro() {
   if (isSuccess) {
     return (
       <Layout>
-        <section className="py-12 md:py-20 bg-gradient-to-br from-primary/10 via-white to-primary/5 min-h-screen flex items-center">
-          <div className="container mx-auto px-4 max-w-lg text-center">
-            <Card className="border-2 border-green-100 shadow-2xl overflow-hidden">
-              <div className="bg-green-500 h-2 w-full" />
-              <CardContent className="pt-10 pb-10">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Cadastro Concluído!</h2>
-                <p className="text-gray-600 text-lg mb-8">
-                  Sua conta foi criada com sucesso. Enviamos um link de confirmação para o seu email. 
-                  Por favor, verifique sua caixa de entrada.
-                </p>
-                
-                <div className="space-y-4">
-                  <Button 
-                    onClick={() => navigate("/admin/login")} 
-                    className="w-full bg-primary hover:bg-primary/90 text-lg py-6"
-                  >
-                    Acessar meu Painel
-                  </Button>
-                  <p className="text-sm text-gray-500">
-                    Você será redirecionado para a página de login onde poderá acessar sua área exclusiva.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+        <div className="min-h-[80vh] flex items-center justify-center container px-4">
+          <Card className="max-w-md w-full text-center p-8 border-t-4 border-green-500 shadow-xl">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Quase lá!</h2>
+            <p className="text-gray-600 mb-6">Enviamos um email de confirmação para {form.getValues("email")}.</p>
+            <Button onClick={() => navigate("/client-dashboard")} className="w-full bg-primary py-6">
+              Ir para o Dashboard
+            </Button>
+          </Card>
+        </div>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <section className="py-12 md:py-20 bg-gradient-to-br from-primary/5 via-white to-primary/10 min-h-screen flex items-center">
-        <div className="container mx-auto px-4 max-w-md">
-          <Card className="border-none shadow-2xl bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center pb-2">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary">
-                <User className="w-8 h-8" />
+      <section className="py-12 md:py-20 bg-slate-50 min-h-screen">
+        <div className="container mx-auto px-4 max-w-xl">
+          <div className="mb-8 space-y-2">
+            <div className="flex justify-between items-end text-sm text-gray-500 mb-1">
+              <span>Passo {currentStep + 1} de {STEPS.length}</span>
+              <span className="font-semibold text-primary">{Math.round(progress)}% Completo</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          <Card className="border-0 shadow-xl bg-white overflow-hidden">
+            <CardHeader className="bg-primary/5 py-4 border-b flex flex-row items-center gap-4">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                {(() => {
+                  const Icon = STEPS[currentStep].icon;
+                  return <Icon className="w-6 h-6" />;
+                })()}
               </div>
-              <CardTitle className="text-3xl font-bold text-gray-900">
-                Seja um Cuidador
-              </CardTitle>
-              <p className="text-gray-500 mt-2">
-                Cadastre-se para encontrar as melhores oportunidades.
-              </p>
+              <div>
+                <CardTitle className="text-xl font-bold">{STEPS[currentStep].title}</CardTitle>
+                <p className="text-sm text-gray-500">Vamos completar seu perfil profissional.</p>
+              </div>
             </CardHeader>
-            <CardContent>
+
+            <CardContent className="p-8">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nome Completo</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Seu nome completo" 
-                            className="bg-gray-50/50"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="seu@email.com" 
-                            className="bg-gray-50/50"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="whatsapp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>WhatsApp</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="(11) 99999-9999" 
-                            className="bg-gray-50/50"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="Mínimo 6 caracteres" 
-                            className="bg-gray-50/50"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 flex gap-3">
-                    <div className="bg-primary/20 p-2 rounded-lg h-fit">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
+                <form className="space-y-6">
+                  {currentStep === 0 && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base">Como você gostaria de ser chamado?</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Input placeholder="Nome Completo" className="pl-10 h-12" {...field} />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="birth_date"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base">Data de Nascimento</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Input type="date" className="pl-10 h-12" {...field} />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Ao se cadastrar, você concorda com nossos termos. Você receberá notificações sobre vagas via WhatsApp.
-                    </p>
-                  </div>
+                  )}
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 py-6 text-lg font-semibold shadow-lg shadow-primary/20 transition-all active:scale-95"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <RefreshCw className="w-5 h-5 animate-spin" />
-                        Criando Conta...
+                  {currentStep === 1 && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="email" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Seu melhor email profissional</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input placeholder="email@exemplo.com" className="pl-10 h-12" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="whatsapp" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">WhatsApp (para receber vagas)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input placeholder="(00) 00000-0000" className="pl-10 h-12" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="password" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Defina sua senha</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input type="password" placeholder="Mínimo 6 caracteres" className="pl-10 h-12" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  )}
+
+                  {currentStep === 2 && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="cep" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Qual seu CEP?</FormLabel>
+                          <FormControl>
+                            <Input placeholder="00000-000" className="h-12" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="city" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Cidade</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ex: São Paulo" className="h-12" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="address" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Endereço</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Rua, número e bairro" className="h-12" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  )}
+
+                  {currentStep === 3 && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="education" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Sua Escolaridade</FormLabel>
+                          <FormControl>
+                            <select className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...field}>
+                              <option value="Ensino Médio">Ensino Médio</option>
+                              <option value="Técnico em Enfermagem">Técnico em Enfermagem</option>
+                              <option value="Graduação em Enfermagem">Graduação em Enfermagem</option>
+                              <option value="Cuidador de Idosos">Curso de Cuidador Profissional</option>
+                              <option value="Outros">Outros</option>
+                            </select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="role" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Como você se define profissionalmente?</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <Input placeholder="Ex: Cuidador de Idosos" className="pl-10 h-12" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  )}
+
+                  {currentStep === 4 && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="has_experience" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Possui experiência comprovada?</FormLabel>
+                          <FormControl>
+                            <div className="flex gap-4">
+                              {["Sim", "Não"].map((val) => (
+                                <Button 
+                                  key={val}
+                                  type="button" 
+                                  variant={field.value === val ? "default" : "outline"}
+                                  className="flex-1 py-6"
+                                  onClick={() => field.onChange(val)}
+                                >
+                                  {val}
+                                </Button>
+                              ))}
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="sleep_on_site" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Disponível para dormir no local?</FormLabel>
+                          <FormControl>
+                            <div className="flex gap-4">
+                              {["Sim", "Não"].map((val) => (
+                                <Button 
+                                  key={val}
+                                  type="button" 
+                                  variant={field.value === val ? "default" : "outline"}
+                                  className={`flex-1 py-6 ${field.value === val ? "bg-primary text-white" : ""}`}
+                                  onClick={() => field.onChange(val)}
+                                >
+                                  {val}
+                                </Button>
+                              ))}
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )} />
+                      <div className="flex items-center space-x-2 bg-slate-50 p-4 rounded-lg border">
+                        <input 
+                          type="checkbox" 
+                          id="has_kids" 
+                          className="w-5 h-5 accent-primary"
+                          {...form.register("has_kids")}
+                        />
+                        <label htmlFor="has_kids" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Possuo filhos dependentes
+                        </label>
                       </div>
-                    ) : "Começar Agora"}
-                  </Button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 pt-6 mt-6 border-t font-medium">
+                    {currentStep > 0 && (
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        onClick={prevStep}
+                        className="py-6 flex-1 text-gray-500"
+                        disabled={isSubmitting}
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Voltar
+                      </Button>
+                    )}
+                    <Button 
+                      type="button" 
+                      onClick={nextStep}
+                      className="py-6 flex-[2] bg-primary text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
+                      disabled={isSubmitting}
+                    >
+                      {currentStep === STEPS.length - 1 ? (
+                        isSubmitting ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Finalizando...
+                          </>
+                        ) : "Concluir Cadastro"
+                      ) : (
+                        <>
+                          Continuar
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </form>
               </Form>
-
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600">
-                  Já possui uma conta?{" "}
-                  <a href="/admin/login" className="text-primary hover:underline">
-                    Faça login aqui
-                  </a>
-                </p>
-              </div>
             </CardContent>
           </Card>
+          
+          <p className="text-center mt-6 text-sm text-gray-400">
+            Passo {currentStep + 1} de {STEPS.length}: {STEPS[currentStep].title}
+          </p>
         </div>
       </section>
     </Layout>
   );
 }
+

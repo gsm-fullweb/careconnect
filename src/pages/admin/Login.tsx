@@ -23,18 +23,22 @@ const Login = () => {
         try {
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
-            const { data: profile } = await supabase
+            const { data: profile, error: profileError } = await supabase
               .from('profiles')
-              .select('type, user_role')
+              .select('user_role') // Removido 'type' temporariamente para evitar erro 400
               .eq('id', user.id)
-              .single();
+              .maybeSingle();
 
-            if (profile?.user_role === 'admin') {
-              setShouldRedirect('/admin');
-            } else if (profile?.type === 'cuidador') {
-              setShouldRedirect('/painel-cuidador');
-            } else if (profile?.type === 'cliente') {
-              setShouldRedirect('/client-dashboard');
+            if (profile) {
+              // Usa user_role como fallback para o redirecionamento
+              const role = profile.user_role;
+              if (role === 'admin') {
+                setShouldRedirect('/admin');
+              } else if (role === 'cuidador') {
+                setShouldRedirect('/painel-cuidador');
+              } else if (role === 'cliente') {
+                setShouldRedirect('/client-dashboard');
+              }
             }
           }
         } catch (error) {
@@ -87,21 +91,22 @@ const Login = () => {
         // Get user profile to determine redirect
         const { data: profile } = await supabase
           .from('profiles')
-          .select('type, user_role')
+          .select('user_role') // Selecionando apenas o que existe com certeza
           .eq('id', data.user?.id)
-          .single();
+          .maybeSingle();
 
         toast({
-          title: "Login successful",
-          description: "Welcome to CareConnect",
+          title: "Login bem-sucedido",
+          description: "Bem-vindo ao CareConnect",
         });
 
-        // Redirect based on user role/type
-        if (profile?.user_role === 'admin') {
+        // Redirecionamento baseado no user_role
+        const role = profile?.user_role;
+        if (role === 'admin') {
           navigate("/admin");
-        } else if (profile?.type === 'cuidador') {
+        } else if (role === 'cuidador') {
           navigate("/painel-cuidador");
-        } else if (profile?.type === 'cliente') {
+        } else if (role === 'cliente') {
           navigate("/client-dashboard");
         } else {
           navigate("/");

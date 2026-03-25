@@ -217,8 +217,8 @@ const UsersManagement = () => {
           perfil_profissional: "",
           descricao_experiencia: "",
           disponibilidade_horarios: "A combinar",
-          descricao: "",
           desconfortos_atividades: "",
+          referencias: "",
           Declaracao: "Aceito",
           ativo: "Sim"
         })
