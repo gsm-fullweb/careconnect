@@ -16,7 +16,11 @@ const ClienteDashboard = () => {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
 
-  // Estados principais
+  // Estados de Perfil
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  // Estados principais (para Clientes)
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("__all__");
   const [selectedCargo, setSelectedCargo] = useState("__all__");
@@ -28,6 +32,9 @@ const ClienteDashboard = () => {
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [availableCargos, setAvailableCargos] = useState<string[]>([]);
 
+  // Estados (para Cuidadores)
+  const [candidatoData, setCandidatoData] = useState<any>(null);
+
   // Estados para depoimentos
   const [novoDepoimento, setNovoDepoimento] = useState({
     cuidador_id: "",
@@ -37,12 +44,43 @@ const ClienteDashboard = () => {
   });
   const [meusDepoimentos, setMeusDepoimentos] = useState<any[]>([]);
 
-  // Carregar dados iniciais
+  // Carregar dados iniciais e Perfil
   useEffect(() => {
+    const fetchProfile = async () => {
+      if (user) {
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+          
+          setUserProfile(profile);
+
+          // Se for cuidador, buscar dados na tabela de candidatos
+          if (profile?.user_role === 'cuidador' || profile?.type === 'cuidador') {
+            const { data: candidato } = await supabase
+              .from('candidatos_cuidadores_rows')
+              .select('*')
+              .eq('email', user.email)
+              .maybeSingle();
+            setCandidatoData(candidato);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar perfil:", error);
+        } finally {
+          setProfileLoading(false);
+        }
+      }
+    };
+
     if (!authLoading && user) {
+      fetchProfile();
       loadMeusDepoimentos();
       loadFavoritos();
       loadFilterOptions();
+    } else if (!authLoading && !user) {
+      setProfileLoading(false);
     }
   }, [user, authLoading]);
 
@@ -340,14 +378,19 @@ const ClienteDashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Loading de autenticação
-  if (authLoading) {
+  // Loading de autenticação ou perfil
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-12 h-12 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500 animate-pulse">Preparando seu dashboard...</p>
+        </div>
       </div>
     );
   }
+
+  const isCaregiver = userProfile?.user_role === 'cuidador' || userProfile?.type === 'cuidador';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -356,8 +399,14 @@ const ClienteDashboard = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Busca de Cuidadores</h1>
-              <p className="text-gray-600">Encontre o cuidador ideal para suas necessidades</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {isCaregiver ? `Bem-vindo, ${userProfile?.name?.split(' ')[0] || 'Profissional'}` : 'Busca de Cuidadores'}
+              </h1>
+              <p className="text-gray-600">
+                {isCaregiver 
+                  ? 'Gerencie seu perfil e acompanhe suas oportunidades' 
+                  : 'Encontre o cuidador ideal para suas necessidades'}
+              </p>
             </div>
             <Button
               variant="outline"
@@ -372,372 +421,463 @@ const ClienteDashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Busca com filtros */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="w-5 h-5" />
-              Buscar Cuidadores
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Primeira linha - Nome */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nome do Cuidador
-              </label>
-              <Input
-                placeholder="Digite parte do nome (ex: 'ali' para Aline) ou deixe vazio para ver todos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleBuscarCuidadores()}
-              />
-            </div>
-
-            {/* Segunda linha - Filtros */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cidade
-                </label>
-                <Select value={selectedCity} onValueChange={setSelectedCity}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma cidade" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                    <SelectItem value="__all__">Todas as cidades</SelectItem>
-                    {availableCities.map((city) => (
-                      <SelectItem key={city} value={city}>{city}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cargo/Especialidade
-                </label>
-                <Select value={selectedCargo} onValueChange={setSelectedCargo}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cargo" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                    <SelectItem value="__all__">Todos os cargos</SelectItem>
-                    {availableCargos.map((cargo) => (
-                      <SelectItem key={cargo} value={cargo}>{cargo}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Terceira linha - Botões */}
-            <div className="flex gap-4">
-              <Button
-                onClick={handleBuscarCuidadores}
-                disabled={loading}
-                className="flex-1 md:flex-none"
-              >
-                <Search className="w-4 h-4 mr-2" />
-                {loading ? "Buscando..." : "Buscar"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={clearFilters}
-                className="flex items-center gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                Limpar Filtros
-              </Button>
-            </div>
-
-            {/* Filtros aplicados */}
-            {(searchTerm || (selectedCity && selectedCity !== "__all__") || (selectedCargo && selectedCargo !== "__all__")) && (
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <span className="text-sm text-gray-600">Filtros aplicados:</span>
-                {searchTerm && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                    Nome: {searchTerm}
-                  </span>
-                )}
-                {selectedCity && selectedCity !== "__all__" && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                    Cidade: {selectedCity}
-                  </span>
-                )}
-                {selectedCargo && selectedCargo !== "__all__" && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
-                    Cargo: {selectedCargo}
-                  </span>
-                )}
-              </div>
-            )}
-
-            <p className="text-sm text-gray-500">
-              💡 Dica: Use os filtros para refinar sua busca ou deixe tudo vazio para ver todos os cuidadores
-            </p>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Tabela de Resultados */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Cuidadores Encontrados ({cuidadoresEncontrados.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!buscaRealizada ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Search className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                    <h3 className="text-lg font-medium mb-2">Faça sua primeira busca</h3>
-                    <p>Use os filtros acima e clique em "Buscar"</p>
-                  </div>
-                ) : cuidadoresEncontrados.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <User className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                    <h3 className="text-lg font-medium mb-2">Nenhum cuidador encontrado</h3>
-                    <p>Tente ajustar os filtros ou limpar a busca</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Cuidador</TableHead>
-                          <TableHead>Cidade</TableHead>
-                          <TableHead>Telefone</TableHead>
-                          <TableHead className="text-center">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {cuidadoresEncontrados.map((cuidador) => (
-                          <TableRow key={cuidador.id} className="hover:bg-gray-50">
-                            <TableCell>
-                              <div>
-                                <p className="font-medium">{cuidador.nome}</p>
-                                <p className="text-sm text-gray-600">{cuidador.cargo}</p>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4 text-gray-400" />
-                                {cuidador.cidade}
-                              </span>
-                            </TableCell>
-                            <TableCell>
-                              <span className="font-mono text-sm">{cuidador.telefone}</span>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2 justify-center">
-                                <Button
-                                  size="sm"
-                                  variant={favoritos.includes(cuidador.id) ? "default" : "outline"}
-                                  onClick={() => toggleFavorito(cuidador.id)}
-                                  className="px-2"
-                                >
-                                  <Heart className={`w-4 h-4 ${favoritos.includes(cuidador.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                                </Button>
-
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleSelecionarCuidador(cuidador)}
-                                >
-                                  <Star className="w-4 h-4 mr-1" />
-                                  Avaliar
-                                </Button>
-
-                                <Button
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700"
-                                  onClick={() => handleWhatsApp(cuidador.telefone, cuidador.nome)}
-                                >
-                                  <Phone className="w-4 h-4 mr-1" />
-                                  WhatsApp
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar - Avaliações */}
-          <div className="space-y-6">
-            {/* Avaliar Cuidador */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5" />
-                  Avaliar Cuidador
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!cuidadorSelecionado ? (
-                  <div className="text-center py-6 text-gray-500">
-                    <Star className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">Selecione um cuidador da tabela para avaliar</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmitDepoimento} className="space-y-4">
-                    <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                      <p className="font-medium text-blue-900">{cuidadorSelecionado.nome}</p>
-                      <p className="text-sm text-blue-700">{cuidadorSelecionado.cidade}</p>
+        
+        {isCaregiver ? (
+          /* ==========================================
+             VISÃO DO CUIDADOR
+             ========================================== */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Card de Status */}
+              <Card className="border-l-4 border-l-careconnect-blue shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-blue-900">
+                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    Status da sua Conta
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col md:flex-row items-center gap-6 p-4 bg-blue-50/50 rounded-xl">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-blue-100">
+                      <User className="w-10 h-10 text-careconnect-blue" />
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Sua Avaliação
-                      </label>
-                      <select
-                        value={novoDepoimento.avaliacao}
-                        onChange={(e) => setNovoDepoimento({
-                          ...novoDepoimento,
-                          avaliacao: parseInt(e.target.value)
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white"
-                      >
-                        <option value={5}>⭐⭐⭐⭐⭐ Excelente (5)</option>
-                        <option value={4}>⭐⭐⭐⭐ Muito Bom (4)</option>
-                        <option value={3}>⭐⭐⭐ Bom (3)</option>
-                        <option value={2}>⭐⭐ Regular (2)</option>
-                        <option value={1}>⭐ Ruim (1)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Seu Depoimento
-                      </label>
-                      <Textarea
-                        value={novoDepoimento.texto}
-                        onChange={(e) => setNovoDepoimento({
-                          ...novoDepoimento,
-                          texto: e.target.value
-                        })}
-                        placeholder="Conte como foi sua experiência com este cuidador..."
-                        rows={4}
-                        required
-                      />
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setCuidadorSelecionado(null);
-                          setNovoDepoimento({ cuidador_id: "", cuidador_nome: "", texto: "", avaliacao: 5 });
-                        }}
-                        className="flex-1"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={loading}
-                        className="flex-1"
-                      >
-                        {loading ? "Enviando..." : "Enviar Avaliação"}
-                      </Button>
-                    </div>
-                  </form>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Meus Depoimentos */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5" />
-                  Minhas Avaliações ({meusDepoimentos.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {meusDepoimentos.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">Nenhuma avaliação enviada ainda</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {meusDepoimentos.map((depoimento: any) => (
-                      <div key={depoimento.id} className="border rounded-lg p-3 bg-white">
-                        <div className="flex justify-between items-start mb-2">
-                          <p className="font-medium text-sm">Cuidador avaliado</p>
-                          <div className="flex">
-                            {[...Array(parseInt(depoimento.rating))].map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-600 mb-2">{depoimento.content}</p>
-                        <div className="flex justify-between items-center">
-                          <span className={`text-xs px-2 py-1 rounded ${depoimento.published
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                            {depoimento.published ? '✅ Publicado' : '⏳ Em análise'}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {new Date(depoimento.created_at).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
+                    <div className="text-center md:text-left">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{candidatoData?.nome || userProfile?.name}</h3>
+                      <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                          candidatoData?.status_candidatura === 'Aprovado' 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {candidatoData?.status_candidatura || 'Em Análise'}
+                        </span>
+                        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                          {candidatoData?.cargo || 'Cuidador'}
+                        </span>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
+                  
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 border rounded-lg bg-white">
+                      <p className="text-sm text-gray-500 mb-1">Cidade de Atuação</p>
+                      <p className="font-semibold flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-careconnect-blue" />
+                        {candidatoData?.cidade || 'Não informado'}
+                      </p>
+                    </div>
+                    <div className="p-4 border rounded-lg bg-white">
+                      <p className="text-sm text-gray-500 mb-1">Contato Registrado</p>
+                      <p className="font-semibold flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-careconnect-blue" />
+                        {candidatoData?.telefone || 'Não informado'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card de Mensagem / Próximos Passos */}
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-blue-900">Experiência Profissional</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600 leading-relaxed italic">
+                      "{candidatoData?.descricao_experiencia || 'Seu resumo profissional aparecerá aqui assim que for revisado por nossa equipe.'}"
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <h4 className="font-bold text-gray-900 mb-2">💡 Dica Care Connect:</h4>
+                    <p className="text-sm text-gray-600">
+                      Mantenha seu telefone sempre ativo! As famílias costumam entrar em contato via WhatsApp para agendar entrevistas rápidas.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Sidebar Cuidador */}
+            <div className="space-y-6">
+              <Card className="bg-gradient-to-br from-blue-600 to-blue-800 text-white border-none shadow-xl">
+                <CardContent className="pt-8">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto backdrop-blur-sm">
+                      <Heart className="w-8 h-8 text-white fill-white" />
+                    </div>
+                    <h3 className="text-xl font-bold">Mantenha o Foco!</h3>
+                    <p className="text-blue-100 text-sm">
+                      Estamos conectando seu perfil com as melhores famílias da sua região.
+                    </p>
+                    <div className="pt-4">
+                      <Button className="w-full bg-white text-blue-800 hover:bg-blue-50 font-bold py-6 rounded-xl shadow-lg">
+                        Atualizar Meu Currículo
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-sm font-bold uppercase tracking-widest text-gray-400">Suporte</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">Precisa de ajuda com sua conta ou tem dúvidas sobre vagas?</p>
+                  <Button variant="outline" className="w-full justify-start gap-2 py-6 border-blue-100 text-blue-700 hover:bg-blue-50">
+                    <MessageSquare className="w-4 h-4" />
+                    Falar com Atendimento
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ) : (
+          /* ==========================================
+             VISÃO DO CLIENTE (BUSCA)
+             ========================================== */
+          <>
+            {/* Busca com filtros */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  Buscar Cuidadores
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Primeira linha - Nome */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nome do Cuidador
+                  </label>
+                  <Input
+                    placeholder="Digite parte do nome (ex: 'ali' para Aline) ou deixe vazio para ver todos..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleBuscarCuidadores()}
+                  />
+                </div>
+
+                {/* Segunda linha - Filtros */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cidade
+                    </label>
+                    <Select value={selectedCity} onValueChange={setSelectedCity}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma cidade" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                        <SelectItem value="__all__">Todas as cidades</SelectItem>
+                        {availableCities.map((city) => (
+                          <SelectItem key={city} value={city}>{city}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Cargo/Especialidade
+                    </label>
+                    <Select value={selectedCargo} onValueChange={setSelectedCargo}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um cargo" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                        <SelectItem value="__all__">Todos os cargos</SelectItem>
+                        {availableCargos.map((cargo) => (
+                          <SelectItem key={cargo} value={cargo}>{cargo}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Terceira linha - Botões */}
+                <div className="flex gap-4">
+                  <Button
+                    onClick={handleBuscarCuidadores}
+                    disabled={loading}
+                    className="flex-1 md:flex-none"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    {loading ? "Buscando..." : "Buscar"}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className="flex items-center gap-2"
+                  >
+                    <Filter className="w-4 h-4" />
+                    Limpar Filtros
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
 
-        {/* Estatísticas simples */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Search className="w-8 h-8 text-blue-500" />
-                <div>
-                  <p className="text-2xl font-bold">{buscaRealizada ? '1' : '0'}</p>
-                  <p className="text-sm text-gray-600">Buscas Realizadas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Tabela de Resultados */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Cuidadores Encontrados ({cuidadoresEncontrados.length})</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!buscaRealizada ? (
+                      <div className="text-center py-12 text-gray-500">
+                        <Search className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <h3 className="text-lg font-medium mb-2">Faça sua primeira busca</h3>
+                        <p>Use os filtros acima e clique em "Buscar"</p>
+                      </div>
+                    ) : cuidadoresEncontrados.length === 0 ? (
+                      <div className="text-center py-12 text-gray-500">
+                        <User className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                        <h3 className="text-lg font-medium mb-2">Nenhum cuidador encontrado</h3>
+                        <p>Tente ajustar os filtros ou limpar a busca</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Cuidador</TableHead>
+                              <TableHead>Cidade</TableHead>
+                              <TableHead>Telefone</TableHead>
+                              <TableHead className="text-center">Ações</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {cuidadoresEncontrados.map((cuidador) => (
+                              <TableRow key={cuidador.id} className="hover:bg-gray-50">
+                                <TableCell>
+                                  <div>
+                                    <p className="font-medium">{cuidador.nome}</p>
+                                    <p className="text-sm text-gray-600">{cuidador.cargo}</p>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="w-4 h-4 text-gray-400" />
+                                    {cuidador.cidade}
+                                  </span>
+                                </TableCell>
+                                <TableCell>
+                                  <span className="font-mono text-sm">{cuidador.telefone}</span>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-2 justify-center">
+                                    <Button
+                                      size="sm"
+                                      variant={favoritos.includes(cuidador.id) ? "default" : "outline"}
+                                      onClick={() => toggleFavorito(cuidador.id)}
+                                      className="px-2"
+                                    >
+                                      <Heart className={`w-4 h-4 ${favoritos.includes(cuidador.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                                    </Button>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <User className="w-8 h-8 text-green-500" />
-                <div>
-                  <p className="text-2xl font-bold">{cuidadoresEncontrados.length}</p>
-                  <p className="text-sm text-gray-600">Cuidadores Encontrados</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleSelecionarCuidador(cuidador)}
+                                    >
+                                      <Star className="w-4 h-4 mr-1" />
+                                      Avaliar
+                                    </Button>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Heart className="w-8 h-8 text-red-500" />
-                <div>
-                  <p className="text-2xl font-bold">{favoritos.length}</p>
-                  <p className="text-sm text-gray-600">Favoritos</p>
-                </div>
+                                    <Button
+                                      size="sm"
+                                      className="bg-green-600 hover:bg-green-700"
+                                      onClick={() => handleWhatsApp(cuidador.telefone, cuidador.nome)}
+                                    >
+                                      <Phone className="w-4 h-4 mr-1" />
+                                      WhatsApp
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+
+              {/* Sidebar - Avaliações */}
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5" />
+                      Avaliar Cuidador
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {!cuidadorSelecionado ? (
+                      <div className="text-center py-6 text-gray-500">
+                        <Star className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Selecione um cuidador da tabela para avaliar</p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmitDepoimento} className="space-y-4">
+                        <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                          <p className="font-medium text-blue-900">{cuidadorSelecionado.nome}</p>
+                          <p className="text-sm text-blue-700">{cuidadorSelecionado.cidade}</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Sua Avaliação
+                          </label>
+                          <select
+                            value={novoDepoimento.avaliacao}
+                            onChange={(e) => setNovoDepoimento({
+                              ...novoDepoimento,
+                              avaliacao: parseInt(e.target.value)
+                            })}
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white"
+                          >
+                            <option value={5}>⭐⭐⭐⭐⭐ Excelente (5)</option>
+                            <option value={4}>⭐⭐⭐⭐ Muito Bom (4)</option>
+                            <option value={3}>⭐⭐⭐ Bom (3)</option>
+                            <option value={2}>⭐⭐ Regular (2)</option>
+                            <option value={1}>⭐ Ruim (1)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Seu Depoimento
+                          </label>
+                          <Textarea
+                            value={novoDepoimento.texto}
+                            onChange={(e) => setNovoDepoimento({
+                              ...novoDepoimento,
+                              texto: e.target.value
+                            })}
+                            placeholder="Conte como foi sua experiência com este cuidador..."
+                            rows={4}
+                            required
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setCuidadorSelecionado(null);
+                              setNovoDepoimento({ cuidador_id: "", cuidador_nome: "", texto: "", avaliacao: 5 });
+                            }}
+                            className="flex-1"
+                          >
+                            Cancelar
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={loading}
+                            className="flex-1"
+                          >
+                            {loading ? "Enviando..." : "Enviar Avaliação"}
+                          </Button>
+                        </div>
+                      </form>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5" />
+                      Minhas Avaliações ({meusDepoimentos.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {meusDepoimentos.length === 0 ? (
+                      <div className="text-center py-4 text-gray-500">
+                        <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Nenhuma avaliação enviada ainda</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-96 overflow-y-auto">
+                        {meusDepoimentos.map((depoimento: any) => (
+                          <div key={depoimento.id} className="border rounded-lg p-3 bg-white">
+                            <div className="flex justify-between items-start mb-2">
+                              <p className="font-medium text-sm">Cuidador avaliado</p>
+                              <div className="flex">
+                                {[...Array(parseInt(depoimento.rating))].map((_, i) => (
+                                  <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-xs text-gray-600 mb-2">{depoimento.content}</p>
+                            <div className="flex justify-between items-center">
+                              <span className={`text-xs px-2 py-1 rounded ${depoimento.published
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                {depoimento.published ? '✅ Publicado' : '⏳ Em análise'}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                {new Date(depoimento.created_at).toLocaleDateString('pt-BR')}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Estatísticas simples */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Search className="w-8 h-8 text-blue-500" />
+                    <div>
+                      <p className="text-2xl font-bold">{buscaRealizada ? '1' : '0'}</p>
+                      <p className="text-sm text-gray-600">Buscas Realizadas</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <User className="w-8 h-8 text-green-500" />
+                    <div>
+                      <p className="text-2xl font-bold">{cuidadoresEncontrados.length}</p>
+                      <p className="text-sm text-gray-600">Cuidadores Encontrados</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-8 h-8 text-red-500" />
+                    <div>
+                      <p className="text-2xl font-bold">{favoritos.length}</p>
+                      <p className="text-sm text-gray-600">Favoritos</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
