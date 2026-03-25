@@ -45,10 +45,16 @@ const About = () => {
       description: "Richard Portela é o desenvolvedor responsável por dar vida à plataforma CareConnect, com foco na implementação da assistente virtual IA Encontre um cuidador, que torna o agendamento de cuidadores mais rápido e inteligente. Combinando tecnologia e empatia para criar soluções modernas, funcionais e acessíveis, sendo peça-chave na transformação digital do cuidado com idosos.",
     },
     {
-      image: "https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//member-3.jpg",
-      name: "Silas Cilva",
+      image: "/sobre/mabel silva.jpg",
+      name: "Maria Prado",
       title: "Social Media Manager",
-      description: "Silas Cilva é especialista em redes sociais, responsável pelo planejamento, gerenciamento e desempenho das plataformas digitais da empresa. Com experiência também em desenvolvimento web e criação de interfaces modernas e responsivas, destaca-se por desenvolver soluções eficientes, criativas e centradas na experiência do usuário.",
+      description: "Maria Prado é especialista em redes sociais, responsável pelo planejamento, gerenciamento e desempenho das plataformas digitais da empresa. Com experiência também em desenvolvimento web e criação de interfaces modernas e responsivas, destaca-se por desenvolver soluções eficientes, criativas e centradas na experiência do usuário.",
+    },
+    {
+      image: "/sobre/Rafael.jpg",
+      name: "Rafael Portela",
+      title: "Programador",
+      description: "Rafael Portela é o programador responsável pelo desenvolvimento e manutenção das soluções da Care Connect. Atua na criação de sistemas eficientes, garantindo que a plataforma funcione de forma estável, rápida e segura para todos os usuários.",
     },
   ];
 
@@ -243,7 +249,7 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
               <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group hover:-translate-y-2">
                 <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 border-4 border-blue-100 group-hover:border-blue-200 transition-colors duration-300">
