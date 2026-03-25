@@ -161,6 +161,15 @@ export default function PreCadastro() {
         status_candidatura: "Em análise",
         ativo: "Sim",
         data_cadastro: new Date().toISOString().split("T")[0],
+        // Campos obrigatórios do banco de dados com valores padrão
+        cursos: "Não informado",
+        referencias: "Não informado",
+        perfil_profissional: "Candidato via site",
+        Declaracao: "Aceito",
+        disponibilidade_horarios: "A combinar",
+        desconfortos_atividades: "Nenhum",
+        descricao_experiencia: "Verificar com o candidato",
+        experiencia: "Não detalhado"
       });
 
       if (dbError) throw dbError;
