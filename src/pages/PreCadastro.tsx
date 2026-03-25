@@ -141,17 +141,15 @@ export default function PreCadastro() {
       });
 
       if (authError) {
-        // Trata erro de usuário já cadastrado como um fluxo positivo de boas-vindas
-        if (authError.message.toLowerCase().includes("user already registered") || 
-            authError.message.toLowerCase().includes("usuário já cadastrado")) {
-          localStorage.setItem('fallback_user', JSON.stringify({ name: data.name, email: data.email }));
-          navigate("/obrigado");
-          return;
+        // Se o erro NÃO for "já cadastrado", interrompemos.
+        // Se FOR "já cadastrado", ignoramos o erro de Auth e tentamos inserir os dados na tabela de candidatos.
+        if (!authError.message.toLowerCase().includes("user already registered") && 
+            !authError.message.toLowerCase().includes("usuário já cadastrado")) {
+          throw authError;
         }
-        throw authError;
       }
 
-      // 2. Insert into candidatos_cuidadores_rows
+      // 2. Insert into candidatos_cuidadores_rows (Sempre tenta inserir se chegou aqui)
       const { error: dbError } = await supabase.from("candidatos_cuidadores_rows").insert({
         nome: data.name,
         email: data.email,

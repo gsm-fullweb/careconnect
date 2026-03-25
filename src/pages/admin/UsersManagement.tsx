@@ -80,7 +80,8 @@ const UsersManagement = () => {
           disponibilidade_horarios, disponivel_dormir_local, referencias, referencia_1, referencia_2,
           referencia_3, perfil_profissional, ultima_atualizacao, cidade, endereco, cep, cpf, RG,
           estado, coren, crefito, crm
-        `);
+        `)
+        .order('id', { ascending: false });
       
       if (error) {
         console.error('Erro ao buscar candidatos:', error);
