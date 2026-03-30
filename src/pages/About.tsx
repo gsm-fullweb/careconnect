@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
@@ -78,7 +79,13 @@ const About = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Sobre Nós" 
+        description="Conheça a história da CareConnect, nossa missão de transformar o cuidado de idosos e a equipe dedicada por trás da nossa plataforma."
+        canonical="/about"
+      />
       {/* Hero Section */}
+
       <section className="py-16 md:py-24 bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

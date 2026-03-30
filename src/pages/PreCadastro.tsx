@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import SEO from "@/components/SEO";
 import {
   Form,
   FormControl,
@@ -200,7 +201,9 @@ export default function PreCadastro() {
 
   return (
     <Layout>
+      <SEO title="Cadastro de Cuidador" canonical="/pre-cadastro" noindex={true} />
       <section className="py-12 md:py-20 bg-slate-50 min-h-screen">
+
         <div className="container mx-auto px-4 max-w-xl">
           <div className="mb-8 space-y-2">
             <div className="flex justify-between items-end text-sm text-gray-500 mb-1">

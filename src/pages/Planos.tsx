@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import Layout from "@/components/layout/Layout";
 import { Check, Star, Shield, Clock, Users, Sparkles, MessageCircle, Calendar, Heart, Pill, Bell, AlertTriangle, Database, Zap } from "lucide-react";
 
@@ -41,7 +42,13 @@ const Planos = () => {
   };
   return (
     <Layout>
+      <SEO 
+        title="Planos e Preços" 
+        description="Escolha o plano ideal para sua família. Encontre cuidadores qualificados com a ajuda da nossa IA Encontre um cuidador no WhatsApp."
+        canonical="/plans"
+      />
       {/* Hero Section - Estilo Humanizado */}
+
       <section className="relative overflow-hidden bg-gradient-to-br from-[#f4f8f9] via-[#e9f3f1] to-[#f8fbfa] text-gray-800">
         {/* Background Pattern - Suave e Natural */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(144,202,249,0.08),transparent_60%)]" />

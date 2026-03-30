@@ -4,6 +4,11 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
+  "redirects": [
+    { "source": "/sobre", "destination": "/about", "permanent": true },
+    { "source": "/servicos", "destination": "/services", "permanent": true },
+    { "source": "/planos", "destination": "/plans", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",
@@ -14,6 +19,7 @@
       "destination": "/index.html"
     }
   ],
+
   "headers": [
     {
       "source": "/assets/(.*)",

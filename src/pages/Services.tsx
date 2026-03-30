@@ -1,8 +1,8 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout"; // Alterado de MainLayout para Layout
+import SEO from "@/components/SEO";
 import {
   Clock,
   Heart,
@@ -103,7 +103,13 @@ const Services = () => { // Alterado de export default function Servicos() para 
 
   return (
     <Layout>
+      <SEO 
+        title="Nossos Serviços" 
+        description="Conheça nossos serviços de cuidadores de idosos: assistência diária, monitoramento de saúde, companhia e suporte especializado."
+        canonical="/services"
+      />
       {/* Hero Section - Estilo Humanizado */}
+
       <section className="py-16 md:py-24 bg-gradient-to-br from-[#f4f8f9] via-[#e9f3f1] to-[#f8fbfa]">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

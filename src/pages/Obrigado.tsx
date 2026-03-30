@@ -1,4 +1,4 @@
-
+import SEO from "@/components/SEO";
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,10 @@ export default function Obrigado() {
 
   return (
     <Layout>
+      <SEO title="Obrigado!" canonical="/obrigado" noindex={true} />
+
       <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex items-center py-12 md:py-20">
+
         <div className="container mx-auto px-4 max-w-3xl text-center">
           
           <div className="mb-8 animate-bounce">

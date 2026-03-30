@@ -5,11 +5,12 @@ const SITE_URL = "https://careconnect.com.br";
 const STATIC_PAGES = [
   { url: "/", priority: "1.0", changefreq: "weekly" },
   { url: "/blog", priority: "0.9", changefreq: "daily" },
-  { url: "/planos", priority: "0.8", changefreq: "monthly" },
-  { url: "/sobre", priority: "0.7", changefreq: "monthly" },
+  { url: "/plans", priority: "0.8", changefreq: "monthly" },
+  { url: "/about", priority: "0.7", changefreq: "monthly" },
   { url: "/contact", priority: "0.7", changefreq: "monthly" },
-  { url: "/servicos", priority: "0.8", changefreq: "monthly" },
+  { url: "/services", priority: "0.8", changefreq: "monthly" },
 ];
+
 
 Deno.serve(async () => {
   const supabase = createClient(
