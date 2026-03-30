@@ -283,9 +283,9 @@ const ChatbotWidget = () => {
                                 <div className="w-14 h-14 bg-gradient-to-br from-careconnect-blue to-careconnect-green rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
                                     <Bot className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className="text-base font-bold text-gray-800">Olá! Sou o Encontre um cuidador 👋</h3>
+                                <h3 className="text-base font-bold text-gray-800">Olá! Você está procurando um cuidador? 👋</h3>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    Para te ajudar melhor, me conta quem é você
+                                    Vou te ajudar com isso. Primeiro, me diga seu nome.
                                 </p>
                             </div>
 
