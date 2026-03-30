@@ -99,7 +99,7 @@ const ChatbotWidget = () => {
                 }),
             });
 
-            let welcomeText = `Olá, **${lead.nome.trim()}**! 😊 Que bom ter você aqui!\n\nSou o **Encontre um cuidador**, assistente virtual do CareConnect 💚\n\nComo posso ajudar você a encontrar o profissional ideal para sua família?`;
+            let welcomeText = `Olá, **${lead.nome.trim()}**! 😊 Que bom ter você aqui!\n\nSou o **Encontre um cuidador** 👋\n\nPara te ajudar melhor, me conta: como posso encontrar o profissional ideal para sua família?`;
 
             if (response.ok) {
                 const ct = response.headers.get("content-type") || "";
@@ -129,7 +129,7 @@ const ChatbotWidget = () => {
                 {
                     id: "welcome",
                     role: "assistant",
-                    content: `Olá, **${lead.nome.trim()}**! 😊 Bem-vindo ao CareConnect!\n\nSou o **Encontre um cuidador**, seu assistente virtual 💚\n\nComo posso ajudar você a encontrar o profissional ideal?`,
+                    content: `Olá, **${lead.nome.trim()}**! 😊 Bem-vindo(a) ao CareConnect!\n\nSou o **Encontre um cuidador** 👋\n\nPara te ajudar melhor, me conta: como posso te ajudar hoje?`,
                 },
             ]);
             setEtapa("chat");
@@ -285,7 +285,7 @@ const ChatbotWidget = () => {
                                 </div>
                                 <h3 className="text-base font-bold text-gray-800">Olá! Sou o Encontre um cuidador 👋</h3>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    Para te ajudar melhor, me conta quem é você?
+                                    Para te ajudar melhor, me conta quem é você
                                 </p>
                             </div>
 
