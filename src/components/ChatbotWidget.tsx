@@ -234,11 +234,12 @@ const ChatbotWidget = () => {
                         className="bg-white rounded-2xl rounded-br-sm shadow-xl border border-gray-100 px-4 py-3 text-left hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 max-w-[220px]"
                     >
                         <p className="text-xs font-bold text-careconnect-blue leading-tight">
-                            🤖 Sou o Encontre um cuidador, IA da CareConnect!
+                            🤖 Você está procurando um cuidador? 👋
                         </p>
                         <p className="text-xs text-gray-600 mt-1 leading-snug">
-                            Encontre o cuidador ideal para sua família agora 👇
+                            Eu posso te ajudar agora mesmo! 👇
                         </p>
+
                         <p className="text-[10px] text-careconnect-green font-semibold mt-1.5">
                             Clique para conversar →
                         </p>
