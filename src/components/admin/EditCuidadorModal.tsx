@@ -34,13 +34,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
         cep: cuidador.cep || "",
         cidade: cuidador.cidade || "",
         cargo: cuidador.cargo || "",
-        experiencia: cuidador.experiencia || "",
-        disponibilidade_horarios: cuidador.disponibilidade_horarios || "",
-        descricao_experiencia: cuidador.descricao_experiencia || "",
-        cursos: cuidador.cursos || "",
-        referencia_1: cuidador.referencia_1 || "",
-        referencia_2: cuidador.referencia_2 || "",
-        referencia_3: cuidador.referencia_3 || "",
+        escolaridade: cuidador.escolaridade || "",
       });
     }
   }, [cuidador]);
@@ -63,33 +57,32 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
       .substring(0, 9);
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev: any) => ({ ...prev, [name]: value }));
-  };
-
   const handleSave = async () => {
     setLoading(true);
+    console.log("Iniciando salvamento para ID:", cuidador.id, formData);
+    
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('candidatos_cuidadores_rows')
         .update({
           nome: formData.nome,
+          email: formData.email,
           telefone: formData.telefone,
           cep: formData.cep,
           cidade: normalizeCity(formData.cidade),
           cargo: formData.cargo,
-          experiencia: formData.experiencia,
-          disponibilidade_horarios: formData.disponibilidade_horarios,
-          descricao_experiencia: formData.descricao_experiencia,
-          cursos: formData.cursos,
-          referencia_1: formData.referencia_1,
-          referencia_2: formData.referencia_2,
-          referencia_3: formData.referencia_3,
+          escolaridade: formData.escolaridade,
           ultima_atualizacao: new Date().toISOString()
         })
-        .eq('id', cuidador.id);
+        .eq('id', cuidador.id)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro no Supabase update:", error);
+        throw error;
+      }
+
+      console.log("Dados atualizados com sucesso:", data);
 
       toast({
         title: "Sucesso",
@@ -111,152 +104,156 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-900">
-            <Pencil className="w-5 h-5 text-careconnect-blue" />
-            Editar Cuidador
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[500px] bg-white border-none shadow-2xl rounded-2xl p-0 overflow-hidden">
+        <div className="bg-careconnect-blue p-6 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-2xl font-bold">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Pencil className="w-6 h-6 text-white" />
+              </div>
+              Editar Cuidador
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-blue-100 mt-2 text-sm">
+            Atualize as informações essenciais do candidato abaixo.
+          </p>
+        </div>
 
-        <div className="grid gap-6 py-4">
-          <div className="grid gap-2">
-            <label className="text-sm font-medium text-gray-700">Nome Completo</label>
-            <Input
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              placeholder="Nome do cuidador"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          {/* GRUPO 1: NOME COMPLETO */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
+              Nome completo
+            </h3>
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-gray-700">Telefone</label>
               <Input
-                name="telefone"
-                value={formData.telefone}
+                name="nome"
+                value={formData.nome || ''}
                 onChange={handleChange}
-                placeholder="(00) 00000-0000"
+                placeholder="Nome completo do cuidador"
+                className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
               />
             </div>
+          </div>
+
+          {/* GRUPO 2: CONTATO */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
+              Contato
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Telefone / WhatsApp</label>
+                <Input
+                  name="telefone"
+                  value={formData.telefone || ''}
+                  onChange={handleChange}
+                  placeholder="(00) 00000-0000"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
+                />
+              </div>
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">E-mail</label>
+                <Input
+                  name="email"
+                  type="email"
+                  value={formData.email || ''}
+                  onChange={handleChange}
+                  placeholder="email@exemplo.com"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* GRUPO 3: LOCALIZAÇÃO */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
+              Localização
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-gray-700">CEP</label>
+                <label className="text-xs font-medium text-gray-500 ml-1">Cidade</label>
                 <Input
-                  name="cep"
-                  value={formData.cep}
+                  name="cidade"
+                  value={formData.cidade || ''}
                   onChange={handleChange}
-                  placeholder="00000-000"
+                  placeholder="Cidade"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-gray-700">Cidade</label>
+                <label className="text-xs font-medium text-gray-500 ml-1">CEP</label>
                 <Input
-                  name="cidade"
-                  value={formData.cidade}
+                  name="cep"
+                  value={formData.cep || ''}
                   onChange={handleChange}
-                  placeholder="Cidade"
+                  placeholder="00000-000"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-gray-700">Cargo / Especialidade</label>
-              <Input
-                name="cargo"
-                value={formData.cargo}
-                onChange={handleChange}
-                placeholder="Ex: Cuidador de Idosos"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-gray-700">Experiência (Anos/Nível)</label>
-              <Input
-                name="experiencia"
-                value={formData.experiencia}
-                onChange={handleChange}
-                placeholder="Ex: 5 anos"
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-medium text-gray-700">Disponibilidade</label>
-            <Input
-              name="disponibilidade_horarios"
-              value={formData.disponibilidade_horarios}
-              onChange={handleChange}
-              placeholder="Ex: Integral, Noturno..."
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-medium text-gray-700">Descrição da Experiência</label>
-            <Textarea
-              name="descricao_experiencia"
-              value={formData.descricao_experiencia}
-              onChange={handleChange}
-              placeholder="Resumo das qualificações e experiências anteriores..."
-              rows={3}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-medium text-gray-700">Cursos e Especializações</label>
-            <Textarea
-              name="cursos"
-              value={formData.cursos}
-              onChange={handleChange}
-              placeholder="Listagem de cursos, certificações..."
-              rows={2}
-            />
-          </div>
-
-          <div className="space-y-4 border-t pt-4">
-            <h4 className="font-semibold text-gray-900">Referências</h4>
-            <div className="grid gap-3">
-              <div className="grid gap-1">
-                <label className="text-xs font-medium text-gray-500">Referência 1</label>
+          {/* GRUPO 4: QUALIFICAÇÃO */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
+              Qualificação
+            </h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Cargo / Especialidade</label>
                 <Input
-                  name="referencia_1"
-                  value={formData.referencia_1}
+                  name="cargo"
+                  value={formData.cargo || ''}
                   onChange={handleChange}
-                  placeholder="Nome e contato da primeira referência"
+                  placeholder="Ex: Cuidador de Idosos"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
                 />
               </div>
-              <div className="grid gap-1">
-                <label className="text-xs font-medium text-gray-500">Referência 2</label>
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Escolaridade / Formação</label>
                 <Input
-                  name="referencia_2"
-                  value={formData.referencia_2}
+                  name="escolaridade"
+                  value={formData.escolaridade || ''}
                   onChange={handleChange}
-                  placeholder="Nome e contato da segunda referência"
-                />
-              </div>
-              <div className="grid gap-1">
-                <label className="text-xs font-medium text-gray-500">Referência 3</label>
-                <Input
-                  name="referencia_3"
-                  value={formData.referencia_3}
-                  onChange={handleChange}
-                  placeholder="Nome e contato da terceira referência"
+                  placeholder="Ex: Superior Completo"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="flex gap-2 sm:justify-end mt-4">
-          <Button variant="outline" onClick={onClose} disabled={loading} className="gap-2">
-            <X className="w-4 h-4" />
+        <DialogFooter className="p-6 bg-gray-50 flex gap-3 sm:justify-end border-t border-gray-100">
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            disabled={loading} 
+            className="flex-1 sm:flex-none h-11 rounded-xl border-gray-300 hover:bg-white hover:border-gray-400 font-semibold"
+          >
             Cancelar
           </Button>
-          <Button onClick={handleSave} disabled={loading} className="bg-careconnect-blue hover:bg-careconnect-blue/90 gap-2">
-            <Save className="w-4 h-4" />
-            {loading ? "Salvando..." : "Salvar Alterações"}
+          <Button 
+            onClick={handleSave} 
+            disabled={loading} 
+            className="flex-1 sm:flex-none h-11 rounded-xl bg-careconnect-blue hover:bg-careconnect-blue/90 font-bold px-6 shadow-md shadow-blue-200"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                Salvando...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                Salvar Alterações
+              </span>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
