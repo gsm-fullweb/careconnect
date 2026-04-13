@@ -35,8 +35,12 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
         cidade: cuidador.cidade || "",
         cargo: cuidador.cargo || "",
         experiencia: cuidador.experiencia || "",
-        disponibilidade_horarios: cuidador.disponibilidade || "",
-        descricao_experiencia: cuidador.descricao || ""
+        disponibilidade_horarios: cuidador.disponibilidade_horarios || "",
+        descricao_experiencia: cuidador.descricao_experiencia || "",
+        cursos: cuidador.cursos || "",
+        referencia_1: cuidador.referencia_1 || "",
+        referencia_2: cuidador.referencia_2 || "",
+        referencia_3: cuidador.referencia_3 || "",
       });
     }
   }, [cuidador]);
@@ -77,6 +81,10 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           experiencia: formData.experiencia,
           disponibilidade_horarios: formData.disponibilidade_horarios,
           descricao_experiencia: formData.descricao_experiencia,
+          cursos: formData.cursos,
+          referencia_1: formData.referencia_1,
+          referencia_2: formData.referencia_2,
+          referencia_3: formData.referencia_3,
           ultima_atualizacao: new Date().toISOString()
         })
         .eq('id', cuidador.id);
@@ -192,8 +200,52 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
               value={formData.descricao_experiencia}
               onChange={handleChange}
               placeholder="Resumo das qualificações e experiências anteriores..."
-              rows={4}
+              rows={3}
             />
+          </div>
+
+          <div className="grid gap-2">
+            <label className="text-sm font-medium text-gray-700">Cursos e Especializações</label>
+            <Textarea
+              name="cursos"
+              value={formData.cursos}
+              onChange={handleChange}
+              placeholder="Listagem de cursos, certificações..."
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <h4 className="font-semibold text-gray-900">Referências</h4>
+            <div className="grid gap-3">
+              <div className="grid gap-1">
+                <label className="text-xs font-medium text-gray-500">Referência 1</label>
+                <Input
+                  name="referencia_1"
+                  value={formData.referencia_1}
+                  onChange={handleChange}
+                  placeholder="Nome e contato da primeira referência"
+                />
+              </div>
+              <div className="grid gap-1">
+                <label className="text-xs font-medium text-gray-500">Referência 2</label>
+                <Input
+                  name="referencia_2"
+                  value={formData.referencia_2}
+                  onChange={handleChange}
+                  placeholder="Nome e contato da segunda referência"
+                />
+              </div>
+              <div className="grid gap-1">
+                <label className="text-xs font-medium text-gray-500">Referência 3</label>
+                <Input
+                  name="referencia_3"
+                  value={formData.referencia_3}
+                  onChange={handleChange}
+                  placeholder="Nome e contato da terceira referência"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

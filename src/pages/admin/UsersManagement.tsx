@@ -84,7 +84,7 @@ const UsersManagement = () => {
           fumante, possui_filhos, escolaridade, cursos, possui_experiencia, descricao_experiencia,
           disponibilidade_horarios, disponivel_dormir_local, referencias, referencia_1, referencia_2,
           referencia_3, perfil_profissional, ultima_atualizacao, cidade, endereco, cep, cpf, RG,
-          estado, coren, crefito, crm
+          estado, coren, crefito, crm, experiencia, descricao
         `)
         .order('id', { ascending: false });
       

@@ -163,10 +163,32 @@ export const CandidateDetailsModal: React.FC<CandidateDetailsModalProps> = ({
                   <p className="font-medium text-lg">{candidate.cargo || 'Não informado'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Experiência</p>
+                  <p className="text-sm text-gray-500">Possui Experiência?</p>
                   <p className="font-medium">{candidate.possui_experiencia || 'Não informado'}</p>
                 </div>
+                <div>
+                  <p className="text-sm text-gray-500">Tempo/Nível de Experiência</p>
+                  <p className="font-medium">{candidate.experiencia || 'Não especificado'}</p>
+                </div>
               </div>
+
+              {candidate.disponibilidade_horarios && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-2">Disponibilidade</p>
+                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 italic text-gray-700">
+                    {candidate.disponibilidade_horarios}
+                  </div>
+                </div>
+              )}
+
+              {candidate.descricao_experiencia && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-2">Descrição da Experiência</p>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 text-gray-700 whitespace-pre-line">
+                    {candidate.descricao_experiencia}
+                  </div>
+                </div>
+              )}
 
               {/* Registros Profissionais */}
               {relevantRegistrations.length > 0 && (
