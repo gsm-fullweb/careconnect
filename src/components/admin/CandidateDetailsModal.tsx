@@ -13,7 +13,8 @@ import {
   Award,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Pencil
 } from "lucide-react";
 
 interface CandidateDetailsModalProps {
@@ -21,12 +22,14 @@ interface CandidateDetailsModalProps {
   onClose: () => void;
   candidate: any | null;
   onUpdate: (updatedCandidate: any) => void;
+  onEdit?: (candidate: any) => void;
 }
 
 export const CandidateDetailsModal: React.FC<CandidateDetailsModalProps> = ({ 
   isOpen, 
   onClose, 
-  candidate 
+  candidate,
+  onEdit
 }) => {
   if (!candidate) return null;
 
@@ -93,6 +96,17 @@ export const CandidateDetailsModal: React.FC<CandidateDetailsModalProps> = ({
                 )}
               </div>
             </div>
+            {onEdit && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => onEdit(candidate)}
+                className="flex items-center gap-2 border-careconnect-blue text-careconnect-blue hover:bg-careconnect-blue hover:text-white transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+                Editar Candidato
+              </Button>
+            )}
           </div>
         </DialogHeader>
         

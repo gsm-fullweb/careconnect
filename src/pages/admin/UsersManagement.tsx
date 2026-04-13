@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Trash, UserPlus, Eye, Filter, Users, CheckCircle, XCircle, Clock, RefreshCw } from "lucide-react";
+import { Search, Trash, UserPlus, Eye, Filter, Users, CheckCircle, XCircle, Clock, RefreshCw, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Table,
@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CandidateDetailsModal } from "@/components/admin/CandidateDetailsModal";
+import { EditCuidadorModal } from "@/components/admin/EditCuidadorModal";
 
 type CandidatoCuidador = {
   id: number;
@@ -58,7 +59,9 @@ const UsersManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<CandidatoCuidador | null>(null);
+  const [selectedEditUser, setSelectedEditUser] = useState<CandidatoCuidador | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cargoFilter, setCargoFilter] = useState("all");
@@ -183,6 +186,17 @@ const UsersManagement = () => {
   const handleViewDetails = (user: CandidatoCuidador) => {
     setSelectedUser(user);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleEditUser = (user: CandidatoCuidador) => {
+    setSelectedEditUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedEditUser(null);
+    fetchUsers();
   };
 
   const [newCandidate, setNewCandidate] = useState({
@@ -558,6 +572,15 @@ const UsersManagement = () => {
                               <Eye className="w-4 h-4" />
                             </Button>
                             <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditUser(user)}
+                              className="h-8 w-8 p-0 border-yellow-200 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
+                              title="Editar candidato"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button 
                               variant="ghost" 
                               size="sm" 
                               onClick={() => handleDeleteUser(user.id)}
@@ -596,6 +619,16 @@ const UsersManagement = () => {
           onClose={handleCloseModal}
           candidate={selectedUser}
           onUpdate={handleUpdateUser}
+          onEdit={handleEditUser}
+        />
+      )}
+
+      {selectedEditUser && (
+        <EditCuidadorModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          cuidador={selectedEditUser}
+          onUpdate={handleCloseEditModal}
         />
       )}
       
