@@ -23,6 +23,7 @@ import {
   RefreshCw, User, CheckCircle, ArrowRight, ArrowLeft, 
   MapPin, Briefcase, Heart, GraduationCap, Lock, Mail, Phone, Calendar
 } from "lucide-react";
+import { normalizeCity } from "@/lib/utils";
 
 // ─── Schema de validação completo ───────────────────────────────────────────
 const formSchema = z.object({
@@ -157,7 +158,7 @@ export default function PreCadastro() {
         telefone: data.whatsapp,
         data_nascimento: data.birth_date,
         cep: data.cep,
-        cidade: data.city,
+        cidade: normalizeCity(data.city),
         endereco: data.address,
         escolaridade: data.education,
         cargo: data.role,
@@ -167,7 +168,7 @@ export default function PreCadastro() {
         possui_filhos: data.has_kids,
         status_candidatura: "Em análise",
         ativo: "Sim",
-        data_cadastro: new Date().toISOString().split("T")[0],
+        data_cadastro: new Date().toLocaleDateString('en-CA'), // Formato YYYY-MM-DD local
         cursos: "Não informado",
         referencias: "Não informado",
         perfil_profissional: "Candidato via site",

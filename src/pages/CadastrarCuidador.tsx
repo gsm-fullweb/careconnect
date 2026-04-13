@@ -9,6 +9,7 @@ import { User, Edit, Save, X, FileText, ArrowRight, Home, GraduationCap, Briefca
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
+import { normalizeCity } from "@/lib/utils";
 
 const CadastrarCuidador = () => {
   const { user } = useAuth();
@@ -123,6 +124,7 @@ const CadastrarCuidador = () => {
     try {
       const updateData = {
         ...editFormData, // Isso incluirá 'estado' se estiver em editFormData
+        cidade: editFormData.cidade ? normalizeCity(editFormData.cidade) : undefined,
         ultima_atualizacao: new Date().toISOString()
       };
 

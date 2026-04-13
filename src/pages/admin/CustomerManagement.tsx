@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatDate, normalizeCity } from "@/lib/utils";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -164,19 +166,19 @@ const CustomersManagement = () => {
     updateStatusMutation.mutate({ id: customerId, status: newStatus });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR");
-  };
 
   const calculateAge = (birthDate: string | null) => {
     if (!birthDate) return "N/A";
     const today = new Date();
-    const birth = new Date(birthDate);
-    const age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
     
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      return age - 1;
+    // Parse YYYY-MM-DD manually to avoid timezone shifts
+    const [year, month, day] = birthDate.split("-").map(Number);
+    
+    let age = today.getFullYear() - year;
+    const monthDiff = today.getMonth() + 1 - month;
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < day)) {
+      age--;
     }
     return age;
   };
@@ -224,7 +226,7 @@ const CustomersManagement = () => {
         birth_date: data.birth_date || null,
         cep: data.cep || null,
         address: data.address || null,
-        city: data.city,
+        city: normalizeCity(data.city),
         state: data.state || null,
         has_children: data.has_children,
         smoker: data.smoker,

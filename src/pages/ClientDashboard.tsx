@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { formatDate, normalizeCity } from "@/lib/utils";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, MessageSquare, User, Star, MapPin, Phone, LogOut, Heart, Filter } from "lucide-react";
+import { Search, MessageSquare, User, Star, MapPin, Phone, LogOut, Heart, Filter, Pencil } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { EditCuidadorModal } from "@/components/admin/EditCuidadorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -31,6 +34,8 @@ const ClienteDashboard = () => {
   const [favoritos, setFavoritos] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [availableCargos, setAvailableCargos] = useState<string[]>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [cuidadorParaEditar, setCuidadorParaEditar] = useState<any>(null);
 
   // Estados (para Cuidadores)
   const [candidatoData, setCandidatoData] = useState<any>(null);
@@ -100,7 +105,7 @@ const ClienteDashboard = () => {
         .eq('status_candidatura', 'Aprovado')
         .not('cargo', 'is', null);
 
-      const uniqueCities = [...new Set(cidadesData?.map(item => item.cidade).filter(Boolean))].sort();
+      const uniqueCities = [...new Set(cidadesData?.map(item => normalizeCity(item.cidade)).filter(Boolean))].sort();
       const uniqueCargos = [...new Set(cargosData?.map(item => item.cargo).filter(Boolean))].sort();
 
       setAvailableCities(uniqueCities);
@@ -153,7 +158,7 @@ const ClienteDashboard = () => {
 
       // Filtro cidade (desconsidera se "__all__")
       if (selectedCity && selectedCity !== "__all__") {
-        query = query.eq('cidade', selectedCity);
+        query = query.ilike('cidade', selectedCity);
       }
 
       // Filtro cargo (desconsidera se "__all__")
@@ -689,15 +694,27 @@ const ClienteDashboard = () => {
                                       Avaliar
                                     </Button>
 
-                                    <Button
-                                      size="sm"
-                                      className="bg-green-600 hover:bg-green-700"
-                                      onClick={() => handleWhatsApp(cuidador.telefone, cuidador.nome)}
-                                    >
-                                      <Phone className="w-4 h-4 mr-1" />
-                                      WhatsApp
-                                    </Button>
-                                  </div>
+                                      <Button
+                                        size="sm"
+                                        className="bg-green-600 hover:bg-green-700"
+                                        onClick={() => handleWhatsApp(cuidador.telefone, cuidador.nome)}
+                                      >
+                                        <Phone className="w-4 h-4 mr-1" />
+                                        WhatsApp
+                                      </Button>
+
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setCuidadorParaEditar(cuidador);
+                                          setIsEditModalOpen(true);
+                                        }}
+                                        className="px-2 border-careconnect-blue text-careconnect-blue hover:bg-blue-50"
+                                      >
+                                        <Pencil className="w-4 h-4" />
+                                      </Button>
+                                    </div>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -826,7 +843,7 @@ const ClienteDashboard = () => {
                                 {depoimento.published ? '✅ Publicado' : '⏳ Em análise'}
                               </span>
                               <span className="text-xs text-gray-400">
-                                {new Date(depoimento.created_at).toLocaleDateString('pt-BR')}
+                                {formatDate(depoimento.created_at)}
                               </span>
                             </div>
                           </div>
@@ -879,6 +896,13 @@ const ClienteDashboard = () => {
           </>
         )}
       </div>
+
+      <EditCuidadorModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        cuidador={cuidadorParaEditar}
+        onUpdate={handleBuscarCuidadores}
+      />
     </div>
   );
 };

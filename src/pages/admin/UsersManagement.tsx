@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { formatDate, normalizeCity } from "@/lib/utils";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -139,9 +141,9 @@ const UsersManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
-      user.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.cidade.toLowerCase().includes(searchTerm.toLowerCase());
+      user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.cidade?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCargo = cargoFilter === "all" || user.cargo === cargoFilter;
     const matchesStatus = statusFilter === "all" || user.status_candidatura === statusFilter;
@@ -204,7 +206,7 @@ const UsersManagement = () => {
           nome: newCandidate.nome,
           email: newCandidate.email.toLowerCase().trim(),
           telefone: newCandidate.telefone,
-          cidade: newCandidate.cidade,
+          cidade: normalizeCity(newCandidate.cidade),
           status_candidatura: newCandidate.status_candidatura,
           cargo: newCandidate.cargo,
           data_nascimento: "1990-01-01",
@@ -281,6 +283,8 @@ const UsersManagement = () => {
   const statusOptions = Array.from(
     new Set(users.map(user => user.status_candidatura))
   );
+
+  const uniqueCidades = [...new Set(users.map(item => normalizeCity(item.cidade)).filter(Boolean))].sort();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -540,10 +544,7 @@ const UsersManagement = () => {
                           </Select>
                         </TableCell>
                         <TableCell className="text-sm text-gray-500">
-                          {user.data_cadastro ? 
-                            new Date(user.data_cadastro).toLocaleDateString('pt-BR') : 
-                            "N/A"
-                          }
+                          {formatDate(user.data_cadastro)}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-center gap-2">

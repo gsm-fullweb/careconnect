@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { formatDate } from "@/lib/utils";
+
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,7 +118,7 @@ const Blog = () => {
                     <CardContent>
                       <p className="text-gray-700 line-clamp-3 mb-4">{post.excerpt || "Nenhum resumo disponível."}</p>
                       <div className="flex items-center text-sm text-gray-500">
-                        <span>{new Date(post.created_at).toLocaleDateString("pt-BR")}</span>
+                        <span>{formatDate(post.created_at)}</span>
                       </div>
                     </CardContent>
                     <CardFooter>

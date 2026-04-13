@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { formatDate } from "@/lib/utils";
+
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -113,7 +115,7 @@ const BlogPost = () => {
               {post.title}
             </h1>
             <div className="flex items-center justify-center text-white/80 text-sm md:text-base">
-              <span className="mr-4">Publicado em {new Date(post.created_at).toLocaleDateString("pt-BR")}</span>
+              <span className="mr-4">Publicado em {formatDate(post.created_at)}</span>
             </div>
           </div>
         </div>
@@ -277,7 +279,7 @@ const BlogPost = () => {
                             </CardTitle>
                           </CardHeader>
                           <CardFooter className="p-4 pt-0 text-xs text-gray-500 font-medium">
-                            {new Date(recentItem.created_at).toLocaleDateString("pt-BR")}
+                            {formatDate(recentItem.created_at)}
                           </CardFooter>
                         </Card>
                       ))}

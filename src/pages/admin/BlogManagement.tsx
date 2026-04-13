@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { formatDate } from "@/lib/utils";
+
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -179,7 +181,7 @@ const BlogManagement = () => {
                   <div className="font-bold text-gray-900">{post.title}</div>
                   <div className="text-gray-600 text-sm">{post.excerpt}</div>
                   <div className="text-xs text-gray-400 mt-1 flex gap-2 items-center">
-                    <span>{new Date(post.created_at).toLocaleDateString("pt-BR")}</span>
+                    <span>{formatDate(post.created_at)}</span>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${post.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                       {post.published ? 'Publicado' : 'Rascunho'}
                     </span>

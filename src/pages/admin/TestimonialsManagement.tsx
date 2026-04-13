@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { formatDate } from "@/lib/utils";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -399,7 +401,7 @@ const TestimonialsManagement = () => {
                         {testimonial.published ? "Publicado" : "Não Publicado"}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {new Date(testimonial.created_at).toLocaleDateString('pt-BR')}
+                        {formatDate(testimonial.created_at)}
                       </span>
                     </div>
                     

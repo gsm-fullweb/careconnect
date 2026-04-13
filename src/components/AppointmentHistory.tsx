@@ -1,4 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils";
+
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -113,7 +115,7 @@ export default function AppointmentHistory() {
               </TableCell>
               <TableCell>{appointment.service_name}</TableCell>
               <TableCell>
-                {new Date(appointment.date).toLocaleDateString('pt-BR')}
+                {formatDate(appointment.date)}
               </TableCell>
               <TableCell>{appointment.time}</TableCell>
               <TableCell>{getStatusBadge(appointment.status)}</TableCell>
