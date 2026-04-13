@@ -204,6 +204,7 @@ const UsersManagement = () => {
     email: "",
     telefone: "",
     cidade: "",
+    cep: "",
     cargo: "cuidador",
     endereco: "",
     status_candidatura: "Em análise"
@@ -229,7 +230,7 @@ const UsersManagement = () => {
           possui_experiencia: "Sim",
           disponivel_dormir_local: "Sim",
           endereco: newCandidate.endereco || "Não informado",
-          cep: "00000-000",
+          cep: newCandidate.cep || "00000-000",
           possui_filhos: false,
           cursos: "Cadastrado pelo administrador",
           experiencia: "Cadastrado pelo administrador",
@@ -253,6 +254,7 @@ const UsersManagement = () => {
         email: "",
         telefone: "",
         cidade: "",
+        cep: "",
         cargo: "cuidador",
         endereco: "",
         status_candidatura: "Em análise"
@@ -675,6 +677,23 @@ const UsersManagement = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        CEP
+                      </label>
+                      <Input 
+                        required 
+                        placeholder="00000-000"
+                        value={newCandidate.cep}
+                        onChange={(e) => {
+                          const val = e.target.value
+                            .replace(/\D/g, "")
+                            .replace(/(\d{5})(\d)/, "$1-$2")
+                            .substring(0, 9);
+                          setNewCandidate({...newCandidate, cep: val});
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Cidade
                       </label>
                       <Input 
@@ -683,21 +702,21 @@ const UsersManagement = () => {
                         onChange={(e) => setNewCandidate({...newCandidate, cidade: e.target.value})}
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Cargo
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-careconnect-blue"
-                        value={newCandidate.cargo}
-                        onChange={(e) => setNewCandidate({...newCandidate, cargo: e.target.value})}
-                      >
-                        <option value="cuidador">Cuidador</option>
-                        <option value="enfermeiro">Enfermeiro</option>
-                        <option value="tecnico_enfermagem">Técnico de Enfermagem</option>
-                        <option value="fisioterapeuta">Fisioterapeuta</option>
-                      </select>
-                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Cargo
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-careconnect-blue"
+                      value={newCandidate.cargo}
+                      onChange={(e) => setNewCandidate({...newCandidate, cargo: e.target.value})}
+                    >
+                      <option value="cuidador">Cuidador</option>
+                      <option value="enfermeiro">Enfermeiro</option>
+                      <option value="tecnico_enfermagem">Técnico de Enfermagem</option>
+                      <option value="fisioterapeuta">Fisioterapeuta</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">

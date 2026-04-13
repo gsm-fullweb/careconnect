@@ -14,7 +14,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Pencil
+  Pencil,
+  MapPin
 } from "lucide-react";
 
 interface CandidateDetailsModalProps {
@@ -132,6 +133,16 @@ export const CandidateDetailsModal: React.FC<CandidateDetailsModalProps> = ({
                 <div>
                   <p className="text-sm text-gray-500">Telefone</p>
                   <p className="font-medium">{candidate.telefone || 'Não informado'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-gray-500" />
+                <div>
+                  <p className="text-sm text-gray-500">Localização</p>
+                  <p className="font-medium">
+                    {candidate.cidade || 'Cidade não informada'} 
+                    {candidate.cep ? ` (${candidate.cep})` : ''}
+                  </p>
                 </div>
               </div>
             </CardContent>

@@ -31,6 +31,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
         nome: cuidador.nome || "",
         email: cuidador.email || "",
         telefone: cuidador.telefone || "",
+        cep: cuidador.cep || "",
         cidade: cuidador.cidade || "",
         cargo: cuidador.cargo || "",
         experiencia: cuidador.experiencia || "",
@@ -42,7 +43,20 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    if (name === "cep") {
+      setFormData((prev: any) => ({ ...prev, [name]: maskCEP(value) }));
+      return;
+    }
+    
     setFormData((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const maskCEP = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{5})(\d)/, "$1-$2")
+      .substring(0, 9);
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -57,6 +71,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
         .update({
           nome: formData.nome,
           telefone: formData.telefone,
+          cep: formData.cep,
           cidade: normalizeCity(formData.cidade),
           cargo: formData.cargo,
           experiencia: formData.experiencia,
@@ -117,14 +132,25 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
                 placeholder="(00) 00000-0000"
               />
             </div>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium text-gray-700">Cidade</label>
-              <Input
-                name="cidade"
-                value={formData.cidade}
-                onChange={handleChange}
-                placeholder="Cidade"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <label className="text-sm font-medium text-gray-700">CEP</label>
+                <Input
+                  name="cep"
+                  value={formData.cep}
+                  onChange={handleChange}
+                  placeholder="00000-000"
+                />
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm font-medium text-gray-700">Cidade</label>
+                <Input
+                  name="cidade"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                  placeholder="Cidade"
+                />
+              </div>
             </div>
           </div>
 
