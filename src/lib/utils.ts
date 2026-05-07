@@ -11,13 +11,15 @@ export function generateSecurePassword(): string {
 export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "N/A";
   
-  // Se for apenas data (YYYY-MM-DD)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    const [year, month, day] = dateString.split("-");
+  // Extrair a parte YYYY-MM-DD diretamente da string,
+  // evitando conversão de fuso horário que causa exibição do dia anterior
+  const dateMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateMatch) {
+    const [, year, month, day] = dateMatch;
     return `${day}/${month}/${year}`;
   }
   
-  // Se for uma data ISO completa, usar a data local para exibição amigável
+  // Fallback para formatos não reconhecidos
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return "Data inválida";
   

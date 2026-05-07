@@ -192,8 +192,6 @@ const CadastrarCuidador = () => {
         return !!(candidatoData?.escolaridade && candidatoData?.cargo);
       case 'experience':
         return !!(candidatoData?.possui_experiencia && candidatoData?.disponibilidade_horarios);
-      case 'references':
-        return !!(candidatoData?.referencia_1);
       default:
         return false;
     }
@@ -203,8 +201,7 @@ const CadastrarCuidador = () => {
   const isRegistrationIncomplete = !candidatoData?.escolaridade ||
     !candidatoData?.disponibilidade_horarios ||
     !candidatoData?.cargo ||
-    !candidatoData?.experiencia ||
-    !candidatoData?.referencias;
+    !candidatoData?.experiencia;
 
   if (loading) {
     return (
@@ -281,8 +278,7 @@ const CadastrarCuidador = () => {
                 { key: 'personal', label: 'Dados Pessoais', icon: User },
                 { key: 'address', label: 'Endereço', icon: MapPin },
                 { key: 'education', label: 'Formação', icon: GraduationCap },
-                { key: 'experience', label: 'Experiência', icon: Briefcase },
-                { key: 'references', label: 'Referências', icon: Users }
+                { key: 'experience', label: 'Experiência', icon: Briefcase }
               ].map(({ key, label, icon: Icon }) => {
                 const isComplete = checkSectionCompletion(key);
                 return (
@@ -804,106 +800,6 @@ const CadastrarCuidador = () => {
             </Card>
           </AccordionItem>
 
-          {/* 📇 5. Referências */}
-          <AccordionItem value="references" className="border rounded-lg">
-            <Card>
-              <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-careconnect-blue" />
-                  <div className="text-left">
-                    <h3 className="font-semibold">Referências</h3>
-                    <p className="text-sm text-gray-600">Referência 1, 2, 3</p>
-                  </div>
-                  {checkSectionCompletion('references') && (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  )}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pt-0">
-                  <div className="flex justify-end mb-4">
-                    {!editingSections.references ? (
-                      <Button
-                        onClick={() => handleSectionEdit('references')}
-                        size="sm"
-                        className="bg-careconnect-blue hover:bg-careconnect-blue/90"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Editar Referências
-                      </Button>
-                    ) : (
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleSectionSave('references')}
-                          disabled={saving}
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          {saving ? "Salvando..." : "Salvar"}
-                        </Button>
-                        <Button
-                          onClick={() => handleSectionCancel('references')}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Cancelar
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Referência 1</label>
-                      {editingSections.references ? (
-                        <Textarea
-                          name="referencia_1"
-                          value={editFormData.referencia_1 || ''}
-                          onChange={handleInputChange}
-                          rows={2}
-                          placeholder="Nome, telefone e relação"
-                        />
-                      ) : (
-                        <p className="text-gray-900">{candidatoData?.referencia_1 || 'Não informado'}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Referência 2</label>
-                      {editingSections.references ? (
-                        <Textarea
-                          name="referencia_2"
-                          value={editFormData.referencia_2 || ''}
-                          onChange={handleInputChange}
-                          rows={2}
-                          placeholder="Nome, telefone e relação"
-                        />
-                      ) : (
-                        <p className="text-gray-900">{candidatoData?.referencia_2 || 'Não informado'}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Referência 3</label>
-                      {editingSections.references ? (
-                        <Textarea
-                          name="referencia_3"
-                          value={editFormData.referencia_3 || ''}
-                          onChange={handleInputChange}
-                          rows={2}
-                          placeholder="Nome, telefone e relação"
-                        />
-                      ) : (
-                        <p className="text-gray-900">{candidatoData?.referencia_3 || 'Não informado'}</p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
 
         </Accordion>
       </div>

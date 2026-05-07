@@ -480,6 +480,7 @@ const UsersManagement = () => {
                     <TableHead className="font-semibold">Contato</TableHead>
                     <TableHead className="font-semibold">Localização</TableHead>
                     <TableHead className="font-semibold">Qualificação</TableHead>
+                    <TableHead className="font-semibold">Disponibilidade</TableHead>
                     <TableHead className="font-semibold">Status</TableHead>
                     <TableHead className="font-semibold">Cadastro</TableHead>
                     <TableHead className="font-semibold text-center">Ações</TableHead>
@@ -488,7 +489,7 @@ const UsersManagement = () => {
                 <TableBody>
                   {filteredUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="h-32 text-center">
+                      <TableCell colSpan={8} className="h-32 text-center">
                         <div className="flex flex-col items-center justify-center text-gray-500">
                           <Users className="w-12 h-12 mb-2 opacity-50" />
                           <p className="font-medium">Nenhum candidato encontrado</p>
@@ -527,6 +528,11 @@ const UsersManagement = () => {
                             <p className="text-gray-500">
                               {user.possui_experiencia === "Sim" ? "Com experiência" : "Sem experiência"}
                             </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-gray-700 max-w-[200px] truncate" title={user.disponibilidade_horarios || 'Não informado'}>
+                            {user.disponibilidade_horarios || 'Não informado'}
                           </div>
                         </TableCell>
                         <TableCell>

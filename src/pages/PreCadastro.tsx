@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import SEO from "@/components/SEO";
 import {
@@ -21,7 +22,8 @@ import Layout from "@/components/layout/Layout";
 import { useNavigate } from "react-router-dom";
 import { 
   RefreshCw, User, CheckCircle, ArrowRight, ArrowLeft, 
-  MapPin, Briefcase, Heart, GraduationCap, Lock, Mail, Phone, Calendar
+  MapPin, Briefcase, Heart, GraduationCap, Lock, Mail, Phone, Calendar,
+  Clock, FileText, Award
 } from "lucide-react";
 import { normalizeCity } from "@/lib/utils";
 
@@ -37,10 +39,11 @@ const formSchema = z.object({
   address: z.string().min(5, { message: "Endereço completo é necessário." }),
   education: z.string().min(1, { message: "Selecione sua escolaridade." }),
   role: z.string().min(2, { message: "Informe seu cargo principal." }),
+  experience_level: z.string().min(1, { message: "Selecione seu nível de experiência." }),
+  experience_description: z.string().optional(),
+  courses: z.string().optional(),
   has_experience: z.string(),
-  sleep_on_site: z.string(),
-  is_smoker: z.string(),
-  has_kids: z.boolean().default(false),
+  availability: z.string().min(3, { message: "Informe sua disponibilidade." }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -71,10 +74,11 @@ export default function PreCadastro() {
       address: "",
       education: "Ensino Médio",
       role: "Cuidador",
+      experience_level: "Menos de 1 ano",
+      experience_description: "",
+      courses: "",
       has_experience: "Sim",
-      sleep_on_site: "Não",
-      is_smoker: "Não",
-      has_kids: false,
+      availability: "",
     },
   });
 
@@ -125,8 +129,8 @@ export default function PreCadastro() {
       case 0: return ["name", "birth_date"];
       case 1: return ["email", "whatsapp", "password"];
       case 2: return ["cep", "city", "address"];
-      case 3: return ["education", "role"];
-      case 4: return ["has_experience", "sleep_on_site", "is_smoker"];
+      case 3: return ["education", "role", "experience_level", "has_experience"];
+      case 4: return ["availability"];
       default: return [];
     }
   };
@@ -163,20 +167,20 @@ export default function PreCadastro() {
         escolaridade: data.education,
         cargo: data.role,
         possui_experiencia: data.has_experience,
-        disponivel_dormir_local: data.sleep_on_site,
-        fumante: data.is_smoker,
-        possui_filhos: data.has_kids,
+        disponivel_dormir_local: "A combinar",
+        fumante: "Não informado",
+        possui_filhos: false,
         status_candidatura: "Em análise",
         ativo: "Sim",
         data_cadastro: new Date().toLocaleDateString('en-CA'), // Formato YYYY-MM-DD local
-        cursos: "Não informado",
+        cursos: data.courses || "Não informado",
         referencias: "Não informado",
         perfil_profissional: "Candidato via site",
         Declaracao: "Aceito",
-        disponibilidade_horarios: "A combinar",
+        disponibilidade_horarios: data.availability,
         desconfortos_atividades: "Nenhum",
-        descricao_experiencia: "Verificar com o candidato",
-        experiencia: "Não detalhado"
+        descricao_experiencia: data.experience_description || "Verificar com o candidato",
+        experiencia: data.experience_level || "Não detalhado"
       });
 
       if (dbError) {
@@ -370,11 +374,56 @@ export default function PreCadastro() {
                           <FormMessage />
                         </FormItem>
                       )} />
-                    </div>
-                  )}
-
-                  {currentStep === 4 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="experience_level" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Tempo / Nível de Experiência</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                              <select className="flex h-12 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...field}>
+                                <option value="Menos de 1 ano">Menos de 1 ano</option>
+                                <option value="1 a 2 anos">1 a 2 anos</option>
+                                <option value="3 a 5 anos">3 a 5 anos</option>
+                                <option value="5 a 10 anos">5 a 10 anos</option>
+                                <option value="Mais de 10 anos">Mais de 10 anos</option>
+                              </select>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="experience_description" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Descrição de Experiência</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                              <Textarea 
+                                placeholder="Descreva brevemente suas experiências anteriores como cuidador(a)..." 
+                                className="pl-10 min-h-[100px] resize-none" 
+                                {...field} 
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="courses" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Cursos Realizados</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Award className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                              <Textarea 
+                                placeholder="Ex: Curso de Cuidador de Idosos (2023), Primeiros Socorros (2022)..." 
+                                className="pl-10 min-h-[100px] resize-none" 
+                                {...field} 
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
                       <FormField control={form.control} name="has_experience" render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-base">Possui experiência comprovada?</FormLabel>
@@ -395,37 +444,27 @@ export default function PreCadastro() {
                           </FormControl>
                         </FormItem>
                       )} />
-                      <FormField control={form.control} name="sleep_on_site" render={({ field }) => (
+                    </div>
+                  )}
+
+                  {currentStep === 4 && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                      <FormField control={form.control} name="availability" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">Disponível para dormir no local?</FormLabel>
+                          <FormLabel className="text-base">Quais dias e horários você está disponível?</FormLabel>
                           <FormControl>
-                            <div className="flex gap-4">
-                              {["Sim", "Não"].map((val) => (
-                                <Button 
-                                  key={val}
-                                  type="button" 
-                                  variant={field.value === val ? "default" : "outline"}
-                                  className={`flex-1 py-6 ${field.value === val ? "bg-primary text-white" : ""}`}
-                                  onClick={() => field.onChange(val)}
-                                >
-                                  {val}
-                                </Button>
-                              ))}
+                            <div className="relative">
+                              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                              <Textarea 
+                                placeholder="Ex: Segunda a sexta, das 8h às 18h. Sábados pela manhã..." 
+                                className="pl-10 min-h-[120px] resize-none" 
+                                {...field} 
+                              />
                             </div>
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )} />
-                      <div className="flex items-center space-x-2 bg-slate-50 p-4 rounded-lg border">
-                        <input 
-                          type="checkbox" 
-                          id="has_kids" 
-                          className="w-5 h-5 accent-primary"
-                          {...form.register("has_kids")}
-                        />
-                        <label htmlFor="has_kids" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Possuo filhos dependentes
-                        </label>
-                      </div>
                     </div>
                   )}
 

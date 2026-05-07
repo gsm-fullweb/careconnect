@@ -223,39 +223,7 @@ export const CandidateDetailsModal: React.FC<CandidateDetailsModalProps> = ({
             </CardContent>
           </Card>
 
-          {/* 3. Referências */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Heart className="w-5 h-5 text-red-500" />
-                Referências
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {candidate.referencia_1 && (
-                <div className="bg-gray-50 p-4 rounded-lg border">
-                  <p className="font-medium text-gray-800 mb-2">Referência 1</p>
-                  <p className="text-gray-700">{candidate.referencia_1}</p>
-                </div>
-              )}
-              {candidate.referencia_2 && (
-                <div className="bg-gray-50 p-4 rounded-lg border">
-                  <p className="font-medium text-gray-800 mb-2">Referência 2</p>
-                  <p className="text-gray-700">{candidate.referencia_2}</p>
-                </div>
-              )}
-              {candidate.referencia_3 && (
-                <div className="bg-gray-50 p-4 rounded-lg border">
-                  <p className="font-medium text-gray-800 mb-2">Referência 3</p>
-                  <p className="text-gray-700">{candidate.referencia_3}</p>
-                </div>
-              )}
-              
-              {!candidate.referencia_1 && !candidate.referencia_2 && !candidate.referencia_3 && (
-                <p className="text-gray-500 italic">Nenhuma referência informada</p>
-              )}
-            </CardContent>
-          </Card>
+
         </div>
 
         <DialogFooter className="border-t pt-6">

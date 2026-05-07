@@ -13,7 +13,6 @@ import PersonalDataSection from "@/components/caregiver-dashboard/PersonalDataSe
 import AddressSection from "@/components/caregiver-dashboard/AddressSection";
 import CategorySection from "@/components/caregiver-dashboard/CategorySection";
 import { ProfessionalDataSection } from "@/components/caregiver-dashboard/ProfessionalDataSection";
-import ReferencesSection from "@/components/caregiver-dashboard/ReferencesSection";
 import TermsAndDeclarationSection from "@/components/caregiver-dashboard/TermsAndDeclarationSection";
 
 const PainelCuidador = () => {
@@ -185,7 +184,7 @@ const PainelCuidador = () => {
   const requiredFields = [
     'nome', 'email', 'telefone', 'data_nascimento', 'cep', 'endereco',
     'cidade', 'escolaridade', 'disponibilidade_horarios', 'cargo',
-    'experiencia', 'referencias'
+    'experiencia'
   ];
 
   const isRegistrationComplete = requiredFields.every(field =>
@@ -310,7 +309,7 @@ const PainelCuidador = () => {
 
       {/* Main Content com Sections novas */}
       <div className="container mx-auto px-4 pb-24 space-y-8 animate-fade-in">
-        <Accordion type="multiple" className="space-y-4" defaultValue={["personal", "category", "address", "professional", "references", "terms"]}>
+        <Accordion type="multiple" className="space-y-4" defaultValue={["personal", "category", "address", "professional", "terms"]}>
 
           <PersonalDataSection
             nome={editFormData?.nome || ''}
@@ -361,15 +360,6 @@ const PainelCuidador = () => {
             handleInputChange={(field, value) => handleInputChange(field, typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : value)}
           />
 
-          <ReferencesSection
-            dados={candidatoData}
-            editData={editFormData}
-            isEditing={editMode}
-            handleInputChange={handleInputChange}
-            onEdit={() => setEditMode(true)}
-            onSave={handleSave}
-            onCancel={handleCancel}
-          />
 
           <TermsAndDeclarationSection
             acceptedTerms={acceptedTerms}
