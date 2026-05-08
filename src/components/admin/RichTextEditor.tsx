@@ -16,7 +16,15 @@ import {
   Image as ImageIcon,
   Upload,
   Trash,
-  Wand2
+  Wand2,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Pilcrow,
+  RemoveFormatting,
+  Quote,
+  ChevronDown
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -60,7 +68,11 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
   }, [value]);
 
   const formatDoc = (command: string, value?: string) => {
-    document.execCommand(command, false, value);
+    if (command === 'formatBlock' && value) {
+      document.execCommand(command, false, `<${value}>`);
+    } else {
+      document.execCommand(command, false, value);
+    }
     updateEditorContent();
   };
 
@@ -224,6 +236,52 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
           <Underline size={18} />
         </Button>
         <div className="h-6 w-px bg-gray-300 mx-1"></div>
+        {/* Heading / Block Format Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1 px-2 text-xs font-medium"
+              title="Formato de Texto"
+            >
+              <Pilcrow size={16} />
+              <span className="hidden sm:inline">Formato</span>
+              <ChevronDown size={14} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'h1')} className="cursor-pointer">
+              <Heading1 size={18} className="mr-2" />
+              <span className="font-bold text-2xl leading-none">Título 1</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'h2')} className="cursor-pointer">
+              <Heading2 size={18} className="mr-2" />
+              <span className="font-bold text-xl leading-none">Título 2</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'h3')} className="cursor-pointer">
+              <Heading3 size={18} className="mr-2" />
+              <span className="font-semibold text-lg leading-none">Título 3</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'h4')} className="cursor-pointer">
+              <Heading4 size={18} className="mr-2" />
+              <span className="font-semibold text-base leading-none">Título 4</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'p')} className="cursor-pointer">
+              <Pilcrow size={18} className="mr-2" />
+              <span className="text-base">Parágrafo</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('formatBlock', 'blockquote')} className="cursor-pointer">
+              <Quote size={18} className="mr-2" />
+              <span className="text-base italic">Citação</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => formatDoc('removeFormat')} className="cursor-pointer text-red-600">
+              <RemoveFormatting size={18} className="mr-2" />
+              <span className="text-base">Remover Formatação</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <div className="h-6 w-px bg-gray-300 mx-1"></div>
         <Button
           variant="ghost"
           size="icon"
@@ -360,10 +418,20 @@ const RichTextEditor = ({ value, onChange, onImageUpload }: RichTextEditorProps)
         </div>
       )}
       
+      <style dangerouslySetInnerHTML={{__html: `
+        .rich-editor-area h1 { font-size: 2em; font-weight: 700; margin: 0.67em 0; color: #222; }
+        .rich-editor-area h2 { font-size: 1.5em; font-weight: 700; margin: 0.6em 0; color: #222; }
+        .rich-editor-area h3 { font-size: 1.25em; font-weight: 600; margin: 0.5em 0; color: #333; }
+        .rich-editor-area h4 { font-size: 1.1em; font-weight: 600; margin: 0.4em 0; color: #333; }
+        .rich-editor-area blockquote { border-left: 4px solid #3b82f6; padding-left: 16px; margin: 16px 0; color: #555; font-style: italic; background: #f8fafc; padding: 12px 16px; border-radius: 0 4px 4px 0; }
+        .rich-editor-area p { margin-bottom: 0.8em; }
+        .rich-editor-area img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
+      `}} />
+      
       <div
         ref={editorRef}
         contentEditable
-        className="p-4 min-h-[200px] focus:outline-none"
+        className="rich-editor-area p-4 min-h-[200px] focus:outline-none"
         onInput={updateEditorContent}
         onBlur={updateEditorContent}
       />
