@@ -44,6 +44,7 @@ const formSchema = z.object({
   courses: z.string().optional(),
   has_experience: z.string(),
   availability: z.string().min(3, { message: "Informe sua disponibilidade." }),
+  sleep_availability: z.string().min(1, { message: "Informe se tem disponibilidade para dormir no local." }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -79,10 +80,12 @@ export default function PreCadastro() {
       courses: "",
       has_experience: "Sim",
       availability: "",
+      sleep_availability: "Não",
     },
   });
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
+  const hasExperienceValue = form.watch("has_experience");
 
   // ─── CEP Auto-fill ────────────────────────────────────────────────────────
   const cepValue = form.watch("cep");
@@ -130,7 +133,7 @@ export default function PreCadastro() {
       case 1: return ["email", "whatsapp", "password"];
       case 2: return ["cep", "city", "address"];
       case 3: return ["education", "role", "experience_level", "has_experience"];
-      case 4: return ["availability"];
+      case 4: return ["availability", "sleep_availability"];
       default: return [];
     }
   };
@@ -167,7 +170,7 @@ export default function PreCadastro() {
         escolaridade: data.education,
         cargo: data.role,
         possui_experiencia: data.has_experience,
-        disponivel_dormir_local: "A combinar",
+        disponivel_dormir_local: data.sleep_availability,
         fumante: "Não informado",
         possui_filhos: false,
         status_candidatura: "Em análise",
@@ -374,56 +377,6 @@ export default function PreCadastro() {
                           <FormMessage />
                         </FormItem>
                       )} />
-                      <FormField control={form.control} name="experience_level" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Tempo / Nível de Experiência</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                              <select className="flex h-12 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...field}>
-                                <option value="Menos de 1 ano">Menos de 1 ano</option>
-                                <option value="1 a 2 anos">1 a 2 anos</option>
-                                <option value="3 a 5 anos">3 a 5 anos</option>
-                                <option value="5 a 10 anos">5 a 10 anos</option>
-                                <option value="Mais de 10 anos">Mais de 10 anos</option>
-                              </select>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                      <FormField control={form.control} name="experience_description" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Descrição de Experiência</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                              <Textarea 
-                                placeholder="Descreva brevemente suas experiências anteriores como cuidador(a)..." 
-                                className="pl-10 min-h-[100px] resize-none" 
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                      <FormField control={form.control} name="courses" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Cursos Realizados</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Award className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                              <Textarea 
-                                placeholder="Ex: Curso de Cuidador de Idosos (2023), Primeiros Socorros (2022)..." 
-                                className="pl-10 min-h-[100px] resize-none" 
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
                       <FormField control={form.control} name="has_experience" render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-base">Possui experiência comprovada?</FormLabel>
@@ -444,6 +397,62 @@ export default function PreCadastro() {
                           </FormControl>
                         </FormItem>
                       )} />
+                      
+                      {hasExperienceValue === "Sim" && (
+                        <>
+                          <FormField control={form.control} name="experience_level" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">Tempo / Nível de Experiência</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                  <select className="flex h-12 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...field}>
+                                    <option value="Menos de 1 ano">Menos de 1 ano</option>
+                                    <option value="1 a 2 anos">1 a 2 anos</option>
+                                    <option value="3 a 5 anos">3 a 5 anos</option>
+                                    <option value="5 a 10 anos">5 a 10 anos</option>
+                                    <option value="Mais de 10 anos">Mais de 10 anos</option>
+                                  </select>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="experience_description" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">Descrição de Experiência</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                                  <Textarea 
+                                    placeholder="Descreva brevemente suas experiências anteriores como cuidador(a)..." 
+                                    className="pl-10 min-h-[100px] resize-none" 
+                                    {...field} 
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+                        </>
+                      )}
+
+                      <FormField control={form.control} name="courses" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Cursos Realizados</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Award className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                              <Textarea 
+                                placeholder="Ex: Curso de Cuidador de Idosos (2023), Primeiros Socorros (2022)..." 
+                                className="pl-10 min-h-[100px] resize-none" 
+                                {...field} 
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
                     </div>
                   )}
 
@@ -460,6 +469,27 @@ export default function PreCadastro() {
                                 className="pl-10 min-h-[120px] resize-none" 
                                 {...field} 
                               />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="sleep_availability" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base">Disponibilidade pra dormir no local?</FormLabel>
+                          <FormControl>
+                            <div className="flex gap-4">
+                              {["Sim", "Não"].map((val) => (
+                                <Button 
+                                  key={val}
+                                  type="button" 
+                                  variant={field.value === val ? "default" : "outline"}
+                                  className="flex-1 py-6"
+                                  onClick={() => field.onChange(val)}
+                                >
+                                  {val}
+                                </Button>
+                              ))}
                             </div>
                           </FormControl>
                           <FormMessage />
