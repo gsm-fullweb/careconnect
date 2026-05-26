@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { getDashboardPathForUser } from "@/lib/authRole";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,11 +21,11 @@ const Login = () => {
       const isAuthenticated = localStorage.getItem("admin-token");
       if (isAuthenticated) {
         try {
-          const { data, error } = await supabase.auth.getUser();
+          const { data, error } = await supabase.auth.getSession();
           if (error) throw error;
           
-          if (data?.user) {
-            setShouldRedirect(await getDashboardPathForUser(data.user));
+          if (data?.session) {
+            setShouldRedirect("/admin");
           } else {
             localStorage.removeItem("admin-token");
           }
@@ -82,7 +81,7 @@ const Login = () => {
           description: "Bem-vindo ao CareConnect",
         });
 
-        navigate(await getDashboardPathForUser(data.user));
+        navigate("/admin");
       }
     } catch (error: any) {
       toast({
