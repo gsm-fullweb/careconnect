@@ -5,6 +5,9 @@
   "installCommand": "npm install",
   "framework": "vite",
   "redirects": [
+    { "source": "/Admin", "destination": "/admin", "permanent": true },
+    { "source": "/Admin/login", "destination": "/admin/login", "permanent": true },
+    { "source": "/Admin/:path*", "destination": "/admin/:path*", "permanent": true },
     { "source": "/sobre", "destination": "/about", "permanent": true },
     { "source": "/servicos", "destination": "/services", "permanent": true },
     { "source": "/planos", "destination": "/plans", "permanent": true }

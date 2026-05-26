@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 
 // Public Pages
@@ -67,6 +67,9 @@ const App = () => (
             <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
 
             {/* Admin Routes */}
+            <Route path="/Admin" element={<Navigate to="/admin" replace />} />
+            <Route path="/Admin/login" element={<Navigate to="/admin/login" replace />} />
+            <Route path="/Admin/*" element={<Navigate to="/admin" replace />} />
             <Route path="/admin/login" element={<Login />} />
 
             {/* Protected Admin Routes */}
