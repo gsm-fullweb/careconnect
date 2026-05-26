@@ -55,6 +55,39 @@ type CandidatoCuidador = {
   ativo?: string | null;
 };
 
+const STATUS_OPTIONS = ["Em análise", "Aprovado", "Rejeitado"];
+const ATIVO_OPTIONS = ["Sim", "Não", "Pausado"];
+
+const LIST_FIELDS = `
+  id, nome, email, telefone, data_cadastro, status_candidatura, cargo,
+  escolaridade, possui_experiencia, disponibilidade_horarios,
+  cidade, cep, ativo
+`;
+
+const normalizeStatus = (status?: string | null) => {
+  const normalized = (status || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+  if (normalized === "aprovado") return "Aprovado";
+  if (normalized === "rejeitado") return "Rejeitado";
+  return "Em análise";
+};
+
+const normalizeAtivo = (ativo?: string | null) => {
+  const normalized = (ativo || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+  if (normalized === "false" || normalized === "nao" || normalized === "não") return "Não";
+  if (normalized === "pausado") return "Pausado";
+  return "Sim";
+};
+
 const UsersManagement = () => {
   const [users, setUsers] = useState<CandidatoCuidador[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,20 +113,14 @@ const UsersManagement = () => {
     try {
       const { data, error } = await supabase
         .from('candidatos_cuidadores_rows')
-        .select(`
-          id, nome, email, telefone, data_cadastro, status_candidatura, cargo, data_nascimento,
-          fumante, possui_filhos, escolaridade, cursos, possui_experiencia, descricao_experiencia,
-          disponibilidade_horarios, disponivel_dormir_local, referencias, referencia_1, referencia_2,
-          referencia_3, perfil_profissional, ultima_atualizacao, cidade, endereco, cep, cpf, RG,
-          estado, coren, crefito, crm, experiencia, descricao, ativo
-        `)
+        .select(LIST_FIELDS)
         .order('id', { ascending: false });
       
       if (error) {
         console.error('Erro ao buscar candidatos:', error);
         throw error;
       }
-      setUsers(data || []);
+      setUsers((data || []) as CandidatoCuidador[]);
       setError(null);
     } catch (error) {
       console.error('Erro ao buscar candidatos:', error);
@@ -185,7 +212,7 @@ const UsersManagement = () => {
       user.cidade?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCargo = cargoFilter === "all" || getCanonicalCargoKey(user.cargo) === cargoFilter;
-    const matchesStatus = statusFilter === "all" || user.status_candidatura === statusFilter;
+    const matchesStatus = statusFilter === "all" || normalizeStatus(user.status_candidatura) === statusFilter;
     
     return matchesSearch && matchesCargo && matchesStatus;
   });
@@ -219,20 +246,57 @@ const UsersManagement = () => {
     }
   };
 
+  const openCandidateDetails = async (userId: number, mode: "view" | "edit") => {
+    const cachedUser = users.find((user) => user.id === userId) || null;
+
+    if (mode === "view") {
+      setSelectedUser(cachedUser);
+      setIsDetailsModalOpen(true);
+    } else {
+      setSelectedEditUser(cachedUser);
+      setIsEditModalOpen(true);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("candidatos_cuidadores_rows")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) throw error;
+
+      const fullUser = data as CandidatoCuidador;
+      setUsers((currentUsers) =>
+        currentUsers.map((user) => (user.id === userId ? { ...user, ...fullUser } : user))
+      );
+
+      if (mode === "view") {
+        setSelectedUser(fullUser);
+      } else {
+        setSelectedEditUser(fullUser);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar detalhes do candidato:", error);
+      toast({
+        title: "Erro",
+        description: "NÃ£o foi possÃ­vel carregar os detalhes completos do candidato.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleViewDetails = (user: CandidatoCuidador) => {
-    setSelectedUser(user);
-    setIsDetailsModalOpen(true);
+    openCandidateDetails(user.id, "view");
   };
 
   const handleEditUser = (user: CandidatoCuidador) => {
-    setSelectedEditUser(user);
-    setIsEditModalOpen(true);
+    openCandidateDetails(user.id, "edit");
   };
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     setSelectedEditUser(null);
-    fetchUsers();
   };
 
   const [newCandidate, setNewCandidate] = useState({
@@ -325,7 +389,6 @@ const UsersManagement = () => {
   const handleCloseModal = () => {
     setIsDetailsModalOpen(false);
     setSelectedUser(null);
-    fetchUsers();
   };
 
   const cargoOptions = Array.from(
@@ -333,8 +396,8 @@ const UsersManagement = () => {
   ).sort((a, b) => formatCargoLabel(a).localeCompare(formatCargoLabel(b), "pt-BR"));
 
   const statusOptions = Array.from(
-    new Set(users.map(user => user.status_candidatura))
-  );
+    new Set(users.map(user => normalizeStatus(user.status_candidatura)))
+  ).sort((a, b) => STATUS_OPTIONS.indexOf(a) - STATUS_OPTIONS.indexOf(b));
 
   const uniqueCidades = [...new Set(users.map(item => normalizeCity(item.cidade)).filter(Boolean))].sort();
 
@@ -574,58 +637,42 @@ const UsersManagement = () => {
                         </TableCell>
                         <TableCell>
                           <Select
-                            value={user.status_candidatura}
+                            value={normalizeStatus(user.status_candidatura)}
                             onValueChange={(newStatus) => handleStatusChange(user.id, newStatus)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Em análise">
-                                <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4" />
-                                  Em análise
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="Aprovado">
-                                <div className="flex items-center gap-2">
-                                  <CheckCircle className="w-4 h-4" />
-                                  Aprovado
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="Rejeitado">
-                                <div className="flex items-center gap-2">
-                                  <XCircle className="w-4 h-4" />
-                                  Rejeitado
-                                </div>
-                              </SelectItem>
+                              {STATUS_OPTIONS.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  <div className="flex items-center gap-2">
+                                    {getStatusIcon(status)}
+                                    {status}
+                                  </div>
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </TableCell>
                         <TableCell>
                           <Select
-                            value={user.ativo || "Sim"}
+                            value={normalizeAtivo(user.ativo)}
                             onValueChange={(newAtivo) => handleAtivoChange(user.id, newAtivo)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                              <SelectItem value="Sim">
-                                <span className="text-green-600 font-semibold flex items-center gap-2">
-                                  ● Sim
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="Não">
-                                <span className="text-red-600 font-semibold flex items-center gap-2">
-                                  ● Não
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="Pausado">
-                                <span className="text-yellow-600 font-semibold flex items-center gap-2">
-                                  ● Pausado
-                                </span>
-                              </SelectItem>
+                              {ATIVO_OPTIONS.map((ativo) => (
+                                <SelectItem key={ativo} value={ativo}>
+                                  <span className={`font-semibold flex items-center gap-2 ${
+                                    ativo === "Sim" ? "text-green-600" : ativo === "Não" ? "text-red-600" : "text-yellow-600"
+                                  }`}>
+                                    ● {ativo}
+                                  </span>
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </TableCell>
