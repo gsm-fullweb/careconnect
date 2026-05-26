@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Briefcase, GraduationCap, Baby, Cigarette, Clock, BookOpen } from "lucide-react";
+import { Briefcase, GraduationCap, Baby, Clock, BookOpen } from "lucide-react";
 
 // ✅ Interface: ProfessionalDataSectionProps
 // 📌 Description: Defines the props for the ProfessionalDataSection component
@@ -76,22 +76,6 @@ export const ProfessionalDataSection: React.FC<ProfessionalDataSectionProps> = (
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Cigarette className="w-4 h-4" />
-              Fumante
-            </Label>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={isEditing ? editData.fumante : (dados?.fumante || false)}
-                onCheckedChange={(checked) => handleInputChange('fumante', checked)}
-                disabled={!isEditing}
-              />
-              <span className="text-sm text-gray-600">
-                {(isEditing ? editData.fumante : dados?.fumante) ? 'Sim' : 'Não'}
-              </span>
-            </div>
-          </div>
 
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">

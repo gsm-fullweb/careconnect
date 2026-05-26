@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Mail, Phone, Calendar, FileText, Users } from "lucide-react";
 
@@ -161,25 +160,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             ) : (
               <div className="p-3 bg-gray-50 rounded-lg">
                 <p className="text-gray-900">{candidatoData?.possui_filhos || 'Não informado'}</p>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Fumante</label>
-            {editMode ? (
-              <Select onValueChange={(value) => handleSelectChange('fumante', value)} value={editFormData.fumante || ''}>
-                <SelectTrigger className="border-gray-300 focus:border-careconnect-blue focus:ring-careconnect-blue">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Sim">Sim</SelectItem>
-                  <SelectItem value="Não">Não</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-gray-900">{candidatoData?.fumante || 'Não informado'}</p>
               </div>
             )}
           </div>

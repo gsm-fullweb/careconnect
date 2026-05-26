@@ -15,7 +15,6 @@ interface PersonalDataSectionProps {
   cpf: string;
   dataNascimento: string;
   possuiFilhos: boolean;
-  fumante: boolean;
   isEditing: boolean;
   saving: boolean;
   onInputChange: (field: string, value: string | boolean) => void;
@@ -35,7 +34,6 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
   cpf,
   dataNascimento,
   possuiFilhos,
-  fumante,
   isEditing,
   saving,
   onInputChange,
@@ -162,19 +160,6 @@ const PersonalDataSection: React.FC<PersonalDataSectionProps> = ({
                 <select
                   value={possuiFilhos ? 'true' : 'false'}
                   onChange={(e) => onInputChange('possui_filhos', e.target.value === 'true')}
-                  disabled={!isEditing}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-100"
-                >
-                  <option value="false">Não</option>
-                  <option value="true">Sim</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Fumante</label>
-                <select
-                  value={fumante ? 'true' : 'false'}
-                  onChange={(e) => onInputChange('fumante', e.target.value === 'true')}
                   disabled={!isEditing}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-100"
                 >

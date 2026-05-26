@@ -318,7 +318,6 @@ const PainelCuidador = () => {
             cpf={editFormData?.cpf || ''}
             dataNascimento={editFormData?.data_nascimento || ''}
             possuiFilhos={formatBooleanStr(editFormData?.possui_filhos)}
-            fumante={formatBooleanStr(editFormData?.fumante)}
             isEditing={editMode}
             saving={saving}
             onInputChange={(field, value) => handleInputChange(field, typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : value)}

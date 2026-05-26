@@ -52,7 +52,7 @@ const Header = () => {
         <div className="hidden lg:flex items-center space-x-3">
           
           <Button asChild size="sm" className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1]">
-            <Link to="/plans">Encontre um Cuidador</Link>
+            <Link to="/encontrar-cuidador">Encontre um Cuidador</Link>
           </Button>
           <Button asChild size="sm" className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white border border-white">
             <Link to="/pre-cadastro">Cadastrar como Cuidador</Link>
@@ -118,8 +118,8 @@ const Header = () => {
                 </Link>
               </Button>
               <Button asChild className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1] w-full">
-                <Link to="/plans" onClick={() => setMobileMenuOpen(false)}>
-                  Assinatura
+                <Link to="/encontrar-cuidador" onClick={() => setMobileMenuOpen(false)}>
+                  Encontre um Cuidador
                 </Link>
               </Button>
               <Button asChild className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white border border-white w-full">
@@ -136,10 +136,3 @@ const Header = () => {
 };
 
 export default Header;
-<Link to="/" className="flex items-center">
-  <img 
-    src="/images/logo-careconnect.png" 
-    alt="CareConnect Logo" 
-    className="w-8 h-8 md:w-10 md:h-10 object-contain"
-  />
-</Link>

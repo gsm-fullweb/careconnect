@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { getDashboardPathForUser } from "@/lib/authRole";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
 const LoginPage = () => {
@@ -27,17 +28,9 @@ const LoginPage = () => {
     const redirectByRole = async (u: typeof user) => {
         if (!u) return;
         // Verificar na tabela candidatos se é cuidador
-        const { data: candidato } = await supabase
-            .from("candidatos_cuidadores_rows")
-            .select("id")
-            .eq("email", u.email ?? "")
-            .maybeSingle();
+        const dashboardPath = await getDashboardPathForUser(u);
 
-        if (candidato) {
-            navigate("/painel-cuidador");
-        } else {
-            navigate("/client-dashboard");
-        }
+        navigate(dashboardPath);
     };
 
     if (authLoading) {

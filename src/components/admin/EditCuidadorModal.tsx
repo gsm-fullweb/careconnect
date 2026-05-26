@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeCity } from "@/lib/utils";
+import { formatCargoLabel, normalizeCity } from "@/lib/utils";
 import { Pencil, Save, X } from "lucide-react";
 
 interface EditCuidadorModalProps {
@@ -35,6 +35,15 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
         cidade: cuidador.cidade || "",
         cargo: cuidador.cargo || "",
         escolaridade: cuidador.escolaridade || "",
+        data_nascimento: cuidador.data_nascimento || "",
+        endereco: cuidador.endereco || "",
+        possui_experiencia: cuidador.possui_experiencia || "",
+        experiencia: cuidador.experiencia || "",
+        descricao_experiencia: cuidador.descricao_experiencia || "",
+        cursos: cuidador.cursos || "",
+        disponibilidade_horarios: cuidador.disponibilidade_horarios || "",
+        disponivel_dormir_local: cuidador.disponivel_dormir_local || "",
+        ativo: cuidador.ativo || "Sim",
       });
     }
   }, [cuidador]);
@@ -70,8 +79,17 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           telefone: formData.telefone,
           cep: formData.cep,
           cidade: normalizeCity(formData.cidade),
-          cargo: formData.cargo,
+          cargo: formatCargoLabel(formData.cargo),
           escolaridade: formData.escolaridade,
+          data_nascimento: formData.data_nascimento,
+          endereco: formData.endereco,
+          possui_experiencia: formData.possui_experiencia,
+          experiencia: formData.experiencia,
+          descricao_experiencia: formData.descricao_experiencia,
+          cursos: formData.cursos,
+          disponibilidade_horarios: formData.disponibilidade_horarios,
+          disponivel_dormir_local: formData.disponivel_dormir_local,
+          ativo: formData.ativo,
           ultima_atualizacao: new Date().toISOString()
         })
         .eq('id', cuidador.id)
@@ -134,6 +152,16 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
                 placeholder="Nome completo do cuidador"
                 className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
               />
+              <div className="grid gap-2 mt-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Data de Nascimento</label>
+                <Input
+                  type="date"
+                  name="data_nascimento"
+                  value={formData.data_nascimento || ''}
+                  onChange={handleChange}
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
+                />
+              </div>
             </div>
           </div>
 
@@ -196,6 +224,16 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
                 />
               </div>
             </div>
+            <div className="grid gap-2 mt-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Endereço Completo</label>
+              <Input
+                name="endereco"
+                value={formData.endereco || ''}
+                onChange={handleChange}
+                placeholder="Rua, número e bairro"
+                className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
+              />
+            </div>
           </div>
 
           {/* GRUPO 4: QUALIFICAÇÃO */}
@@ -225,6 +263,94 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
                   className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Possui Experiência?</label>
+                <select
+                  name="possui_experiencia"
+                  value={formData.possui_experiencia || ''}
+                  onChange={(e: any) => handleChange(e)}
+                  className="flex h-11 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm focus:border-careconnect-blue focus:ring-careconnect-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-careconnect-blue"
+                >
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <label className="text-xs font-medium text-gray-500 ml-1">Tempo de Experiência</label>
+                <Input
+                  name="experiencia"
+                  value={formData.experiencia || ''}
+                  onChange={handleChange}
+                  placeholder="Ex: 1 a 2 anos"
+                  className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl h-11"
+                />
+              </div>
+            </div>
+            <div className="grid gap-2 mt-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Descrição de Experiência</label>
+              <Textarea
+                name="descricao_experiencia"
+                value={formData.descricao_experiencia || ''}
+                onChange={handleChange}
+                placeholder="Descreva as experiências..."
+                className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl min-h-[80px]"
+              />
+            </div>
+            <div className="grid gap-2 mt-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Cursos Realizados</label>
+              <Textarea
+                name="cursos"
+                value={formData.cursos || ''}
+                onChange={handleChange}
+                placeholder="Cursos e especializações..."
+                className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl min-h-[80px]"
+              />
+            </div>
+            <div className="grid gap-2 mt-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Disponibilidade de Horários</label>
+              <Textarea
+                name="disponibilidade_horarios"
+                value={formData.disponibilidade_horarios || ''}
+                onChange={handleChange}
+                placeholder="Dias e horários..."
+                className="border-gray-200 focus:border-careconnect-blue focus:ring-careconnect-blue rounded-xl min-h-[80px]"
+              />
+            </div>
+            <div className="grid gap-2 mt-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Disponibilidade para Dormir?</label>
+              <select
+                name="disponivel_dormir_local"
+                value={formData.disponivel_dormir_local || ''}
+                onChange={(e: any) => handleChange(e)}
+                className="flex h-11 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm focus:border-careconnect-blue focus:ring-careconnect-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-careconnect-blue"
+              >
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+                <option value="A combinar">A combinar</option>
+              </select>
+            </div>
+          </div>
+
+          {/* GRUPO 5: VISIBILIDADE */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
+              Visibilidade (Marketplace)
+            </h3>
+            <div className="grid gap-2">
+              <label className="text-xs font-medium text-gray-500 ml-1">Status de Visibilidade</label>
+              <select
+                name="ativo"
+                value={formData.ativo || 'Sim'}
+                onChange={(e: any) => handleChange(e)}
+                className="flex h-11 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm focus:border-careconnect-blue focus:ring-careconnect-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-careconnect-blue font-semibold text-gray-800"
+              >
+                <option value="Sim">Sim (Ativo nas buscas)</option>
+                <option value="Não">Não (Bloqueado/Inativo)</option>
+                <option value="Pausado">Pausado</option>
+              </select>
             </div>
           </div>
         </div>

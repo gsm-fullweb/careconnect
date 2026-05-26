@@ -25,14 +25,19 @@ import {
   MapPin, Briefcase, Heart, GraduationCap, Lock, Mail, Phone, Calendar,
   Clock, FileText, Award
 } from "lucide-react";
-import { normalizeCity } from "@/lib/utils";
+import { CARGO_OPTIONS, normalizeCity } from "@/lib/utils";
 
 // ─── Schema de validação completo ───────────────────────────────────────────
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nome completo é necessário." }),
   email: z.string().email({ message: "Email inválido." }),
   whatsapp: z.string().min(10, { message: "Mínimo 10 dígitos." }),
-  password: z.string().min(6, { message: "Senha deve ter 6+ caracteres." }),
+  password: z.string()
+    .min(8, { message: "Senha deve ter 8+ caracteres." })
+    .regex(/[a-z]/, { message: "Inclua pelo menos uma letra minúscula." })
+    .regex(/[A-Z]/, { message: "Inclua pelo menos uma letra maiúscula." })
+    .regex(/[0-9]/, { message: "Inclua pelo menos um número." })
+    .regex(/[^A-Za-z0-9]/, { message: "Inclua pelo menos um caractere especial." }),
   birth_date: z.string().min(1, { message: "Data de nascimento é obrigatória." }),
   cep: z.string().min(8, { message: "CEP inválido." }),
   city: z.string().min(2, { message: "Cidade é necessária." }),
@@ -48,6 +53,39 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+const syncCaregiverWithChathook = async (caregiver: {
+  id?: number;
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  cep: string;
+  city: string;
+  address: string;
+  role: string;
+  experience: string;
+  availability: string;
+  status: string;
+}) => {
+  try {
+    const response = await fetch("/api/chathook-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "caregiver.created",
+        caregiver,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      console.warn("Cadastro salvo, mas o sync com Chathook falhou:", error || response.statusText);
+    }
+  } catch (error) {
+    console.warn("Cadastro salvo, mas o sync com Chathook falhou:", error);
+  }
+};
 
 const STEPS = [
   { id: "personal", title: "Quem é você?", icon: User },
@@ -74,7 +112,7 @@ export default function PreCadastro() {
       city: "",
       address: "",
       education: "Ensino Médio",
-      role: "Cuidador",
+      role: "Cuidador(a) de Idosos",
       experience_level: "Menos de 1 ano",
       experience_description: "",
       courses: "",
@@ -159,7 +197,7 @@ export default function PreCadastro() {
       }
 
       // 2. Insert into candidatos_cuidadores_rows (Sempre tenta inserir se chegou aqui)
-      const { error: dbError } = await supabase.from("candidatos_cuidadores_rows").insert({
+      const { data: caregiverRow, error: dbError } = await supabase.from("candidatos_cuidadores_rows").insert({
         nome: data.name,
         email: data.email,
         telefone: data.whatsapp,
@@ -184,7 +222,7 @@ export default function PreCadastro() {
         desconfortos_atividades: "Nenhum",
         descricao_experiencia: data.experience_description || "Verificar com o candidato",
         experiencia: data.experience_level || "Não detalhado"
-      });
+      }).select("id,email").single();
 
       if (dbError) {
         // Se já existe na tabela de candidatos mas não deu erro no auth, também consideramos sucesso
@@ -194,6 +232,23 @@ export default function PreCadastro() {
           return;
         }
         throw dbError;
+      }
+
+      if (caregiverRow?.id) {
+        await syncCaregiverWithChathook({
+          id: caregiverRow.id,
+          name: data.name,
+          email: caregiverRow.email || data.email,
+          password: data.password,
+          phone: data.whatsapp,
+          cep: data.cep,
+          city: normalizeCity(data.city),
+          address: data.address,
+          role: data.role,
+          experience: data.experience_level || "Não detalhado",
+          availability: data.availability,
+          status: "Em análise",
+        });
       }
 
       localStorage.setItem('fallback_user', JSON.stringify({ name: data.name, email: data.email }));
@@ -307,7 +362,7 @@ export default function PreCadastro() {
                           <FormControl>
                             <div className="relative">
                               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                              <Input type="password" placeholder="Mínimo 6 caracteres" className="pl-10 h-12" {...field} />
+                              <Input type="password" placeholder="8+ caracteres, maiúscula, número e símbolo" className="pl-10 h-12" {...field} />
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -369,10 +424,11 @@ export default function PreCadastro() {
                         <FormItem>
                           <FormLabel className="text-base">Como você se define profissionalmente?</FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                              <Input placeholder="Ex: Cuidador de Idosos" className="pl-10 h-12" {...field} />
-                            </div>
+                            <select className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" {...field}>
+                              {CARGO_OPTIONS.map((cargo) => (
+                                <option key={cargo.key} value={cargo.label}>{cargo.label}</option>
+                              ))}
+                            </select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -545,4 +601,3 @@ export default function PreCadastro() {
     </Layout>
   );
 }
-

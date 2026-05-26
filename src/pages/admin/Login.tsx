@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { getDashboardPathForUser } from "@/lib/authRole";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,25 +22,13 @@ const Login = () => {
       const isAuthenticated = localStorage.getItem("admin-token");
       if (isAuthenticated) {
         try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('user_role') // Removido 'type' temporariamente para evitar erro 400
-              .eq('id', user.id)
-              .maybeSingle();
-
-            if (profile) {
-              // Usa user_role como fallback para o redirecionamento
-              const role = profile.user_role;
-              if (role === 'admin') {
-                setShouldRedirect('/admin');
-              } else if (role === 'cuidador') {
-                setShouldRedirect('/painel-cuidador');
-              } else if (role === 'cliente') {
-                setShouldRedirect('/client-dashboard');
-              }
-            }
+          const { data, error } = await supabase.auth.getUser();
+          if (error) throw error;
+          
+          if (data?.user) {
+            setShouldRedirect(await getDashboardPathForUser(data.user));
+          } else {
+            localStorage.removeItem("admin-token");
           }
         } catch (error) {
           console.error('Error checking authentication:', error);
@@ -88,29 +77,12 @@ const Login = () => {
         // Store the session token
         localStorage.setItem("admin-token", data.session.access_token);
 
-        // Get user profile to determine redirect
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('user_role') // Selecionando apenas o que existe com certeza
-          .eq('id', data.user?.id)
-          .maybeSingle();
-
         toast({
           title: "Login bem-sucedido",
           description: "Bem-vindo ao CareConnect",
         });
 
-        // Redirecionamento baseado no user_role
-        const role = profile?.user_role;
-        if (role === 'admin') {
-          navigate("/admin");
-        } else if (role === 'cuidador') {
-          navigate("/painel-cuidador");
-        } else if (role === 'cliente') {
-          navigate("/client-dashboard");
-        } else {
-          navigate("/");
-        }
+        navigate(await getDashboardPathForUser(data.user));
       }
     } catch (error: any) {
       toast({

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, FileText, Edit, Save, X, CheckCircle, AlertCircle } from "lucide-react";
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { CARGO_OPTIONS, formatCargoLabel, getCanonicalCargoKey } from "@/lib/utils";
 
 // ✅ Interface: CategorySectionProps
 // 📌 Description: Defines the props for the CategorySection component
@@ -44,13 +45,14 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
   // 📤 Returns: boolean - true if section is complete
   const checkCompletion = () => {
     if (!cargo) return false;
+    const cargoKey = getCanonicalCargoKey(cargo);
     
-    switch (cargo) {
+    switch (cargoKey) {
       case 'enfermeiro':
-      case 'tecnico':
+      case 'tecnico_enfermagem':
         return !!(cargo && coren);
       case 'fisioterapeuta':
-      case 'terapeuta':
+      case 'terapeuta_ocupacional':
         return !!(cargo && crefito);
       case 'medico':
         return !!(cargo && crm);
@@ -77,7 +79,7 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
             <div className="text-left flex-1">
               <h3 className="font-semibold">Categoria Profissional</h3>
               <p className="text-sm text-gray-600">
-                {cargo ? `${cargo}${getRegistrationNumber()}` : 'Selecione sua categoria profissional'}
+                {cargo ? `${formatCargoLabel(cargo)}${getRegistrationNumber()}` : 'Selecione sua categoria profissional'}
               </p>
             </div>
             {checkCompletion() ? (
@@ -131,8 +133,8 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
                   Categoria Profissional *
                 </Label>
                 <Select 
-                  value={cargo} 
-                  onValueChange={(value) => onInputChange('cargo', value)}
+                  value={getCanonicalCargoKey(cargo)}
+                  onValueChange={(value) => onInputChange('cargo', formatCargoLabel(value))}
                   disabled={!isEditing}
                 >
                   <SelectTrigger className="transition-all duration-200">
@@ -149,7 +151,7 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
                 </Select>
               </div>
 
-              {(cargo === 'enfermeiro' || cargo === 'tecnico') && (
+              {(getCanonicalCargoKey(cargo) === 'enfermeiro' || getCanonicalCargoKey(cargo) === 'tecnico_enfermagem') && (
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                     <FileText className="w-4 h-4" />
@@ -166,7 +168,7 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
                 </div>
               )}
 
-              {(cargo === 'fisioterapeuta' || cargo === 'terapeuta') && (
+              {(getCanonicalCargoKey(cargo) === 'fisioterapeuta' || getCanonicalCargoKey(cargo) === 'terapeuta_ocupacional') && (
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                     <FileText className="w-4 h-4" />
@@ -183,7 +185,7 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
                 </div>
               )}
 
-              {cargo === 'medico' && (
+              {getCanonicalCargoKey(cargo) === 'medico' && (
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                     <FileText className="w-4 h-4" />
@@ -210,12 +212,12 @@ export const CategorySection: React.FC<CategorySectionProps> = ({
   // 📌 Description: Gets the appropriate registration number based on professional category
   // 📤 Returns: string - formatted registration number or empty string
   function getRegistrationNumber(): string {
-    switch (cargo) {
+    switch (getCanonicalCargoKey(cargo)) {
       case 'enfermeiro':
-      case 'tecnico':
+      case 'tecnico_enfermagem':
         return coren ? ` - COREN: ${coren}` : '';
       case 'fisioterapeuta':
-      case 'terapeuta':
+      case 'terapeuta_ocupacional':
         return crefito ? ` - CREFITO: ${crefito}` : '';
       case 'medico':
         return crm ? ` - CRM: ${crm}` : '';

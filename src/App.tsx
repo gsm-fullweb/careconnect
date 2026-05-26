@@ -21,6 +21,7 @@ import Obrigado from "./pages/Obrigado";
 import LoginPage from "./pages/Login";
 import ClientDashboard from "./pages/ClientDashboard";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
+import EncontrarCuidador from "./pages/EncontrarCuidador";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -63,6 +64,7 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/painel-cuidador" element={<CaregiverDashboard />} />
             <Route path="/client-dashboard" element={<ClientDashboard />} />
+            <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<Login />} />

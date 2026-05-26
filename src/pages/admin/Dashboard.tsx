@@ -15,63 +15,71 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchTotals = async () => {
-      const [{ count: candidatos }, { count: testimonials }, { count: partners }] = await Promise.all([
-        supabase.from("candidatos_cuidadores_rows").select("*", { count: "exact", head: true }),
-        supabase.from("testimonials").select("*", { count: "exact", head: true }),
-        supabase.from("partners").select("*", { count: "exact", head: true }),
-      ]);
-      setTotals({
-        candidatos: candidatos ?? 0,
-        testimonials: testimonials ?? 0,
-        partners: partners ?? 0,
-      });
+      try {
+        const [{ count: candidatos }, { count: testimonials }, { count: partners }] = await Promise.all([
+          supabase.from("candidatos_cuidadores_rows").select("id", { count: "exact", head: true }),
+          supabase.from("testimonials").select("id", { count: "exact", head: true }),
+          supabase.from("partners").select("id", { count: "exact", head: true }),
+        ]);
+        setTotals({
+          candidatos: candidatos ?? 0,
+          testimonials: testimonials ?? 0,
+          partners: partners ?? 0,
+        });
+      } catch (err) {
+        console.error("Erro ao buscar totais do painel:", err);
+      }
     };
 
     const fetchRecent = async () => {
-      const [candidatos, testimonials, partners] = await Promise.all([
-        supabase.from("candidatos_cuidadores_rows").select("id, nome, data_cadastro").order("data_cadastro", { ascending: false }).limit(3),
-        supabase.from("testimonials").select("id, name, created_at").order("created_at", { ascending: false }).limit(3),
-        supabase.from("partners").select("id, name, created_at").order("created_at", { ascending: false }).limit(3),
-      ]);
+      try {
+        const [candidatos, testimonials, partners] = await Promise.all([
+          supabase.from("candidatos_cuidadores_rows").select("id, nome, data_cadastro").order("data_cadastro", { ascending: false }).limit(3),
+          supabase.from("testimonials").select("id, name, created_at").order("created_at", { ascending: false }).limit(3),
+          supabase.from("partners").select("id, name, created_at").order("created_at", { ascending: false }).limit(3),
+        ]);
 
-      const activities: any[] = [];
+        const activities: any[] = [];
 
-      if (candidatos.data) {
-        candidatos.data.forEach((c: any) =>
-          activities.push({
-            type: "Novo Candidato",
-            details: c.nome,
-            time: c.data_cadastro,
-            icon: <User className="w-4 h-4" />,
-            created_at: c.data_cadastro,
-          })
-        );
-      }
-      if (testimonials.data) {
-        testimonials.data.forEach((t: any) =>
-          activities.push({
-            type: "Depoimento",
-            details: t.name,
-            time: t.created_at,
-            icon: <MessageSquare className="w-4 h-4" />,
-            created_at: t.created_at,
-          })
-        );
-      }
-      if (partners.data) {
-        partners.data.forEach((p: any) =>
-          activities.push({
-            type: "Parceiro",
-            details: p.name,
-            time: p.created_at,
-            icon: <Users className="w-4 h-4" />,
-            created_at: p.created_at,
-          })
-        );
-      }
+        if (candidatos.data) {
+          candidatos.data.forEach((c: any) =>
+            activities.push({
+              type: "Novo Candidato",
+              details: c.nome,
+              time: c.data_cadastro,
+              icon: <User className="w-4 h-4" />,
+              created_at: c.data_cadastro,
+            })
+          );
+        }
+        if (testimonials.data) {
+          testimonials.data.forEach((t: any) =>
+            activities.push({
+              type: "Depoimento",
+              details: t.name,
+              time: t.created_at,
+              icon: <MessageSquare className="w-4 h-4" />,
+              created_at: t.created_at,
+            })
+          );
+        }
+        if (partners.data) {
+          partners.data.forEach((p: any) =>
+            activities.push({
+              type: "Parceiro",
+              details: p.name,
+              time: p.created_at,
+              icon: <Users className="w-4 h-4" />,
+              created_at: p.created_at,
+            })
+          );
+        }
 
-      activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-      setRecent(activities.slice(0, 6));
+        activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setRecent(activities.slice(0, 6));
+      } catch (err) {
+        console.error("Erro ao buscar atividades recentes:", err);
+      }
     };
 
     fetchTotals();

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { formatDate, normalizeCity } from "@/lib/utils";
+import React, { useState, useEffect, useRef } from "react";
+import { PUBLIC_CAREGIVER_FIELDS, formatCargoLabel, formatDate, formatPhoneDisplay, getCanonicalCargoKey, getWhatsAppHref, normalizeCity } from "@/lib/utils";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, MessageSquare, User, Star, MapPin, Phone, LogOut, Heart, Filter, Pencil } from "lucide-react";
+import { Search, MessageSquare, User, Star, MapPin, Phone, LogOut, Heart, Filter } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EditCuidadorModal } from "@/components/admin/EditCuidadorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { isCaregiverUser } from "@/lib/authRole";
 import { useNavigate, Navigate } from 'react-router-dom';
 
 const ClienteDashboard = () => {
@@ -22,6 +23,8 @@ const ClienteDashboard = () => {
   // Estados de Perfil
   const [userProfile, setUserProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [shouldRedirectToCaregiver, setShouldRedirectToCaregiver] = useState(false);
+  const initialLoadUserIdRef = useRef<string | null>(null);
 
   // Estados principais (para Clientes)
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,45 +52,63 @@ const ClienteDashboard = () => {
   });
   const [meusDepoimentos, setMeusDepoimentos] = useState<any[]>([]);
 
+  const normalizeFilterText = (text: string | null | undefined) =>
+    (text || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, " ");
+
   // Carregar dados iniciais e Perfil
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (user) {
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-          
-          setUserProfile(profile);
+    if (authLoading) return;
 
-          // Se for cuidador, buscar dados na tabela de candidatos
-          if (profile?.user_role === 'cuidador' || profile?.type === 'cuidador') {
-            const { data: candidato } = await supabase
-              .from('candidatos_cuidadores_rows')
-              .select('*')
-              .eq('email', user.email)
-              .maybeSingle();
-            setCandidatoData(candidato);
-          }
-        } catch (error) {
-          console.error("Erro ao carregar perfil:", error);
-        } finally {
-          setProfileLoading(false);
+    if (!user) {
+      initialLoadUserIdRef.current = null;
+      setProfileLoading(false);
+      return;
+    }
+
+    if (initialLoadUserIdRef.current === user.id) return;
+    initialLoadUserIdRef.current = user.id;
+
+    const fetchProfile = async () => {
+      try {
+        const caregiver = await isCaregiverUser(user);
+        setShouldRedirectToCaregiver(caregiver);
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        setUserProfile(profile);
+
+        // Se for cuidador, buscar dados na tabela de candidatos
+        if (caregiver) {
+          const { data: candidato } = await supabase
+            .from('candidatos_cuidadores_rows')
+            .select('*')
+            .ilike('email', user.email?.trim().toLowerCase() ?? '')
+            .maybeSingle();
+          setCandidatoData(candidato);
         }
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
+      } finally {
+        setProfileLoading(false);
       }
     };
 
-    if (!authLoading && user) {
-      fetchProfile();
-      loadMeusDepoimentos();
-      loadFavoritos();
-      loadFilterOptions();
-    } else if (!authLoading && !user) {
-      setProfileLoading(false);
-    }
-  }, [user, authLoading]);
+    fetchProfile();
+    loadMeusDepoimentos();
+    loadFavoritos();
+    loadFilterOptions();
+    // Executa uma vez ao entrar na pagina. Depois disso, so pelo botao/Enter de busca.
+    handleBuscarCuidadores();
+  }, [user?.id, authLoading]);
 
   const loadFilterOptions = async () => {
     try {
@@ -96,6 +117,7 @@ const ClienteDashboard = () => {
         .from('candidatos_cuidadores_rows')
         .select('cidade')
         .eq('status_candidatura', 'Aprovado')
+        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null')
         .not('cidade', 'is', null);
 
       // Carregar cargos únicos
@@ -103,13 +125,18 @@ const ClienteDashboard = () => {
         .from('candidatos_cuidadores_rows')
         .select('cargo')
         .eq('status_candidatura', 'Aprovado')
+        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null')
         .not('cargo', 'is', null);
 
-      const uniqueCities = [...new Set(cidadesData?.map(item => normalizeCity(item.cidade)).filter(Boolean))].sort();
-      const uniqueCargos = [...new Set(cargosData?.map(item => item.cargo).filter(Boolean))].sort();
+      const uniqueCities = [
+        ...new Set(cidadesData?.map(item => normalizeCity(item.cidade)).filter(Boolean))
+      ].sort();
+      const uniqueCargoKeys = [
+        ...new Set(cargosData?.map(item => getCanonicalCargoKey(item.cargo)).filter(Boolean))
+      ].sort((a, b) => formatCargoLabel(a).localeCompare(formatCargoLabel(b), "pt-BR"));
 
       setAvailableCities(uniqueCities);
-      setAvailableCargos(uniqueCargos);
+      setAvailableCargos(uniqueCargoKeys);
     } catch (error) {
       console.error('Erro ao carregar opções de filtro:', error);
     }
@@ -148,22 +175,20 @@ const ClienteDashboard = () => {
 
       let query = supabase
         .from('candidatos_cuidadores_rows')
-        .select('*')
-        .eq('status_candidatura', 'Aprovado');
+        .select(PUBLIC_CAREGIVER_FIELDS)
+        .eq('status_candidatura', 'Aprovado')
+        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null');
 
-      // Filtro nome
+      // Filtro nome ou ID (já que o nome real é ocultado)
       if (termoNormalizado) {
-        query = query.ilike('nome', `%${termoNormalizado}%`);
-      }
-
-      // Filtro cidade (desconsidera se "__all__")
-      if (selectedCity && selectedCity !== "__all__") {
-        query = query.ilike('cidade', selectedCity);
-      }
-
-      // Filtro cargo (desconsidera se "__all__")
-      if (selectedCargo && selectedCargo !== "__all__") {
-        query = query.eq('cargo', selectedCargo);
+        const matchId = termoNormalizado.match(/\d+/);
+        if ((termoNormalizado.includes('cuidador') || termoNormalizado.includes('#')) && matchId) {
+          query = query.eq('id', Number(matchId[0]));
+        } else if (!isNaN(Number(termoNormalizado)) && termoNormalizado.trim() !== '') {
+          query = query.eq('id', Number(termoNormalizado));
+        } else {
+          query = query.ilike('nome', `%${termoNormalizado}%`);
+        }
       }
 
       const { data, error } = await query
@@ -175,18 +200,32 @@ const ClienteDashboard = () => {
         throw error;
       }
 
+      const cuidadoresFiltrados = (data || []).filter((cuidador) => {
+        const matchesCity =
+          !selectedCity ||
+          selectedCity === "__all__" ||
+          normalizeFilterText(cuidador.cidade) === normalizeFilterText(selectedCity);
+
+        const matchesCargo =
+          !selectedCargo ||
+          selectedCargo === "__all__" ||
+          getCanonicalCargoKey(cuidador.cargo) === selectedCargo;
+
+        return matchesCity && matchesCargo;
+      });
+
       // Mapear os dados para o formato da tabela
-      const cuidadoresFormatados = (data || []).map(cuidador => {
+      const cuidadoresFormatados = cuidadoresFiltrados.map(cuidador => {
         return {
           id: cuidador.id,
-          nome: cuidador.nome || 'Nome não informado',
+          nome: cuidador.nome || `Cuidador #${cuidador.id}`,
+          nomePublico: cuidador.nome || `Cuidador #${cuidador.id}`,
           cidade: cuidador.cidade || 'Não informado',
-          telefone: cuidador.telefone || 'Não informado',
-          cargo: cuidador.cargo || 'Cuidador',
+          cargo: formatCargoLabel(cuidador.cargo),
           experiencia: cuidador.experiencia || 'Não informado',
-          email: cuidador.email,
           disponibilidade: cuidador.disponibilidade_horarios || 'Não informado',
-          descricao: cuidador.descricao_experiencia || 'Profissional experiente'
+          descricao: cuidador.descricao_experiencia || 'Profissional experiente',
+          telefone: cuidador.telefone || ''
         };
       });
 
@@ -194,8 +233,8 @@ const ClienteDashboard = () => {
 
       const filtrosAplicados = [
         termoNormalizado && `nome: "${termoNormalizado}"`,
-        selectedCity && `cidade: "${selectedCity}"`,
-        selectedCargo && `cargo: "${selectedCargo}"`
+        selectedCity !== "__all__" && `cidade: "${selectedCity}"`,
+        selectedCargo !== "__all__" && `cargo: "${formatCargoLabel(selectedCargo)}"`
       ].filter(Boolean).join(', ');
 
       toast({
@@ -229,31 +268,86 @@ const ClienteDashboard = () => {
     });
   };
 
-  const handleWhatsApp = (telefone: string, nome: string) => {
-    if (!telefone || telefone === 'Não informado') {
+  const handleDemonstrarInteresse = async (cuidador: any) => {
+    if (!user) {
       toast({
-        title: "Telefone não disponível",
-        description: "Este cuidador não possui telefone cadastrado.",
+        title: "Atenção",
+        description: "Você precisa estar logado para demonstrar interesse.",
         variant: "destructive"
       });
       return;
     }
+    
+    setLoading(true);
+    try {
+      const email = user.email;
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'Cliente Logado';
+      const whatsapp = user.user_metadata?.phone || user.user_metadata?.whatsapp || '';
+      
+      const { data: customerData, error: fetchError } = await supabase
+        .from('customer')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle();
+        
+      if (fetchError) throw fetchError;
+      
+      const dataHora = new Date().toLocaleString('pt-BR');
+      const novaObservacao = `[${dataHora}] Demonstrou interesse no cuidador ${cuidador.nomePublico || `ID ${cuidador.id}`}. WhatsApp liberado ao cliente: ${formatPhoneDisplay(cuidador.telefone)}.`;
+      
+      if (customerData) {
+        const obsAtual = customerData.observations ? `${customerData.observations}\n${novaObservacao}` : novaObservacao;
+        
+        const { error: updateError } = await supabase
+          .from('customer')
+          .update({
+            observations: obsAtual,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', customerData.id);
+          
+        if (updateError) throw updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('customer')
+          .insert({
+            name: name,
+            email: email,
+            whatsapp: whatsapp || 'Não informado',
+            city: cuidador.cidade || 'Não informada',
+            observations: novaObservacao,
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+        if (insertError) throw insertError;
+      }
+      
+      toast({
+        title: "WhatsApp liberado!",
+        description: `Voce ja pode contatar ${cuidador.nomePublico} pelo WhatsApp.`,
+      });
 
-    // Limpar o telefone (remover caracteres não numéricos)
-    const telefoneClean = telefone.replace(/\D/g, '');
+      const whatsappHref = getWhatsAppHref(
+        cuidador.telefone,
+        `Ola, encontrei seu perfil na CareConnect e tenho interesse em conversar sobre cuidados.`
+      );
 
-    // Verificar se o telefone tem o formato correto
-    let whatsappNumber = telefoneClean;
-
-    // Se não começar com 55 (código do Brasil), adicionar
-    if (!whatsappNumber.startsWith('55')) {
-      whatsappNumber = '55' + whatsappNumber;
+      if (whatsappHref) {
+        window.open(whatsappHref, '_blank', 'noopener,noreferrer');
+      }
+      
+    } catch (error) {
+      console.error('Erro ao registrar interesse:', error);
+      toast({
+        title: "Erro ao registrar interesse",
+        description: "Não foi possível registrar seu interesse no momento. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-
-    const mensagem = `Olá ${nome}, encontrei seu perfil na plataforma CareConnect e gostaria de conversar sobre serviços de cuidado.`;
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensagem)}`;
-
-    window.open(url, '_blank');
   };
 
   const toggleFavorito = async (cuidadorId: string) => {
@@ -300,12 +394,12 @@ const ClienteDashboard = () => {
     setNovoDepoimento({
       ...novoDepoimento,
       cuidador_id: cuidador.id,
-      cuidador_nome: cuidador.nome
+      cuidador_nome: cuidador.nomePublico
     });
 
     toast({
       title: "Cuidador selecionado",
-      description: `${cuidador.nome} foi selecionado para avaliação.`,
+      description: `${cuidador.nomePublico} foi selecionado para avaliação.`,
     });
   };
 
@@ -395,7 +489,12 @@ const ClienteDashboard = () => {
     );
   }
 
-  const isCaregiver = userProfile?.user_role === 'cuidador' || userProfile?.type === 'cuidador';
+  // Redireciona cuidadores diretamente para o painel de cuidador
+  if (shouldRedirectToCaregiver) {
+    return <Navigate to="/painel-cuidador" replace />;
+  }
+
+  const isCaregiver = false;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -595,7 +694,7 @@ const ClienteDashboard = () => {
                       <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                         <SelectItem value="__all__">Todos os cargos</SelectItem>
                         {availableCargos.map((cargo) => (
-                          <SelectItem key={cargo} value={cargo}>{cargo}</SelectItem>
+                          <SelectItem key={cargo} value={cargo}>{formatCargoLabel(cargo)}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -631,6 +730,9 @@ const ClienteDashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Cuidadores Encontrados ({cuidadoresEncontrados.length})</CardTitle>
+                    <p className="text-sm text-gray-500">
+                      Exibimos apenas dados parciais. Ao demonstrar interesse, liberamos somente o WhatsApp do cuidador.
+                    </p>
                   </CardHeader>
                   <CardContent>
                     {!buscaRealizada ? (
@@ -652,7 +754,7 @@ const ClienteDashboard = () => {
                             <TableRow>
                               <TableHead>Cuidador</TableHead>
                               <TableHead>Cidade</TableHead>
-                              <TableHead>Telefone</TableHead>
+                              <TableHead>Disponibilidade</TableHead>
                               <TableHead className="text-center">Ações</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -661,7 +763,7 @@ const ClienteDashboard = () => {
                               <TableRow key={cuidador.id} className="hover:bg-gray-50">
                                 <TableCell>
                                   <div>
-                                    <p className="font-medium">{cuidador.nome}</p>
+                                    <p className="font-medium text-gray-900">{cuidador.nomePublico}</p>
                                     <p className="text-sm text-gray-600">{cuidador.cargo}</p>
                                   </div>
                                 </TableCell>
@@ -672,7 +774,7 @@ const ClienteDashboard = () => {
                                   </span>
                                 </TableCell>
                                 <TableCell>
-                                  <span className="font-mono text-sm">{cuidador.telefone}</span>
+                                  <span className="text-sm text-gray-700">{cuidador.disponibilidade}</span>
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex gap-2 justify-center">
@@ -680,41 +782,32 @@ const ClienteDashboard = () => {
                                       size="sm"
                                       variant={favoritos.includes(cuidador.id) ? "default" : "outline"}
                                       onClick={() => toggleFavorito(cuidador.id)}
-                                      className="px-2"
+                                      className="px-2 animate-hover"
+                                      title={favoritos.includes(cuidador.id) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                     >
                                       <Heart className={`w-4 h-4 ${favoritos.includes(cuidador.id) ? 'fill-red-500 text-red-500' : ''}`} />
                                     </Button>
-
+ 
                                     <Button
                                       size="sm"
                                       variant="outline"
                                       onClick={() => handleSelecionarCuidador(cuidador)}
+                                      className="animate-hover"
                                     >
-                                      <Star className="w-4 h-4 mr-1" />
+                                      <Star className="w-4 h-4 mr-1 text-yellow-500 fill-yellow-500" />
                                       Avaliar
                                     </Button>
-
-                                      <Button
-                                        size="sm"
-                                        className="bg-green-600 hover:bg-green-700"
-                                        onClick={() => handleWhatsApp(cuidador.telefone, cuidador.nome)}
-                                      >
-                                        <Phone className="w-4 h-4 mr-1" />
-                                        WhatsApp
-                                      </Button>
-
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                          setCuidadorParaEditar(cuidador);
-                                          setIsEditModalOpen(true);
-                                        }}
-                                        className="px-2 border-careconnect-blue text-careconnect-blue hover:bg-blue-50"
-                                      >
-                                        <Pencil className="w-4 h-4" />
-                                      </Button>
-                                    </div>
+ 
+                                    <Button
+                                      size="sm"
+                                      className="bg-purple-600 hover:bg-purple-700 text-white font-medium transition-all duration-300 shadow-sm hover:shadow animate-hover"
+                                      onClick={() => handleDemonstrarInteresse(cuidador)}
+                                      disabled={loading}
+                                    >
+                                      <Phone className="w-4 h-4 mr-1" />
+                                      WhatsApp
+                                    </Button>
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -744,7 +837,7 @@ const ClienteDashboard = () => {
                     ) : (
                       <form onSubmit={handleSubmitDepoimento} className="space-y-4">
                         <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                          <p className="font-medium text-blue-900">{cuidadorSelecionado.nome}</p>
+                          <p className="font-medium text-blue-900">{cuidadorSelecionado.nomePublico}</p>
                           <p className="text-sm text-blue-700">{cuidadorSelecionado.cidade}</p>
                         </div>
 

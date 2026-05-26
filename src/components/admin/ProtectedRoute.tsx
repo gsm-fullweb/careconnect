@@ -2,25 +2,42 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminUser } from "@/lib/authRole";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => {
+    // Optimistically assume authenticated if token exists in localStorage
+    // to bypass the loading spinner and render the dashboard immediately.
+    // The background validation will securely confirm or redirect.
+    return localStorage.getItem("admin-token") ? true : null;
+  });
   const location = useLocation();
 
   useEffect(() => {
     // Check if user is logged in with Supabase
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      
-      if (data.session) {
-        setIsAuthenticated(true);
-        // Also update local storage for compatibility with existing code
-        localStorage.setItem("admin-token", data.session.access_token);
-      } else {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (data?.session) {
+          const isAdmin = await isAdminUser(data.session.user);
+          setIsAuthenticated(isAdmin);
+          if (isAdmin) {
+            localStorage.setItem("admin-token", data.session.access_token);
+          } else {
+            localStorage.removeItem("admin-token");
+          }
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem("admin-token");
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
         setIsAuthenticated(false);
         localStorage.removeItem("admin-token");
       }
@@ -30,11 +47,22 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session) {
-          setIsAuthenticated(true);
-          localStorage.setItem("admin-token", session.access_token);
-        } else {
+      async (event, session) => {
+        try {
+          if (session) {
+            const isAdmin = await isAdminUser(session.user);
+            setIsAuthenticated(isAdmin);
+            if (isAdmin) {
+              localStorage.setItem("admin-token", session.access_token);
+            } else {
+              localStorage.removeItem("admin-token");
+            }
+          } else {
+            setIsAuthenticated(false);
+            localStorage.removeItem("admin-token");
+          }
+        } catch (err) {
+          console.error("Auth state change error:", err);
           setIsAuthenticated(false);
           localStorage.removeItem("admin-token");
         }

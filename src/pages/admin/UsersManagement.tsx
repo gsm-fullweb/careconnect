@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatDate, normalizeCity } from "@/lib/utils";
+import { CARGO_OPTIONS, formatCargoLabel, formatDate, getCanonicalCargoKey, normalizeCity } from "@/lib/utils";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,7 @@ type CandidatoCuidador = {
   coren: string | null;
   crefito: string | null;
   crm: string | null;
+  ativo?: string | null;
 };
 
 const UsersManagement = () => {
@@ -84,7 +85,7 @@ const UsersManagement = () => {
           fumante, possui_filhos, escolaridade, cursos, possui_experiencia, descricao_experiencia,
           disponibilidade_horarios, disponivel_dormir_local, referencias, referencia_1, referencia_2,
           referencia_3, perfil_profissional, ultima_atualizacao, cidade, endereco, cep, cpf, RG,
-          estado, coren, crefito, crm, experiencia, descricao
+          estado, coren, crefito, crm, experiencia, descricao, ativo
         `)
         .order('id', { ascending: false });
       
@@ -142,13 +143,48 @@ const UsersManagement = () => {
     }
   };
 
+  const handleAtivoChange = async (userId: number, newAtivo: string) => {
+    try {
+      const { error } = await supabase
+        .from('candidatos_cuidadores_rows')
+        .update({ 
+          ativo: newAtivo,
+          ultima_atualizacao: new Date().toISOString()
+        })
+        .eq('id', userId);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Atualiza o estado local
+      setUsers(currentUsers =>
+        currentUsers.map(user =>
+          user.id === userId ? { ...user, ativo: newAtivo } : user
+        )
+      );
+      
+      toast({
+        title: "Visibilidade atualizada",
+        description: `Visibilidade do cuidador alterada para "${newAtivo}" com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar visibilidade:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar a visibilidade do cuidador. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
       user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.cidade?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCargo = cargoFilter === "all" || user.cargo === cargoFilter;
+    const matchesCargo = cargoFilter === "all" || getCanonicalCargoKey(user.cargo) === cargoFilter;
     const matchesStatus = statusFilter === "all" || user.status_candidatura === statusFilter;
     
     return matchesSearch && matchesCargo && matchesStatus;
@@ -205,7 +241,7 @@ const UsersManagement = () => {
     telefone: "",
     cidade: "",
     cep: "",
-    cargo: "cuidador",
+    cargo: "Cuidador(a) de Idosos",
     endereco: "",
     status_candidatura: "Em análise"
   });
@@ -255,7 +291,7 @@ const UsersManagement = () => {
         telefone: "",
         cidade: "",
         cep: "",
-        cargo: "cuidador",
+        cargo: "Cuidador(a) de Idosos",
         endereco: "",
         status_candidatura: "Em análise"
       });
@@ -293,8 +329,8 @@ const UsersManagement = () => {
   };
 
   const cargoOptions = Array.from(
-    new Set(users.filter(user => user.cargo).map(user => user.cargo))
-  );
+    new Set(users.map(user => getCanonicalCargoKey(user.cargo)).filter(Boolean))
+  ).sort((a, b) => formatCargoLabel(a).localeCompare(formatCargoLabel(b), "pt-BR"));
 
   const statusOptions = Array.from(
     new Set(users.map(user => user.status_candidatura))
@@ -407,8 +443,8 @@ const UsersManagement = () => {
                   onChange={(e) => setCargoFilter(e.target.value)}
                 >
                   <option value="all">Todos os Cargos</option>
-                  {cargoOptions.map((cargo, index) => (
-                    cargo && <option key={index} value={cargo}>{cargo}</option>
+                  {cargoOptions.map((cargo) => (
+                    <option key={cargo} value={cargo}>{formatCargoLabel(cargo)}</option>
                   ))}
                 </select>
               </div>
@@ -482,6 +518,7 @@ const UsersManagement = () => {
                     <TableHead className="font-semibold">Qualificação</TableHead>
                     <TableHead className="font-semibold">Disponibilidade</TableHead>
                     <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Visibilidade</TableHead>
                     <TableHead className="font-semibold">Cadastro</TableHead>
                     <TableHead className="font-semibold text-center">Ações</TableHead>
                   </TableRow>
@@ -489,7 +526,7 @@ const UsersManagement = () => {
                 <TableBody>
                   {filteredUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="h-32 text-center">
+                      <TableCell colSpan={9} className="h-32 text-center">
                         <div className="flex flex-col items-center justify-center text-gray-500">
                           <Users className="w-12 h-12 mb-2 opacity-50" />
                           <p className="font-medium">Nenhum candidato encontrado</p>
@@ -505,7 +542,7 @@ const UsersManagement = () => {
                             <p className="font-medium text-gray-900">{user.nome}</p>
                             {user.cargo && (
                               <Badge variant="outline" className="text-xs">
-                                {user.cargo}
+                                {formatCargoLabel(user.cargo)}
                               </Badge>
                             )}
                           </div>
@@ -561,6 +598,33 @@ const UsersManagement = () => {
                                   <XCircle className="w-4 h-4" />
                                   Rejeitado
                                 </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={user.ativo || "Sim"}
+                            onValueChange={(newAtivo) => handleAtivoChange(user.id, newAtivo)}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                              <SelectItem value="Sim">
+                                <span className="text-green-600 font-semibold flex items-center gap-2">
+                                  ● Sim
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="Não">
+                                <span className="text-red-600 font-semibold flex items-center gap-2">
+                                  ● Não
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="Pausado">
+                                <span className="text-yellow-600 font-semibold flex items-center gap-2">
+                                  ● Pausado
+                                </span>
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -718,10 +782,9 @@ const UsersManagement = () => {
                       value={newCandidate.cargo}
                       onChange={(e) => setNewCandidate({...newCandidate, cargo: e.target.value})}
                     >
-                      <option value="cuidador">Cuidador</option>
-                      <option value="enfermeiro">Enfermeiro</option>
-                      <option value="tecnico_enfermagem">Técnico de Enfermagem</option>
-                      <option value="fisioterapeuta">Fisioterapeuta</option>
+                      {CARGO_OPTIONS.map((cargo) => (
+                        <option key={cargo.key} value={cargo.label}>{cargo.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>

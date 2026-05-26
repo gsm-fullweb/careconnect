@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Briefcase, GraduationCap, Award } from "lucide-react";
+import { CARGO_OPTIONS, formatCargoLabel, getCanonicalCargoKey } from "@/lib/utils";
 
 interface ProfessionalSectionProps {
   editMode: boolean;
@@ -24,16 +25,17 @@ export const ProfessionalSection: React.FC<ProfessionalSectionProps> = ({
   // Função para determinar quais registros profissionais mostrar
   const getRelevantRegistrations = (cargo: string) => {
     const registrations = [];
+    const cargoKey = getCanonicalCargoKey(cargo);
     
-    if (cargo === "Técnico(a) de Enfermagem" || cargo === "Enfermeiro(a)") {
+    if (cargoKey === "tecnico_enfermagem" || cargoKey === "enfermeiro") {
       registrations.push("coren");
     }
     
-    if (cargo === "Fisioterapeuta" || cargo === "Terapeuta Ocupacional") {
+    if (cargoKey === "fisioterapeuta" || cargoKey === "terapeuta_ocupacional") {
       registrations.push("crefito");
     }
     
-    if (cargo === "Médico(a)") {
+    if (cargoKey === "medico") {
       registrations.push("crm");
     }
     
@@ -105,21 +107,18 @@ export const ProfessionalSection: React.FC<ProfessionalSectionProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Categoria Profissional</label>
               {editMode ? (
-                <Select onValueChange={(value) => handleSelectChange('cargo', value)} value={editFormData.cargo || ''}>
+                <Select onValueChange={(value) => handleSelectChange('cargo', value)} value={formatCargoLabel(editFormData.cargo)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Cuidador(a) de Idosos">Cuidador(a) de Idosos</SelectItem>
-                    <SelectItem value="Técnico(a) de Enfermagem">Técnico(a) de Enfermagem</SelectItem>
-                    <SelectItem value="Enfermeiro(a)">Enfermeiro(a)</SelectItem>
-                    <SelectItem value="Fisioterapeuta">Fisioterapeuta</SelectItem>
-                    <SelectItem value="Terapeuta Ocupacional">Terapeuta Ocupacional</SelectItem>
-                    <SelectItem value="Médico(a)">Médico(a)</SelectItem>
+                    {CARGO_OPTIONS.map((cargo) => (
+                      <SelectItem key={cargo.key} value={cargo.label}>{cargo.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="text-gray-900">{candidatoData?.cargo || 'Não informado'}</p>
+                <p className="text-gray-900">{formatCargoLabel(candidatoData?.cargo) || 'Não informado'}</p>
               )}
             </div>
 
