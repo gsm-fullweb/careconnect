@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { PUBLIC_CAREGIVER_FIELDS, formatCargoLabel, formatDate, formatPhoneDisplay, getCanonicalCargoKey, getWhatsAppHref, normalizeCity } from "@/lib/utils";
+import { formatCargoLabel, formatDate, formatPhoneDisplay, getCanonicalCargoKey, getWhatsAppHref, normalizeCity } from "@/lib/utils";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,16 +20,52 @@ const CLIENT_SEARCH_STORAGE_KEY = "careconnect_client_search";
 type ClientSearchFilters = {
   cidade: string;
   disponibilidade: string;
+  hasPrefill: boolean;
 };
+
+const CLIENT_CAREGIVER_FIELDS = `
+  id, nome, cidade, cargo, experiencia, disponibilidade_horarios,
+  descricao_experiencia, telefone, status_candidatura, ativo
+`;
+
+const normalizeStatus = (status?: string | null) => {
+  const normalized = (status || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+  if (normalized === "aprovado") return "Aprovado";
+  if (normalized === "rejeitado") return "Rejeitado";
+  return "Em analise";
+};
+
+const normalizeAtivo = (ativo?: string | null) => {
+  const normalized = (ativo || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+  if (normalized === "false" || normalized === "nao" || normalized === "não") return "Nao";
+  if (normalized === "pausado") return "Pausado";
+  return "Sim";
+};
+
+const isVisibleCaregiver = (caregiver: { status_candidatura?: string | null; ativo?: string | null }) =>
+  normalizeStatus(caregiver.status_candidatura) === "Aprovado" && normalizeAtivo(caregiver.ativo) === "Sim";
 
 const getInitialClientSearchFilters = (search: string): ClientSearchFilters => {
   const params = new URLSearchParams(search);
   const filters: ClientSearchFilters = {
     cidade: params.get("cidade") || "",
     disponibilidade: params.get("disponibilidade") || "",
+    hasPrefill: false,
   };
 
-  if (filters.cidade || filters.disponibilidade || typeof window === "undefined") {
+  filters.hasPrefill = !!(filters.cidade || filters.disponibilidade);
+
+  if (filters.hasPrefill || typeof window === "undefined") {
     return filters;
   }
 
@@ -37,9 +73,13 @@ const getInitialClientSearchFilters = (search: string): ClientSearchFilters => {
     const stored = localStorage.getItem(CLIENT_SEARCH_STORAGE_KEY);
     if (!stored) return filters;
     const parsed = JSON.parse(stored);
+    const cidade = typeof parsed?.cidade === "string" ? parsed.cidade : "";
+    const disponibilidade = typeof parsed?.disponibilidade === "string" ? parsed.disponibilidade : "";
+
     return {
-      cidade: typeof parsed?.cidade === "string" ? parsed.cidade : "",
-      disponibilidade: typeof parsed?.disponibilidade === "string" ? parsed.disponibilidade : "",
+      cidade,
+      disponibilidade,
+      hasPrefill: !!(cidade || disponibilidade),
     };
   } catch {
     return filters;
@@ -149,32 +189,28 @@ const ClienteDashboard = () => {
     loadFavoritos();
     loadFilterOptions();
     // Executa uma vez ao entrar na pagina. Depois disso, so pelo botao/Enter de busca.
-    handleBuscarCuidadores();
+    if (initialClientSearch.hasPrefill) {
+      handleBuscarCuidadores();
+      localStorage.removeItem(CLIENT_SEARCH_STORAGE_KEY);
+    }
   }, [user?.id, authLoading]);
 
   const loadFilterOptions = async () => {
     try {
-      // Carregar cidades únicas
-      const { data: cidadesData } = await supabase
+      const { data, error } = await supabase
         .from('candidatos_cuidadores_rows')
-        .select('cidade')
-        .eq('status_candidatura', 'Aprovado')
-        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null')
-        .not('cidade', 'is', null);
+        .select('cidade,cargo,status_candidatura,ativo')
+        .order('id', { ascending: false });
 
-      // Carregar cargos únicos
-      const { data: cargosData } = await supabase
-        .from('candidatos_cuidadores_rows')
-        .select('cargo')
-        .eq('status_candidatura', 'Aprovado')
-        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null')
-        .not('cargo', 'is', null);
+      if (error) throw error;
+
+      const visibleCaregivers = (data || []).filter(isVisibleCaregiver);
 
       const uniqueCities = [
-        ...new Set(cidadesData?.map(item => normalizeCity(item.cidade)).filter(Boolean))
+        ...new Set(visibleCaregivers.map(item => normalizeCity(item.cidade)).filter(Boolean))
       ].sort();
       const uniqueCargoKeys = [
-        ...new Set(cargosData?.map(item => getCanonicalCargoKey(item.cargo)).filter(Boolean))
+        ...new Set(visibleCaregivers.map(item => getCanonicalCargoKey(item.cargo)).filter(Boolean))
       ].sort((a, b) => formatCargoLabel(a).localeCompare(formatCargoLabel(b), "pt-BR"));
 
       setAvailableCities(uniqueCities);
@@ -218,9 +254,7 @@ const ClienteDashboard = () => {
 
       let query = supabase
         .from('candidatos_cuidadores_rows')
-        .select(PUBLIC_CAREGIVER_FIELDS)
-        .eq('status_candidatura', 'Aprovado')
-        .or('ativo.eq.Sim,ativo.eq.true,ativo.is.null');
+        .select(CLIENT_CAREGIVER_FIELDS);
 
       // Filtro nome ou ID (já que o nome real é ocultado)
       if (termoNormalizado) {
@@ -235,7 +269,7 @@ const ClienteDashboard = () => {
       }
 
       const { data, error } = await query
-        .order('nome')
+        .order('id', { ascending: false })
         .limit(100);
 
       if (error) {
@@ -244,6 +278,8 @@ const ClienteDashboard = () => {
       }
 
       const cuidadoresFiltrados = (data || []).filter((cuidador) => {
+        if (!isVisibleCaregiver(cuidador)) return false;
+
         const matchesCity =
           !selectedCity ||
           selectedCity === "__all__" ||
@@ -288,7 +324,7 @@ const ClienteDashboard = () => {
 
       toast({
         title: "Busca realizada com sucesso",
-        description: `Encontrados ${cuidadoresFormatados.length} cuidador(es)${filtrosAplicados ? ` com filtros: ${filtrosAplicados}` : ''}`,
+        description: filtrosAplicados ? `Filtros aplicados: ${filtrosAplicados}` : "Confira os cuidadores encontrados abaixo.",
       });
 
     } catch (error) {
@@ -795,7 +831,7 @@ const ClienteDashboard = () => {
               <div className="lg:col-span-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Cuidadores Encontrados ({cuidadoresEncontrados.length})</CardTitle>
+                    <CardTitle>Cuidadores Encontrados</CardTitle>
                     <p className="text-sm text-gray-500">
                       Exibimos apenas dados parciais. Ao demonstrar interesse, liberamos somente o WhatsApp do cuidador.
                     </p>
@@ -804,8 +840,8 @@ const ClienteDashboard = () => {
                     {!buscaRealizada ? (
                       <div className="text-center py-12 text-gray-500">
                         <Search className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                        <h3 className="text-lg font-medium mb-2">Faça sua primeira busca</h3>
-                        <p>Use os filtros acima e clique em "Buscar"</p>
+                        <h3 className="text-lg font-medium mb-2">Realize uma busca para encontrar cuidadores</h3>
+                        <p>Informe cidade, especialidade ou disponibilidade e clique em "Buscar".</p>
                       </div>
                     ) : cuidadoresEncontrados.length === 0 ? (
                       <div className="text-center py-12 text-gray-500">
@@ -1015,7 +1051,7 @@ const ClienteDashboard = () => {
             </div>
 
             {/* Estatísticas simples */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
@@ -1023,18 +1059,6 @@ const ClienteDashboard = () => {
                     <div>
                       <p className="text-2xl font-bold">{buscaRealizada ? '1' : '0'}</p>
                       <p className="text-sm text-gray-600">Buscas Realizadas</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <User className="w-8 h-8 text-green-500" />
-                    <div>
-                      <p className="text-2xl font-bold">{cuidadoresEncontrados.length}</p>
-                      <p className="text-sm text-gray-600">Cuidadores Encontrados</p>
                     </div>
                   </div>
                 </CardContent>
