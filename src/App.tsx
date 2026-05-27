@@ -67,9 +67,9 @@ const App = () => (
             <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
 
             {/* Admin Routes */}
-            <Route path="/Admin" element={<Navigate to="/admin" replace />} />
-            <Route path="/Admin/login" element={<Navigate to="/admin/login" replace />} />
-            <Route path="/Admin/*" element={<Navigate to="/admin" replace />} />
+            <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />
+            <Route caseSensitive path="/Admin/login" element={<Navigate to="/admin/login" replace />} />
+            <Route caseSensitive path="/Admin/*" element={<Navigate to="/admin" replace />} />
             <Route path="/admin/login" element={<Login />} />
 
             {/* Protected Admin Routes */}
