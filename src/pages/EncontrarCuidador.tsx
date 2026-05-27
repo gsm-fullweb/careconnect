@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Calendar, CheckCircle2, Clock, MapPin, Sparkles, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Calendar, Clock, MapPin, Sparkles, User } from "lucide-react";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,18 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeCity } from "@/lib/utils";
+
+const CLIENT_SEARCH_STORAGE_KEY = "careconnect_client_search";
+const TOTAL_STEPS = 3;
 
 export default function EncontrarCuidador() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
-  const [finished, setFinished] = useState(false);
 
   const [cidade, setCidade] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [tipoCuidado, setTipoCuidado] = useState("");
   const [diasHorarios, setDiasHorarios] = useState("");
-  const [urgente, setUrgente] = useState("");
   const [nomeResponsavel, setNomeResponsavel] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
@@ -28,14 +29,8 @@ export default function EncontrarCuidador() {
       case 1:
         return cidade.trim().length > 2;
       case 2:
-        return bairro.trim().length > 2;
-      case 3:
-        return tipoCuidado !== "";
-      case 4:
         return diasHorarios.trim().length > 3;
-      case 5:
-        return urgente !== "";
-      case 6:
+      case 3:
         return nomeResponsavel.trim().length > 2 && whatsapp.replace(/\D/g, "").length >= 10;
       default:
         return false;
@@ -43,7 +38,7 @@ export default function EncontrarCuidador() {
   };
 
   const handleNext = () => {
-    if (isStepValid()) setStep((prev) => prev + 1);
+    if (isStepValid()) setStep((prev) => Math.min(TOTAL_STEPS, prev + 1));
   };
 
   const handlePrev = () => {
@@ -65,9 +60,9 @@ export default function EncontrarCuidador() {
     try {
       const formattedWhatsapp = whatsapp.replace(/\D/g, "");
       const generatedEmail = `${formattedWhatsapp}@careconnect-family.com`;
-      const necessityText = `Necessidade: ${tipoCuidado}. Urgente: ${urgente}.`;
-      const specialCareText = `Periodo: ${diasHorarios}. Bairro: ${bairro}.`;
-      const initialObs = `[Pre-cadastro Conversacional] Cliente informou necessidade para a regiao de ${cidade} - ${bairro}.`;
+      const normalizedCidade = normalizeCity(cidade);
+      const specialCareText = `Disponibilidade desejada: ${diasHorarios}.`;
+      const initialObs = `[Pre-cadastro Conversacional] Cliente informou necessidade para a regiao de ${normalizedCidade}. ${specialCareText}`;
 
       const { data: existingCustomer, error: fetchError } = await supabase
         .from("customer")
@@ -80,7 +75,7 @@ export default function EncontrarCuidador() {
       if (existingCustomer) {
         const dataHora = new Date().toLocaleString("pt-BR");
         const updatedObs = existingCustomer.observations
-          ? `${existingCustomer.observations}\n\n[Reenvio do Fluxo - ${dataHora}] Cidade: ${cidade}, Bairro: ${bairro}. ${necessityText} ${specialCareText}`
+          ? `${existingCustomer.observations}\n\n[Reenvio do Fluxo - ${dataHora}] Cidade: ${normalizedCidade}. ${specialCareText}`
           : initialObs;
 
         const { error: updateError } = await supabase
@@ -88,9 +83,7 @@ export default function EncontrarCuidador() {
           .update({
             name: nomeResponsavel,
             whatsapp,
-            city: cidade,
-            address: bairro,
-            necessity: necessityText,
+            city: normalizedCidade,
             special_care: specialCareText,
             observations: updatedObs,
             updated_at: new Date().toISOString(),
@@ -103,9 +96,7 @@ export default function EncontrarCuidador() {
           name: nomeResponsavel,
           email: generatedEmail,
           whatsapp,
-          city: cidade,
-          address: bairro,
-          necessity: necessityText,
+          city: normalizedCidade,
           special_care: specialCareText,
           observations: initialObs,
           status: "pending",
@@ -116,11 +107,26 @@ export default function EncontrarCuidador() {
         if (insertError) throw insertError;
       }
 
-      setFinished(true);
+      const searchParams = new URLSearchParams({
+        cidade: normalizedCidade,
+        disponibilidade: diasHorarios.trim(),
+      });
+
+      localStorage.setItem(
+        CLIENT_SEARCH_STORAGE_KEY,
+        JSON.stringify({
+          cidade: normalizedCidade,
+          disponibilidade: diasHorarios.trim(),
+          updatedAt: new Date().toISOString(),
+        })
+      );
+
       toast({
         title: "Solicitacao recebida!",
-        description: "Agora a busca e o contato com cuidadores ficam no painel do cliente.",
+        description: "Vamos abrir o painel com sua cidade e disponibilidade.",
       });
+
+      navigate(`/client-dashboard?${searchParams.toString()}`);
     } catch (error) {
       console.error("Erro no pre-cadastro da familia:", error);
       toast({
@@ -133,15 +139,14 @@ export default function EncontrarCuidador() {
     }
   };
 
-  const getStepProgress = () => Math.round((step / 6) * 100);
+  const getStepProgress = () => Math.round((step / TOTAL_STEPS) * 100);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-indigo-50 to-purple-100 flex flex-col justify-between">
       <Header />
 
       <main className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center max-w-4xl">
-        {!finished ? (
-          <div className="w-full">
+        <div className="w-full">
             <div className="text-center mb-8">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-600/10 text-purple-700 text-xs font-semibold uppercase tracking-wider mb-3">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -165,7 +170,7 @@ export default function EncontrarCuidador() {
 
               <CardContent className="p-8 md:p-12">
                 <div className="text-sm font-semibold text-purple-600 mb-2 tracking-wide uppercase">
-                  Passo {step} de 6
+                  Passo {step} de {TOTAL_STEPS}
                 </div>
 
                 <div className="min-h-[220px] flex flex-col justify-center">
@@ -195,63 +200,6 @@ export default function EncontrarCuidador() {
 
                   {step === 2 && (
                     <div className="space-y-4 animate-fade-in">
-                      <Label htmlFor="bairro" className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">
-                        Qual o bairro de atendimento?
-                      </Label>
-                      <p className="text-gray-500 text-xs md:text-sm">
-                        O bairro ajuda a equipe e o painel a organizar a necessidade.
-                      </p>
-                      <div className="relative">
-                        <MapPin className="absolute left-3.5 top-3.5 w-5 h-5 text-gray-400" />
-                        <Input
-                          id="bairro"
-                          type="text"
-                          placeholder="Digite o bairro..."
-                          value={bairro}
-                          onChange={(event) => setBairro(event.target.value)}
-                          className="pl-12 py-6 text-lg border-gray-300 focus:ring-purple-500 rounded-xl"
-                          onKeyDown={(event) => event.key === "Enter" && isStepValid() && handleNext()}
-                          autoFocus
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 3 && (
-                    <div className="space-y-4 animate-fade-in">
-                      <Label className="text-xl md:text-2xl font-bold text-gray-800 leading-tight block">
-                        O cuidado necessario e para:
-                      </Label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[
-                          { id: "Idoso", label: "Idoso de forma geral" },
-                          { id: "Pessoa acamada", label: "Pessoa acamada / Dependente" },
-                          { id: "Pos-cirurgico", label: "Recuperacao pos-cirurgica" },
-                          { id: "Companhia", label: "Companhia e auxilio diario" },
-                        ].map((option) => (
-                          <button
-                            key={option.id}
-                            type="button"
-                            onClick={() => {
-                              setTipoCuidado(option.id);
-                              setTimeout(handleNext, 200);
-                            }}
-                            className={`p-5 rounded-2xl border text-left text-base font-semibold transition-all duration-300 flex items-center justify-between ${
-                              tipoCuidado === option.id
-                                ? "border-purple-600 bg-purple-50 text-purple-900 shadow-md ring-2 ring-purple-600/20"
-                                : "border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50/20 text-gray-700"
-                            }`}
-                          >
-                            <span>{option.label}</span>
-                            {tipoCuidado === option.id && <CheckCircle2 className="w-5 h-5 text-purple-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 4 && (
-                    <div className="space-y-4 animate-fade-in">
                       <Label htmlFor="dias" className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">
                         Quais dias e horarios voce precisa de apoio?
                       </Label>
@@ -271,38 +219,7 @@ export default function EncontrarCuidador() {
                     </div>
                   )}
 
-                  {step === 5 && (
-                    <div className="space-y-4 animate-fade-in">
-                      <Label className="text-xl md:text-2xl font-bold text-gray-800 leading-tight block">
-                        Esta necessidade de suporte e urgente?
-                      </Label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {[
-                          { id: "Sim", label: "Sim, preciso o quanto antes" },
-                          { id: "Nao", label: "Nao, apenas pesquisando / planejando" },
-                        ].map((option) => (
-                          <button
-                            key={option.id}
-                            type="button"
-                            onClick={() => {
-                              setUrgente(option.id);
-                              setTimeout(handleNext, 200);
-                            }}
-                            className={`p-5 rounded-2xl border text-left text-base font-semibold transition-all duration-300 flex items-center justify-between ${
-                              urgente === option.id
-                                ? "border-purple-600 bg-purple-50 text-purple-900 shadow-md ring-2 ring-purple-600/20"
-                                : "border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50/20 text-gray-700"
-                            }`}
-                          >
-                            <span>{option.label}</span>
-                            {urgente === option.id && <CheckCircle2 className="w-5 h-5 text-purple-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 6 && (
+                  {step === 3 && (
                     <div className="space-y-5 animate-fade-in">
                       <Label className="text-xl md:text-2xl font-bold text-gray-800 leading-tight block">
                         Para finalizar, quem e o responsavel?
@@ -358,7 +275,7 @@ export default function EncontrarCuidador() {
                     <div />
                   )}
 
-                  {step < 6 ? (
+                  {step < TOTAL_STEPS ? (
                     <Button
                       type="button"
                       onClick={handleNext}
@@ -392,33 +309,6 @@ export default function EncontrarCuidador() {
               </CardContent>
             </Card>
           </div>
-        ) : (
-          <div className="w-full animate-fade-in">
-            <Card className="max-w-2xl mx-auto bg-white/90 backdrop-blur border-white/50 shadow-xl rounded-3xl">
-              <CardContent className="p-8 text-center space-y-6">
-                <div className="w-16 h-16 bg-green-500/10 border border-green-500/20 text-green-600 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <div>
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
-                    Tudo certo, {nomeResponsavel}!
-                  </h2>
-                  <p className="text-gray-600 text-sm md:text-base mt-2">
-                    Sua solicitacao foi registrada. Para buscar cuidadores, filtrar especialidades e liberar WhatsApp, acesse o painel do cliente.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row justify-center gap-3">
-                  <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-5 rounded-xl">
-                    <Link to="/client-dashboard">Ir para o painel do cliente</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="border-gray-300 hover:bg-gray-100 font-semibold px-6 py-5 rounded-xl">
-                    <Link to="/">Voltar para a pagina inicial</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </main>
 
       <footer className="py-8 border-t border-gray-200/50 bg-white/50 text-center text-xs text-gray-500">

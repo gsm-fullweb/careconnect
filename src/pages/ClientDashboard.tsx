@@ -13,12 +13,51 @@ import { EditCuidadorModal } from "@/components/admin/EditCuidadorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { isCaregiverUser } from "@/lib/authRole";
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
+
+const CLIENT_SEARCH_STORAGE_KEY = "careconnect_client_search";
+
+type ClientSearchFilters = {
+  cidade: string;
+  disponibilidade: string;
+};
+
+const getInitialClientSearchFilters = (search: string): ClientSearchFilters => {
+  const params = new URLSearchParams(search);
+  const filters: ClientSearchFilters = {
+    cidade: params.get("cidade") || "",
+    disponibilidade: params.get("disponibilidade") || "",
+  };
+
+  if (filters.cidade || filters.disponibilidade || typeof window === "undefined") {
+    return filters;
+  }
+
+  try {
+    const stored = localStorage.getItem(CLIENT_SEARCH_STORAGE_KEY);
+    if (!stored) return filters;
+    const parsed = JSON.parse(stored);
+    return {
+      cidade: typeof parsed?.cidade === "string" ? parsed.cidade : "",
+      disponibilidade: typeof parsed?.disponibilidade === "string" ? parsed.disponibilidade : "",
+    };
+  } catch {
+    return filters;
+  }
+};
 
 const ClienteDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const initialClientSearchRef = useRef<ClientSearchFilters | null>(null);
+
+  if (initialClientSearchRef.current === null) {
+    initialClientSearchRef.current = getInitialClientSearchFilters(location.search);
+  }
+
+  const initialClientSearch = initialClientSearchRef.current;
 
   // Estados de Perfil
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -28,8 +67,11 @@ const ClienteDashboard = () => {
 
   // Estados principais (para Clientes)
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCity, setSelectedCity] = useState("__all__");
+  const [selectedCity, setSelectedCity] = useState(
+    initialClientSearch.cidade ? normalizeCity(initialClientSearch.cidade) : "__all__"
+  );
   const [selectedCargo, setSelectedCargo] = useState("__all__");
+  const [requestedAvailability, setRequestedAvailability] = useState(initialClientSearch.disponibilidade);
   const [cuidadoresEncontrados, setCuidadoresEncontrados] = useState<any[]>([]);
   const [cuidadorSelecionado, setCuidadorSelecionado] = useState<any>(null);
   const [buscaRealizada, setBuscaRealizada] = useState(false);
@@ -168,10 +210,11 @@ const ClienteDashboard = () => {
 
     try {
       console.log('Iniciando busca de cuidadores...');
-      console.log('Filtros aplicados:', { searchTerm, selectedCity, selectedCargo });
+      console.log('Filtros aplicados:', { searchTerm, selectedCity, selectedCargo, requestedAvailability });
 
       // Normalizar o termo de busca
       const termoNormalizado = searchTerm?.trim().toLowerCase() || '';
+      const disponibilidadeNormalizada = normalizeFilterText(requestedAvailability);
 
       let query = supabase
         .from('candidatos_cuidadores_rows')
@@ -227,6 +270,11 @@ const ClienteDashboard = () => {
           descricao: cuidador.descricao_experiencia || 'Profissional experiente',
           telefone: cuidador.telefone || ''
         };
+      }).sort((a, b) => {
+        if (!disponibilidadeNormalizada) return 0;
+        const aMatches = normalizeFilterText(a.disponibilidade).includes(disponibilidadeNormalizada);
+        const bMatches = normalizeFilterText(b.disponibilidade).includes(disponibilidadeNormalizada);
+        return Number(bMatches) - Number(aMatches);
       });
 
       setCuidadoresEncontrados(cuidadoresFormatados);
@@ -234,7 +282,8 @@ const ClienteDashboard = () => {
       const filtrosAplicados = [
         termoNormalizado && `nome: "${termoNormalizado}"`,
         selectedCity !== "__all__" && `cidade: "${selectedCity}"`,
-        selectedCargo !== "__all__" && `cargo: "${formatCargoLabel(selectedCargo)}"`
+        selectedCargo !== "__all__" && `cargo: "${formatCargoLabel(selectedCargo)}"`,
+        requestedAvailability && `disponibilidade desejada: "${requestedAvailability}"`
       ].filter(Boolean).join(', ');
 
       toast({
@@ -259,8 +308,10 @@ const ClienteDashboard = () => {
     setSearchTerm("");
     setSelectedCity("__all__");
     setSelectedCargo("__all__");
+    setRequestedAvailability("");
     setCuidadoresEncontrados([]);
     setBuscaRealizada(false);
+    localStorage.removeItem(CLIENT_SEARCH_STORAGE_KEY);
 
     toast({
       title: "Filtros limpos",
@@ -495,6 +546,9 @@ const ClienteDashboard = () => {
   }
 
   const isCaregiver = false;
+  const cityOptions = selectedCity !== "__all__" && !availableCities.includes(selectedCity)
+    ? [selectedCity, ...availableCities]
+    : availableCities;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -676,7 +730,7 @@ const ClienteDashboard = () => {
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                         <SelectItem value="__all__">Todas as cidades</SelectItem>
-                        {availableCities.map((city) => (
+                        {cityOptions.map((city) => (
                           <SelectItem key={city} value={city}>{city}</SelectItem>
                         ))}
                       </SelectContent>
@@ -702,6 +756,18 @@ const ClienteDashboard = () => {
                 </div>
 
                 {/* Terceira linha - Botões */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Disponibilidade desejada
+                  </label>
+                  <Input
+                    placeholder="Ex: Seg a Sex, das 8h as 18h..."
+                    value={requestedAvailability}
+                    onChange={(e) => setRequestedAvailability(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleBuscarCuidadores()}
+                  />
+                </div>
+
                 <div className="flex gap-4">
                   <Button
                     onClick={handleBuscarCuidadores}
