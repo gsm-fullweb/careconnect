@@ -19,7 +19,7 @@ const Hero = () => {
                 size="lg"
                 className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white text-base"
               >
-                <a href="https://careconnect.com.br/" target="_self" rel="noopener noreferrer">Encontre um Cuidador</a>
+                <Link to="/cuidador-de-idosos-mogi-das-cruzes">Encontre um Cuidador</Link>
               </Button>
               <Button
                 asChild

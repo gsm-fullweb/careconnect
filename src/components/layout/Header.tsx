@@ -52,7 +52,7 @@ const Header = () => {
         <div className="hidden lg:flex items-center space-x-3">
           
           <Button asChild size="sm" className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1]">
-            <Link to="/encontrar-cuidador">Encontre um Cuidador</Link>
+            <Link to="/cuidador-de-idosos-mogi-das-cruzes">Encontre um Cuidador</Link>
           </Button>
           <Button asChild size="sm" className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white border border-white">
             <Link to="/pre-cadastro">Cadastrar como Cuidador</Link>
@@ -118,7 +118,7 @@ const Header = () => {
                 </Link>
               </Button>
               <Button asChild className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1] w-full">
-                <Link to="/encontrar-cuidador" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/cuidador-de-idosos-mogi-das-cruzes" onClick={() => setMobileMenuOpen(false)}>
                   Encontre um Cuidador
                 </Link>
               </Button>

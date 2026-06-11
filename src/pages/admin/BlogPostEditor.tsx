@@ -56,7 +56,7 @@ const BlogPostEditor = () => {
       console.log("Fetching post with ID:", id);
       
       // First try to fetch the post using the ID directly
-      let query = supabase
+      const query = supabase
         .from("blog_posts")
         .select("*")
         .eq("id", id);
