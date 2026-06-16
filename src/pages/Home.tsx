@@ -14,8 +14,8 @@ const Home = () => {
   return (
     <Layout>
       <SEO 
-        title="Agência de Cuidadores de Idosos" 
-        description="CareConnect oferece serviços profissionais de cuidadores de idosos em domicílio. Qualidade, segurança e carinho para sua família."
+        title="Cuidador de Idosos em Mogi das Cruzes" 
+        description="Encontre cuidadores de idosos qualificados em Mogi das Cruzes e região do Alto Tietê. A CareConnect oferece home care, acompanhamento hospitalar e cuidados especializados com matching inteligente por IA. Solicite orçamento!"
         canonical="/"
       />
       <Hero />

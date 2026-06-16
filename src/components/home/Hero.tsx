@@ -8,10 +8,10 @@ const Hero = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900">
-              Conectando cuidado a quem precisa ser cuidado
+              Cuidador de Idosos em Mogi das Cruzes — Encontre o Profissional Ideal
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8">
-              Conectamos famílias a cuidadores experientes, garantindo segurança, praticidade e confiança. Encontre o profissional ideal de forma simples e tenha tranquilidade no cuidado com seus entes queridos.
+              A <strong>CareConnect</strong> conecta famílias em <strong>Mogi das Cruzes</strong> e região do Alto Tietê a cuidadores de idosos qualificados e verificados. Matching inteligente com IA para encontrar o profissional ideal com segurança e agilidade.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -19,7 +19,7 @@ const Hero = () => {
                 size="lg"
                 className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white text-base"
               >
-                <Link to="/cuidador-de-idosos-mogi-das-cruzes">Encontre um Cuidador</Link>
+                <a href="https://careconnect.com.br/" target="_self" rel="noopener noreferrer">Encontre um Cuidador</a>
               </Button>
               <Button
                 asChild
@@ -35,8 +35,10 @@ const Hero = () => {
             <div className="relative w-full max-w-md aspect-square rounded-full overflow-hidden">
               <img
                 src="/images/hero-image.jpg"
-                alt="Cuidador e pessoa idosa juntos"
+                alt="Cuidador de idosos profissional da CareConnect em Mogi das Cruzes auxiliando pessoa idosa"
                 className="object-cover w-full h-full"
+                width="500"
+                height="500"
               />
             </div>
           </div>

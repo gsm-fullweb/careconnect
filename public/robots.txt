@@ -1,9 +1,15 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /login
 Disallow: /admin/login
+Disallow: /login
 Disallow: /painel-cuidador
 Disallow: /client-dashboard
+Disallow: /obrigado
+Disallow: /encontrar-cuidador
 
+# Sitemap
 Sitemap: https://careconnect.com.br/sitemap.xml
+
+# Crawl-delay (educado com o bot)
+Crawl-delay: 1

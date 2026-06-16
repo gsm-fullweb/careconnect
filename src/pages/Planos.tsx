@@ -43,8 +43,8 @@ const Planos = () => {
   return (
     <Layout>
       <SEO 
-        title="Planos e Preços" 
-        description="Escolha o plano ideal para sua família. Encontre cuidadores qualificados com a ajuda da nossa IA Encontre um cuidador no WhatsApp."
+        title="Planos e Preços | Cuidador de Idosos em Mogi das Cruzes" 
+        description="Conheça os planos da CareConnect para cuidadores de idosos em Mogi das Cruzes. Encontre cuidadores qualificados e verificados com matching inteligente por IA no WhatsApp. Sem fidelidade!"
         canonical="/plans"
       />
       {/* Hero Section - Estilo Humanizado */}

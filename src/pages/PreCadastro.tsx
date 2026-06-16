@@ -264,7 +264,11 @@ export default function PreCadastro() {
 
   return (
     <Layout>
-      <SEO title="Cadastro de Cuidador" canonical="/pre-cadastro" noindex={true} />
+      <SEO 
+        title="Trabalhe Conosco como Cuidador de Idosos em Mogi das Cruzes" 
+        description="Cadastre-se como cuidador de idosos na CareConnect em Mogi das Cruzes. Vagas para cuidadores, acompanhantes hospitalares e técnicos de enfermagem no Alto Tietê."
+        canonical="/pre-cadastro"
+      />
       <section className="py-12 md:py-20 bg-slate-50 min-h-screen">
 
         <div className="container mx-auto px-4 max-w-xl">

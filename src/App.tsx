@@ -22,7 +22,7 @@ import LoginPage from "./pages/Login";
 import ClientDashboard from "./pages/ClientDashboard";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
 import EncontrarCuidador from "./pages/EncontrarCuidador";
-import CuidadorMogiLanding from "./pages/CuidadorMogiLanding";
+import CuidadorIdososMogiDasCruzes from "./pages/CuidadorIdososMogiDasCruzes";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -60,14 +60,13 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/plans" element={<Planos />} />
             <Route path="/pre-cadastro" element={<PreCadastro />} />
-            <Route path="/encontre-um-cuidador" element={<CuidadorMogiLanding />} />
-            <Route path="/cuidador-de-idosos-mogi-das-cruzes" element={<CuidadorMogiLanding />} />
             <Route path="/cadastrar-cuidador" element={<CadastrarCuidador />} />
             <Route path="/obrigado" element={<Obrigado />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/painel-cuidador" element={<CaregiverDashboard />} />
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
+            <Route path="/cuidador-idosos-mogi-das-cruzes" element={<CuidadorIdososMogiDasCruzes />} />
 
             {/* Admin Routes */}
             <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />

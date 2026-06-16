@@ -80,8 +80,8 @@ const About = () => {
   return (
     <Layout>
       <SEO 
-        title="Sobre Nós" 
-        description="Conheça a história da CareConnect, nossa missão de transformar o cuidado de idosos e a equipe dedicada por trás da nossa plataforma."
+        title="Sobre a CareConnect - Agência de Cuidadores em Mogi das Cruzes" 
+        description="Conheça a CareConnect, agência de cuidadores de idosos em Mogi das Cruzes. Nossa missão é transformar o cuidado domiciliar no Alto Tietê com tecnologia, segurança e humanização."
         canonical="/about"
       />
       {/* Hero Section */}
@@ -164,7 +164,7 @@ const About = () => {
                   A partir desta experiência, criamos uma plataforma que revolucionou o mercado de cuidados para idosos, implementando tecnologias avançadas para garantir uma experiência simples, segura e humanizada.
                 </p>
                 <p>
-                  Hoje, conectamos famílias a cuidadores experientes em todo o Brasil, sempre com o compromisso de oferecer o melhor cuidado possível, com a conveniência da tecnologia e o calor humano que cada idoso merece.
+                  Hoje, conectamos famílias a cuidadores experientes em Mogi das Cruzes, Suzano, Arujá, Guararema e toda a região do Alto Tietê, sempre com o compromisso de oferecer o melhor cuidado possível, com a conveniência da tecnologia e o calor humano que cada idoso merece.
                 </p>
               </div>
             </div>

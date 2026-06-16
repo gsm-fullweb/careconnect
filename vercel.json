@@ -10,7 +10,9 @@
     { "source": "/Admin/:path*", "destination": "/admin/:path*", "permanent": true },
     { "source": "/sobre", "destination": "/about", "permanent": true },
     { "source": "/servicos", "destination": "/services", "permanent": true },
-    { "source": "/planos", "destination": "/plans", "permanent": true }
+    { "source": "/planos", "destination": "/plans", "permanent": true },
+    { "source": "/contato", "destination": "/contact", "permanent": true },
+    { "source": "/cuidadores-mogi", "destination": "/cuidador-idosos-mogi-das-cruzes", "permanent": true }
   ],
   "rewrites": [
     {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { formatDate } from "@/lib/utils";
+import SEO from "@/components/SEO";
 
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -45,6 +46,11 @@ const Blog = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Blog | Dicas de Cuidado para Idosos em Mogi das Cruzes"
+        description="Artigos e dicas sobre cuidado de idosos em Mogi das Cruzes. Aprenda sobre saúde do idoso, como contratar cuidadores, valores de home care e muito mais."
+        canonical="/blog"
+      />
       {/* Hero Section */}
       <div className="bg-careconnect-blue/90 text-white py-20">
         <div className="container-custom text-center">

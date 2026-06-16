@@ -104,8 +104,8 @@ const Services = () => { // Alterado de export default function Servicos() para 
   return (
     <Layout>
       <SEO 
-        title="Nossos Serviços" 
-        description="Conheça nossos serviços de cuidadores de idosos: assistência diária, monitoramento de saúde, companhia e suporte especializado."
+        title="Serviços de Home Care e Cuidador de Idosos em Mogi das Cruzes" 
+        description="Serviços de cuidador de idosos em Mogi das Cruzes: home care 24h, acompanhamento hospitalar, cuidados para Alzheimer, cuidados paliativos e pós-cirúrgico. Cuidadores verificados e qualificados."
         canonical="/services"
       />
       {/* Hero Section - Estilo Humanizado */}
@@ -115,10 +115,10 @@ const Services = () => { // Alterado de export default function Servicos() para 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-                Nossos Serviços de Cuidados
+                Serviços de Cuidador de Idosos em Mogi das Cruzes
               </h1>
               <p className="text-lg text-gray-600 mb-6">
-                Oferecemos uma ampla gama de serviços de cuidados personalizados para atender às necessidades específicas de cada idoso, garantindo conforto, dignidade e qualidade de vida.
+                A CareConnect oferece serviços completos de cuidadores de idosos em Mogi das Cruzes e região do Alto Tietê. Cuidados personalizados para atender às necessidades específicas de cada idoso, garantindo conforto, dignidade e qualidade de vida.
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 Todos os nossos cuidadores são rigorosamente selecionados, treinados e supervisionados para proporcionar o melhor atendimento possível.
@@ -257,27 +257,39 @@ const Services = () => { // Alterado de export default function Servicos() para 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="p-6">
+              <h3 className="text-xl font-bold mb-3">Qual é o valor mensal para um cuidador de idosos em Mogi das Cruzes?</h3>
+              <p className="text-gray-600">
+                Em Mogi das Cruzes, o valor mensal de um cuidador de idosos varia de R$ 2.800 a R$ 4.500 para contratação direta, e de R$ 4.500 a R$ 9.000 via agência (inclui encargos, substituição e supervisão). O preço depende da complexidade do caso e do regime de contratação. Na CareConnect, ajudamos a encontrar o melhor custo-benefício.
+              </p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-3">Quanto está custando a diária de uma cuidadora de idosos?</h3>
+              <p className="text-gray-600">
+                A diária de uma cuidadora (plantão de 12 horas) em Mogi das Cruzes e região custa entre R$ 150 e R$ 320. Plantões noturnos podem ter adicional de 20%. Profissionais especializados em Alzheimer ou AVC cobram de 15% a 35% acima da base.
+              </p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-3">Quanto é 12 horas de uma cuidadora?</h3>
+              <p className="text-gray-600">
+                O plantão de 12 horas de uma cuidadora em Mogi das Cruzes custa entre R$ 150 e R$ 320, dependendo da qualificação da profissional e da complexidade do atendimento. Solicite um orçamento personalizado pela CareConnect.
+              </p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-3">Quanto custa 6 horas de uma cuidadora?</h3>
+              <p className="text-gray-600">
+                O valor médio para 6 horas de cuidadora em Mogi das Cruzes fica entre R$ 100 e R$ 200, variando conforme a experiência da profissional e as necessidades do paciente.
+              </p>
+            </Card>
+            <Card className="p-6">
               <h3 className="text-xl font-bold mb-3">Qual é a diferença entre cuidador e enfermeiro?</h3>
               <p className="text-gray-600">
-                Cuidadores oferecem assistência nas atividades diárias como alimentação, higiene e acompanhamento, enquanto enfermeiros são profissionais de saúde formados que podem realizar procedimentos médicos específicos.
+                Cuidadores oferecem assistência nas atividades diárias como alimentação, higiene e acompanhamento, enquanto enfermeiros são profissionais de saúde formados que podem realizar procedimentos médicos específicos. Na CareConnect, temos ambos os perfis disponíveis em Mogi das Cruzes.
               </p>
             </Card>
             <Card className="p-6">
-              <h3 className="text-xl font-bold mb-3">Os cuidadores têm formação específica?</h3>
+              <h3 className="text-xl font-bold mb-3">Como contratar um cuidador de idosos em Mogi das Cruzes?</h3>
               <p className="text-gray-600">
-                Sim, todos os nossos cuidadores possuem formação e/ou experiência comprovada no cuidado com idosos. Muitos possuem cursos técnicos e especializações na área.
-              </p>
-            </Card>
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-3">Como é feita a seleção dos cuidadores?</h3>
-              <p className="text-gray-600">
-                Realizamos um rigoroso processo de seleção que inclui verificação de antecedentes, validação de documentos, entrevistas e avaliação de experiência e habilidades específicas.
-              </p>
-            </Card>
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-3">É possível contratar por períodos específicos?</h3>
-              <p className="text-gray-600">
-                Sim, oferecemos serviços flexíveis que podem ser contratados por horas, períodos (diurno/noturno) ou em regime integral, de acordo com a necessidade de cada família.
+                Na CareConnect, basta acessar nosso WhatsApp e conversar com nossa IA assistente. Ela entende suas necessidades e encontra os melhores cuidadores verificados disponíveis em Mogi das Cruzes e região do Alto Tietê. É simples, rápido e seguro.
               </p>
             </Card>
           </div>

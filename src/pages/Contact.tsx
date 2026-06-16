@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout"; // Alterado de MainLayout para Layout
+import SEO from "@/components/SEO";
 import { MapPin, Phone, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"; // Alterado de sonner para hooks/use-toast
 
@@ -71,13 +72,18 @@ const Contact = () => { // Alterado de export default function Contato() para co
 
   return (
     <Layout>
+      <SEO
+        title="Contato | Cuidador de Idosos em Mogi das Cruzes"
+        description="Entre em contato com a CareConnect em Mogi das Cruzes. Solicite orçamento para cuidador de idosos, home care ou acompanhante hospitalar. WhatsApp: (11) 4863-3976."
+        canonical="/contact"
+      />
       {/* Hero Section */}
       <section className="py-16 md:py-24 bg-[#6B46C1]/5">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-6">
-                Entre em Contato
+                Contato — Cuidadores de Idosos em Mogi das Cruzes
               </h1>
               <p className="text-lg text-gray-600 mb-8">
                 Estamos sempre disponíveis para responder suas dúvidas e ajudar você a encontrar o melhor cuidado para sua família. Entre em contato conosco de qualquer uma das formas abaixo.

@@ -1,17 +1,53 @@
-[images]
-  remote_images = ["https://source.unsplash.com/.*", "https://images.unsplash.com/.*", "https://ext.same-assets.com/.*", "https://ugc.same-assets.com/.*"]
-
 [build]
-  command = "bun run build"
-  publish = ".next"
+  command = "npm run build"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  NEXT_PUBLIC_BASE_URL = "/"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+[[redirects]]
+  from = "/sobre"
+  to = "/about"
+  status = 301
+  force = true
 
+[[redirects]]
+  from = "/servicos"
+  to = "/services"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/planos"
+  to = "/plans"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/Admin"
+  to = "/admin"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/Admin/*"
+  to = "/admin/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/contato"
+  to = "/contact"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cuidadores-mogi"
+  to = "/cuidador-idosos-mogi-das-cruzes"
+  status = 301
+  force = true
+
+# SPA fallback — must be LAST
 [[redirects]]
   from = "/*"
   to = "/index.html"
