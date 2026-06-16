@@ -28,7 +28,7 @@ const SEO = ({
   const defaultTitle = 'CareConnect - Cuidador de Idosos em Mogi das Cruzes | Home Care';
   const fullTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const fullDescription = description || 'Encontre cuidadores de idosos qualificados em Mogi das Cruzes e região do Alto Tietê. Home care, acompanhamento hospitalar e cuidados especializados com matching inteligente por IA.';
-  const url = `https://careconnect.com.br${canonical || ''}`;
+  const url = `https://www.careconnect.com.br${canonical || ''}`;
   const defaultKeywords = 'cuidador de idosos mogi das cruzes, home care mogi das cruzes, cuidadora de idosos, agência de cuidadores, cuidados domiciliares, acompanhante hospitalar';
 
   return (

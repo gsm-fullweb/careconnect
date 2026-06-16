@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { formatDate } from "@/lib/utils";
+import SEO from "@/components/SEO";
 
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -41,17 +42,6 @@ const BlogPost = () => {
           console.error("Erro ao buscar post:", error);
         } else if (data) {
           setPost(data);
-          
-          // INJEÇÃO DE SEO PARA O GOOGLE
-          document.title = `${data.title} | CareConnect Blog`;
-          
-          let metaDesc = document.querySelector('meta[name="description"]');
-          if (!metaDesc) {
-            metaDesc = document.createElement('meta');
-            metaDesc.setAttribute('name', 'description');
-            document.head.appendChild(metaDesc);
-          }
-          metaDesc.setAttribute('content', data.excerpt || data.title);
         }
 
         // Buscar posts recentes para a sidebar
@@ -102,6 +92,14 @@ const BlogPost = () => {
 
   return (
     <Layout>
+      {post && (
+        <SEO
+          title={post.title}
+          description={post.excerpt || post.title}
+          canonical={`/blog/${post.slug || post.id}`}
+          type="article"
+        />
+      )}
       {/* Article Hero */}
       <div className="bg-careconnect-blue/90 text-white py-20">
         <div className="container-custom">

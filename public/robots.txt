@@ -9,7 +9,7 @@ Disallow: /obrigado
 Disallow: /encontrar-cuidador
 
 # Sitemap
-Sitemap: https://careconnect.com.br/sitemap.xml
+Sitemap: https://www.careconnect.com.br/sitemap.xml
 
 # Crawl-delay (educado com o bot)
 Crawl-delay: 1
