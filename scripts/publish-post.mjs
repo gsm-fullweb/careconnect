@@ -168,12 +168,11 @@ const row = {
   updated_at: now,
 };
 if (authorId) row.author_id = authorId;
-if (published) row.published_at = now;
 
 try {
   const { data: existing, error: selErr } = await supabase
     .from("blog_posts")
-    .select("id, published, published_at")
+    .select("id, published")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -181,10 +180,6 @@ try {
 
   let result;
   if (existing) {
-    // Preserva published_at original se já estava publicado
-    if (existing.published && existing.published_at) {
-      row.published_at = existing.published_at;
-    }
     result = await supabase
       .from("blog_posts")
       .update(row)
