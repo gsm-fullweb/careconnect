@@ -2,6 +2,7 @@
 title: "Como Cuidar de um Idoso com Alzheimer em Casa: Guia Prático"
 slug: como-cuidar-idoso-alzheimer-casa-guia-pratico
 excerpt: "Cuidar de um familiar com Alzheimer é um desafio diário. Veja dicas práticas de rotina, adaptação de segurança física e quando contar com ajuda de um cuidador especializado."
+cover_image: "https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images/o08spworce-1781654655988.png"
 published: true
 ---
 
