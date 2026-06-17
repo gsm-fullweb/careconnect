@@ -14,6 +14,8 @@
     { "source": "/contato", "destination": "/contact", "permanent": true },
     { "source": "/cuidadores-mogi", "destination": "/cuidador-idosos-mogi-das-cruzes", "permanent": true }
   ],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/(.*)",
