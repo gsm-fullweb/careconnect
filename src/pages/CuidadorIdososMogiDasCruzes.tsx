@@ -1,4 +1,5 @@
 import SEO from "@/components/SEO";
+import { LocalBusinessSchema } from "@/components/SchemaOrg";
 import Layout from "@/components/layout/Layout";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,15 @@ const CuidadorIdososMogiDasCruzes = () => {
         title="Cuidador de Idosos em Mogi das Cruzes | Home Care e Acompanhante Hospitalar"
         description="Cuidadores de idosos qualificados em Mogi das Cruzes e Alto Tietê. Home care 24h, acompanhante hospitalar, cuidados para Alzheimer e paliativos. Diária a partir de R$ 150. Solicite orçamento!"
         canonical="/cuidador-idosos-mogi-das-cruzes"
+      />
+      <LocalBusinessSchema
+        name="CareConnect - Cuidador de Idosos em Mogi das Cruzes"
+        description="Encontre cuidadores de idosos qualificados em Mogi das Cruzes e Alto Tietê. Home care 24h, acompanhante hospitalar, cuidados para Alzheimer e paliativos com matching inteligente por IA."
+        city="Mogi das Cruzes"
+        state="SP"
+        phone="+55-11-4863-3976"
+        email="contato@careconnect.com.br"
+        url="/cuidador-idosos-mogi-das-cruzes"
       />
 
       {/* Hero Section */}

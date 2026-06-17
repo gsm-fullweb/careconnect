@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { formatDate } from "@/lib/utils";
 import SEO from "@/components/SEO";
+import { ArticleSchema, BreadcrumbSchema } from "@/components/SchemaOrg";
 
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -93,12 +94,30 @@ const BlogPost = () => {
   return (
     <Layout>
       {post && (
-        <SEO
-          title={post.title}
-          description={post.excerpt || post.title}
-          canonical={`/blog/${post.slug || post.id}`}
-          type="article"
-        />
+        <>
+          <SEO
+            title={post.title}
+            description={post.excerpt || post.title}
+            canonical={`/blog/${post.slug || post.id}`}
+            type="article"
+            image={post.cover_image}
+          />
+          <ArticleSchema
+            title={post.title}
+            description={post.excerpt || post.title}
+            image={post.cover_image}
+            datePublished={post.created_at}
+            dateModified={post.updated_at || post.created_at}
+            url={`/blog/${post.slug || post.id}`}
+          />
+          <BreadcrumbSchema
+            items={[
+              { name: "Home", url: "/" },
+              { name: "Blog", url: "/blog" },
+              { name: post.title, url: `/blog/${post.slug || post.id}` }
+            ]}
+          />
+        </>
       )}
       {/* Article Hero */}
       <div className="bg-careconnect-blue/90 text-white py-20">
