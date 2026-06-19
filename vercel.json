@@ -29,7 +29,7 @@
       ]
     },
     {
-      "source": "/((?!sitemap\.xml|robots\.txt|og-image\.png|favicon\.ico|assets/).*)",
+      "source": "/((?!sitemap\\.xml|robots\\.txt|og-image\\.png|favicon\\.ico|assets/).*)",
       "destination": "/index.html"
     }
   ],
