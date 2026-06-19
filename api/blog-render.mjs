@@ -9,9 +9,8 @@
  */
 
 const SITE_URL = "https://www.careconnect.com.br";
-const SUPABASE_URL = "https://dyxkbbojlyppizsgjjxx.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbG…-4K4";
+const SUPABASE_URL = process.env.SUPABASE_URL || "https://dyxkbbojlyppizsgjjxx.supabase.co";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const TEMPLATE = (title, description, content, slug, image) => `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -183,8 +182,8 @@ export default async function handler(request, response) {
       `${SUPABASE_URL}/rest/v1/blog_posts?select=title,excerpt,content,slug,cover_image&slug=eq.${encodeURIComponent(cleanSlug)}&published=eq.true`,
       {
         headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
         },
       }
     );
