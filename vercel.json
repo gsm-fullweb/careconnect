@@ -18,8 +18,15 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "source": "/blog/(.*)",
+      "destination": "/api/blog-render?slug=$1",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Googlebot|Twitterbot|facebookexternalhit|LinkedInBot|Slack|WhatsApp|Telegram|bingbot|YandexBot|DuckDuckBot|Baiduspider|Discordbot|Applebot).*"
+        }
+      ]
     },
     {
       "source": "/(.*)",

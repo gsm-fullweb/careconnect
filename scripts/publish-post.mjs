@@ -96,10 +96,27 @@ try {
 
 const { fm, body } = parseFrontmatter(raw);
 
+// ---------- Limpeza: remove seções de briefing/metadados que sobram no corpo ----------
+function stripMetaSections(text) {
+  // Remove tudo antes de '=== CONTEÚDO ===' (se existir)
+  text = text.replace(/^[\s\S]*?=== CONTEÚDO ===\s*/m, '');
+  // Remove blocos de metadados pós-conteúdo (FAQ, links internos, notas)
+  text = text.replace(/=== FAQ SCHEMA[\s\S]*?(?===|$)/m, '');
+  text = text.replace(/=== INTERNAL LINKS SUGERIDOS[\s\S]*?(?===|$)/m, '');
+  text = text.replace(/=== NOTAS EDITORIAIS[\s\S]*$/m, '');
+  // Remove === TITLE TAG === e === META DESCRIPTION === soltos
+  text = text.replace(/=== TITLE TAG ===[\s\S]*?(?===|$)/m, '');
+  text = text.replace(/=== SEO BRIEFING ===[\s\S]*?(?===|$)/m, '');
+  text = text.replace(/=== META DESCRIPTION ===[\s\S]*?(?===|$)/m, '');
+  return text.trim();
+}
+
+const cleanBody = stripMetaSections(body);
+
 // title: frontmatter > primeiro H1
 let title = fm.title;
 if (!title) {
-  const h1 = body.match(/^\s*#\s+(.+)$/m);
+  const h1 = cleanBody.match(/^\s*#\s+(.+)$/m);
   title = h1 ? h1[1].trim() : null;
 }
 if (!title) {
@@ -116,7 +133,7 @@ const authorId = fm.author_id || env.BLOG_AUTHOR_ID || null;
 const published = wantPublish ? true : fm.published === true;
 
 // Converte markdown -> HTML (o blog renderiza HTML no campo content)
-const contentHtml = marked.parse(body.trim());
+const contentHtml = marked.parse(cleanBody);
 
 const postUrl = `${SITE_BASE}/blog/${slug}`;
 

@@ -3,7 +3,7 @@
   <!-- Home -->
   <url>
     <loc>https://www.careconnect.com.br/</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -40,12 +40,44 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog -->
+  <!-- Blog Listing -->
   <url>
     <loc>https://www.careconnect.com.br/blog</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- Blog Posts -->
+  <url>
+    <loc>https://www.careconnect.com.br/blog/quanto-custa-cuidador-idosos-sao-paulo</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.careconnect.com.br/blog/quanto-custa-cuidador-idosos-mogi-das-cruzes</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.careconnect.com.br/blog/quanto-custa-um-cuidador-de-idosos-em-guarulhos-em-2026</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.careconnect.com.br/blog/como-cuidar-de-idoso-com-alzheimer-em-casa-guia-pratico-2026</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.careconnect.com.br/blog/como-cuidar-de-idoso-com-parkinson-em-casa-guia-2026</loc>
+    <lastmod>2026-06-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
   <!-- Conversion Pages -->
