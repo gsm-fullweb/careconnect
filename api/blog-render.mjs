@@ -10,7 +10,7 @@
 
 const SITE_URL = "https://www.careconnect.com.br";
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://dyxkbbojlyppizsgjjxx.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5eGtiYm9qbHlwcGl6c2dqanh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNzQ2NjAsImV4cCI6MjA2MzY1MDY2MH0.47pGkZXkqZoAsjVHhwSQPLEcGY99hoiDO-6LdCG-4K4";
 
 const TEMPLATE = (title, description, content, slug, image) => `<!DOCTYPE html>
 <html lang="pt-BR">
