@@ -18,6 +18,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/blog/(.*)",
       "destination": "/api/blog-render?slug=$1",
       "has": [
