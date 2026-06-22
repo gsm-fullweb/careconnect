@@ -8,11 +8,15 @@
  * Visitantes normais continuam recebendo a SPA normal.
  */
 
+import { marked } from "marked";
+
+marked.use({ breaks: true, gfm: true });
+
 const SITE_URL = "https://www.careconnect.com.br";
 const SUPABASE_URL = "https://dyxkbbojlyppizsgjjxx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5eGtiYm9qbHlwcGl6c2dqanh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNzQ2NjAsImV4cCI6MjA2MzY1MDY2MH0.47pGkZXkqZoAsjVHhwSQPLEcGY99hoiDO-6LdCG-4K4";
 
-const TEMPLATE = (title, description, content, slug, image) => `<!DOCTYPE html>
+const TEMPLATE = (title, description, content, slug, image, schemas = "") => `<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -32,6 +36,7 @@ const TEMPLATE = (title, description, content, slug, image) => `<!DOCTYPE html>
     <meta name="twitter:title" content="${escapeXml(title)}" />
     <meta name="twitter:description" content="${escapeXml(description || title)}" />
     <meta name="twitter:image" content="${image || `${SITE_URL}/og-image.png`}" />
+    ${schemas}
     <style>
       body { font-family: Inter, system-ui, -apple-system, sans-serif; line-height: 1.7; color: #1a1a2e; max-width: 760px; margin: 0 auto; padding: 32px 20px; }
       h1 { font-size: 2rem; line-height: 1.3; margin-bottom: 1rem; color: #111; }
@@ -77,92 +82,32 @@ function markdownToHtml(md) {
   md = md.replace(/^[\s\S]*?=== CONTEÚDO ===\s*/m, "");
   md = md.replace(/=== .*? ===[\s\S]*?(?=\n#|\n##|\n$|$)/g, "");
 
-  // Processa blocos especiais
-  let html = md;
+  // Conversão robusta via marked (mesmo parser do frontend e do publicador)
+  return marked.parse(md, { async: false });
+}
 
-  // Headers
-  html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
-  html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
-  html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
-
-  // Bold/italic
-  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
-
-  // Blockquotes
-  html = html.replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>");
-
-  // Tables
-  html = html.replace(
-    /^\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/gm,
-    (match, headerRow, bodyRows) => {
-      const headers = headerRow.split("|").map((h) => h.trim()).filter(Boolean);
-      const rows = bodyRows
-        .trim()
-        .split("\n")
-        .map((row) => {
-          const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
-          return `<tr>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`;
-        })
-        .join("\n");
-      return `<table><thead><tr>${headers
-        .map((h) => `<th>${h}</th>`)
-        .join("")}</tr></thead><tbody>${rows}</tbody></table>`;
-    }
-  );
-
-  // Unordered lists
-  html = html.replace(/^- (.+)$/gm, (match, item) => {
-    // Skip if it's a table row
-    if (item.startsWith("|")) return match;
-    return `<li>${item}</li>`;
+/**
+ * Adiciona ids (âncoras) aos headings h2/h3 — paridade com a renderização
+ * client-side, ajuda crawlers a mapear a estrutura do artigo.
+ */
+function addHeadingIds(html) {
+  const used = new Set();
+  return html.replace(/<(h[23])>([\s\S]*?)<\/\1>/g, (match, tag, inner) => {
+    const text = inner.replace(/<[^>]+>/g, "").trim();
+    if (!text) return match;
+    const base =
+      text
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") || "secao";
+    let id = base;
+    let n = 2;
+    while (used.has(id)) id = `${base}-${n++}`;
+    used.add(id);
+    return `<${tag} id="${id}">${inner}</${tag}>`;
   });
-  html = html.replace(/((?:<li>.*?<\/li>\n?)+)/g, "<ul>$1</ul>");
-
-  // Ordered lists
-  html = html.replace(/^\d+\. (.+)$/gm, "<li>$1</li>");
-
-  // Paragraphs (lines that aren't already wrapped)
-  const lines = html.split("\n");
-  let inBlock = false;
-  let result = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (
-      !line ||
-      line.startsWith("<h") ||
-      line.startsWith("<li") ||
-      line.startsWith("<ul") ||
-      line.startsWith("</ul") ||
-      line.startsWith("<ol") ||
-      line.startsWith("</ol") ||
-      line.startsWith("<table") ||
-      line.startsWith("</table") ||
-      line.startsWith("<tr") ||
-      line.startsWith("</tr") ||
-      line.startsWith("<th") ||
-      line.startsWith("<td") ||
-      line.startsWith("<thead") ||
-      line.startsWith("</thead") ||
-      line.startsWith("<tbody") ||
-      line.startsWith("</tbody") ||
-      line.startsWith("<blockquote") ||
-      line.startsWith("</blockquote") ||
-      line.startsWith("---") ||
-      line.startsWith("<strong") ||
-      line.startsWith("<em")
-    ) {
-      result.push(line);
-      continue;
-    }
-    result.push(`<p>${line}</p>`);
-  }
-  html = result.join("\n");
-
-  // Horizontal rules
-  html = html.replace(/^---+$/gm, "<hr />");
-
-  return html;
 }
 
 export default async function handler(request, response) {
@@ -202,26 +147,73 @@ export default async function handler(request, response) {
       return;
     }
 
-    // Converte o HTML já armazenado no Supabase para uma versão limpa
-    // O content já está em HTML (convertido pelo marked.js no publish)
-    let contentHtml = post.content || "";
+    let rawContent = post.content || "";
 
-    // Extrai só o body do HTML se tiver DOCTYPE/html tags
-    const bodyMatch = contentHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    if (bodyMatch) {
-      contentHtml = bodyMatch[1];
+    // 1. Strip frontmatter YAML (se o agente inseriu Markdown cru)
+    rawContent = rawContent.replace(/^\uFEFF?---\s*\n[\s\S]*?\n---\s*\n?/, "");
+
+    // 2. Extrai JSON-LD schemas antes de remover as seções
+    let faqSchemaHtml = "";
+    let localBusinessSchemaHtml = "";
+
+    const faqMatch = rawContent.match(
+      /=== FAQ SCHEMA ===\s*\n(?:```json\s*\n)?([\s\S]*?)(?:\n```)?(?=\n=== |$)/m
+    );
+    if (faqMatch) {
+      try {
+        const parsed = JSON.parse(faqMatch[1].trim());
+        faqSchemaHtml = `<script type="application/ld+json">${JSON.stringify(parsed)}</script>`;
+      } catch { /* JSON inválido — ignora */ }
     }
 
-    // Remove scripts e estilos
+    const lbMatch = rawContent.match(
+      /=== LOCAL BUSINESS SCHEMA ===\s*\n(?:```json\s*\n)?([\s\S]*?)(?:\n```)?(?=\n=== |$)/m
+    );
+    if (lbMatch) {
+      try {
+        const parsed = JSON.parse(lbMatch[1].trim());
+        localBusinessSchemaHtml = `<script type="application/ld+json">${JSON.stringify(parsed)}</script>`;
+      } catch { /* JSON inválido — ignora */ }
+    }
+
+    // 3. Remove blocos === ... === do corpo
+    rawContent = rawContent.replace(/^[\s\S]*?=== CONTEÚDO ===\s*/m, "");
+    rawContent = rawContent.replace(
+      /=== (?:FAQ SCHEMA|LOCAL BUSINESS SCHEMA|INTERNAL LINKS SUGERIDOS|NOTAS EDITORIAIS|TITLE TAG|SEO BRIEFING|META DESCRIPTION)[\s\S]*?(?=\n=== |$)/gm,
+      ""
+    );
+    rawContent = rawContent.trim();
+
+    // 4. Detecta se é HTML ou Markdown e converte se necessário
+    const isHtml = /^<[a-zA-Z][^>]*>/.test(rawContent) && !rawContent.startsWith("# ");
+    let contentHtml;
+
+    if (isHtml) {
+      contentHtml = rawContent;
+      // Extrai só o body do HTML se tiver DOCTYPE/html tags
+      const bodyMatch = contentHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+      if (bodyMatch) {
+        contentHtml = bodyMatch[1];
+      }
+    } else {
+      // Markdown cru — converte usando o parser embutido
+      contentHtml = markdownToHtml(rawContent);
+    }
+
+    // Remove scripts e estilos (segurança)
     contentHtml = contentHtml.replace(/<script[\s\S]*?<\/script>/gi, "");
     contentHtml = contentHtml.replace(/<style[\s\S]*?<\/style>/gi, "");
+
+    // Adiciona âncoras aos headings (paridade com o frontend)
+    contentHtml = addHeadingIds(contentHtml);
 
     const pageHtml = TEMPLATE(
       post.title || "CareConnect Blog",
       post.excerpt || "",
       contentHtml,
       post.slug || cleanSlug,
-      post.cover_image || ""
+      post.cover_image || "",
+      faqSchemaHtml + localBusinessSchemaHtml
     );
 
     response.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -230,6 +222,7 @@ export default async function handler(request, response) {
     response.status(200).send(pageHtml);
   } catch (error) {
     console.error("Blog render error:", error);
-    response.status(503).send("Sitemap temporarily unavailable");
+    response.status(503).send("Service temporarily unavailable");
   }
 }
+

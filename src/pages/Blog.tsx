@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { formatDate } from "@/lib/utils";
+import type { BlogPostListItem } from "@/lib/blogUtils";
 import SEO from "@/components/SEO";
 
 import { Link } from "react-router-dom";
@@ -8,12 +9,30 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
+import { toast } from "sonner";
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<BlogPostListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [subName, setSubName] = useState("");
+  const [subEmail, setSubEmail] = useState("");
+
+  const handleSubscribe = (e: FormEvent) => {
+    e.preventDefault();
+    const email = subEmail.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) {
+      toast.error("Digite um e-mail válido para continuar.");
+      return;
+    }
+    const msg = `Olá! Quero receber as dicas do blog da CareConnect.${subName.trim() ? ` Meu nome é ${subName.trim()}.` : ""} Meu e-mail: ${email}`;
+    window.open(`https://wa.me/5511948633976?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+    toast.success("Quase lá! Confirme o envio pelo WhatsApp.");
+    setSubName("");
+    setSubEmail("");
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -67,15 +86,28 @@ const Blog = () => {
           {/* Search and Filters */}
           <div className="mb-12">
             <div className="flex flex-col md:flex-row gap-4 md:items-center mb-6 max-w-lg mx-auto">
-              <div className="flex-grow">
+              <div className="flex-grow relative">
+                <label htmlFor="blog-search" className="sr-only">
+                  Pesquisar publicações do blog
+                </label>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 <Input
+                  id="blog-search"
+                  type="search"
                   placeholder="Pesquisar publicações do blog..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full"
+                  className="w-full pl-9"
                 />
               </div>
             </div>
+            {!isLoading && searchTerm && (
+              <p className="text-sm text-gray-500 text-center mb-6" role="status" aria-live="polite">
+                {filteredPosts.length === 1
+                  ? "1 resultado encontrado"
+                  : `${filteredPosts.length} resultados encontrados`}
+              </p>
+            )}
             
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
@@ -154,10 +186,26 @@ const Blog = () => {
                 </p>
               </div>
               <div>
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                  <Input placeholder="Seu Nome" />
-                  <Input placeholder="Seu Email" type="email" />
-                  <Button className="w-full bg-careconnect-blue hover:bg-careconnect-blue/90">
+                <form className="space-y-4" onSubmit={handleSubscribe}>
+                  <label htmlFor="sub-name" className="sr-only">Seu nome</label>
+                  <Input
+                    id="sub-name"
+                    placeholder="Seu Nome"
+                    autoComplete="name"
+                    value={subName}
+                    onChange={(e) => setSubName(e.target.value)}
+                  />
+                  <label htmlFor="sub-email" className="sr-only">Seu e-mail</label>
+                  <Input
+                    id="sub-email"
+                    placeholder="Seu Email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={subEmail}
+                    onChange={(e) => setSubEmail(e.target.value)}
+                  />
+                  <Button type="submit" className="w-full bg-careconnect-blue hover:bg-careconnect-blue/90">
                     Inscrever-se Agora
                   </Button>
                 </form>

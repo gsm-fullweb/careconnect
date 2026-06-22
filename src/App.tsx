@@ -1,43 +1,51 @@
 
+import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
-
-// Public Pages
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Services from "./pages/Services";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import Planos from "./pages/Planos";
-import PreCadastro from "./pages/PreCadastro";
-import CadastrarCuidador from "./pages/CadastrarCuidador";
-import Obrigado from "./pages/Obrigado";
-import LoginPage from "./pages/Login";
-import ClientDashboard from "./pages/ClientDashboard";
-import CaregiverDashboard from "./pages/CaregiverDashboard";
-import EncontrarCuidador from "./pages/EncontrarCuidador";
-import CuidadorIdososMogiDasCruzes from "./pages/CuidadorIdososMogiDasCruzes";
-
-// Admin Pages
-import Login from "./pages/admin/Login";
-import Dashboard from "./pages/admin/Dashboard";
-import AdminLayout from "./components/admin/AdminLayout";
-import UsersManagement from "./pages/admin/UsersManagement";
-import CustomerManagement from "./pages/admin/CustomerManagement";
-import BlogManagement from "./pages/admin/BlogManagement";
-import BlogPostEditor from "./pages/admin/BlogPostEditor";
-import TestimonialsManagement from "./pages/admin/TestimonialsManagement";
-import PartnersManagement from "./pages/admin/PartnersManagement";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import ChatbotWidget from "./components/ChatbotWidget";
 
+// Public Pages (lazy — code-splitting por rota)
+const Home = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Planos = lazy(() => import("./pages/Planos"));
+const PreCadastro = lazy(() => import("./pages/PreCadastro"));
+const CadastrarCuidador = lazy(() => import("./pages/CadastrarCuidador"));
+const Obrigado = lazy(() => import("./pages/Obrigado"));
+const LoginPage = lazy(() => import("./pages/Login"));
+const ClientDashboard = lazy(() => import("./pages/ClientDashboard"));
+const CaregiverDashboard = lazy(() => import("./pages/CaregiverDashboard"));
+const EncontrarCuidador = lazy(() => import("./pages/EncontrarCuidador"));
+const CuidadorIdososMogiDasCruzes = lazy(() => import("./pages/CuidadorIdososMogiDasCruzes"));
+
+// Admin Pages (lazy)
+const Login = lazy(() => import("./pages/admin/Login"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const UsersManagement = lazy(() => import("./pages/admin/UsersManagement"));
+const CustomerManagement = lazy(() => import("./pages/admin/CustomerManagement"));
+const BlogManagement = lazy(() => import("./pages/admin/BlogManagement"));
+const BlogPostEditor = lazy(() => import("./pages/admin/BlogPostEditor"));
+const TestimonialsManagement = lazy(() => import("./pages/admin/TestimonialsManagement"));
+const PartnersManagement = lazy(() => import("./pages/admin/PartnersManagement"));
+
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="flex justify-center items-center min-h-[60vh]">
+    <Loader2 className="animate-spin text-careconnect-blue h-10 w-10" />
+  </div>
+);
 
 // ✅ Function: App
 // 📌 Description: Main application component that sets up routing and providers
@@ -50,6 +58,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
@@ -92,6 +101,7 @@ const App = () => (
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
           <ChatbotWidget />
         </BrowserRouter>
       </TooltipProvider>
