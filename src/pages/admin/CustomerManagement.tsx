@@ -11,7 +11,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Eye, Lock, Unlock, Filter, Calendar, Phone, Mail, MapPin, Edit } from "lucide-react";
+import { Search, Eye, Lock, Unlock, Filter, Calendar, Phone, Mail, MapPin, Edit, Trash2, RotateCcw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -135,6 +146,33 @@ const CustomersManagement = () => {
         variant: "destructive",
       });
       console.error("Error updating customer status:", error);
+    },
+  });
+
+  // Delete customer
+  const deleteCustomerMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("customer")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      toast({
+        title: "Cliente excluído",
+        description: "O cliente foi excluído com sucesso.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o cliente.",
+        variant: "destructive",
+      });
+      console.error("Error deleting customer:", error);
     },
   });
 
@@ -804,6 +842,49 @@ const CustomersManagement = () => {
                       >
                         <Lock className="w-4 h-4" />
                       </Button>
+
+                      {/* Return to Pending */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleStatusChange(customer.id, "pending")}
+                        disabled={customer.status === "pending" || !customer.status}
+                        className="text-yellow-600 hover:text-yellow-700"
+                        title="Voltar para pendente"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </Button>
+
+                      {/* Delete Customer */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir cliente"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir cliente</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir <strong>{customer.name}</strong>? Esta ação não pode ser desfeita e removerá permanentemente o cliente.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteCustomerMutation.mutate(customer.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
