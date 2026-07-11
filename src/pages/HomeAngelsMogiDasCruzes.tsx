@@ -104,7 +104,7 @@ const HomeAngelsMogiDasCruzes = () => {
       <SEO
         title="Home Angels Mogi das Cruzes - Compare com a CareConnect"
         description="Procurando pela Home Angels Mogi das Cruzes? Conheça os diferenciais da CareConnect e agende um orçamento gratuito no WhatsApp."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/home-angels-mogi-das-cruzes"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const HomeAngelsMogiDasCruzes = () => {
 };
 
 export default HomeAngelsMogiDasCruzes;
+
 

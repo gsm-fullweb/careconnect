@@ -104,7 +104,7 @@ const CuidareMogiDasCruzes = () => {
       <SEO
         title="Cuidare Mogi das Cruzes - Compare os Melhores Cuidadores"
         description="Procurando pela Cuidare em Mogi das Cruzes? Compare e encontre os melhores profissionais verificados. Fale agora no WhatsApp!"
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/cuidare-mogi-das-cruzes"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const CuidareMogiDasCruzes = () => {
 };
 
 export default CuidareMogiDasCruzes;
+
 

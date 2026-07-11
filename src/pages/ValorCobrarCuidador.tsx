@@ -104,7 +104,7 @@ const ValorCobrarCuidador = () => {
       <SEO
         title="Qual valor cobrar para cuidar de um idoso? | Para Cuidadores"
         description="Tabela de referência para cuidadores: descubra qual valor cobrar para cuidar de um idoso em plantões e diárias. Entre em contato com a nossa agência."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/qual-valor-cobrar-para-cuidar-de-um-idoso"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const ValorCobrarCuidador = () => {
 };
 
 export default ValorCobrarCuidador;
+
 

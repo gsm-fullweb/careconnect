@@ -13,6 +13,19 @@ const STATIC_URLS = [
   "/cuidador-idosos-mogi-das-cruzes",
   "/pre-cadastro",
   "/cadastrar-cuidador",
+  "/cuidare-mogi-das-cruzes",
+  "/acuidar-mogi-das-cruzes-cuidadores-de-idosos",
+  "/home-angels-mogi-das-cruzes",
+  "/qual-o-valor-da-diaria-do-cuidador-de-idoso",
+  "/quanto-e-12-horas-de-uma-cuidadora",
+  "/qual-valor-cobrar-para-cuidar-de-um-idoso",
+  "/como-contratar-cuidador-sem-vinculo-empregaticio",
+  "/duvidas-frequentes-cuidador-de-idosos",
+  "/home-care-mogi-das-cruzes-trabalhe-conosco",
+  "/casa-de-repouso-mogi-das-cruzes-trabalhe-conosco",
+  "/vagas-de-cuidadora-de-idosos-particular",
+  "/avaliacoes-sobre-cuidare-mogi-das-cruzes",
+  "/cuidador-mogi-das-cruzes",
 ];
 
 type BlogPost = {

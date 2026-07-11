@@ -104,7 +104,7 @@ const Valor12HorasCuidadora = () => {
       <SEO
         title="Quanto é 12 horas de uma cuidadora? | CareConnect"
         description="Descubra quanto custa 12 horas de uma cuidadora de idosos. Tabela de preços para plantões diurnos e noturnos. Tire suas dúvidas pelo WhatsApp."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/quanto-e-12-horas-de-uma-cuidadora"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const Valor12HorasCuidadora = () => {
 };
 
 export default Valor12HorasCuidadora;
+
 

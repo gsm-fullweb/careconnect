@@ -104,7 +104,7 @@ const HomeCareTrabalheConosco = () => {
       <SEO
         title="Home Care Mogi das Cruzes Trabalhe Conosco | CareConnect"
         description="Vagas para cuidadores em Home Care Mogi das Cruzes. Cadastre-se na CareConnect e encontre oportunidades."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/home-care-mogi-das-cruzes-trabalhe-conosco"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const HomeCareTrabalheConosco = () => {
 };
 
 export default HomeCareTrabalheConosco;
+
 

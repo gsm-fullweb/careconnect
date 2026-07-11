@@ -104,7 +104,7 @@ const VagasCuidadoraParticular = () => {
       <SEO
         title="Vagas de Cuidadora de Idosos Particular | Trabalhe Conosco"
         description="Confira vagas de cuidadora de idosos particular abertas em Mogi das Cruzes. Fale conosco pelo WhatsApp para mais informações."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/vagas-de-cuidadora-de-idosos-particular"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const VagasCuidadoraParticular = () => {
 };
 
 export default VagasCuidadoraParticular;
+
 

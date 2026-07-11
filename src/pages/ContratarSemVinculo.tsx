@@ -104,7 +104,7 @@ const ContratarSemVinculo = () => {
       <SEO
         title="Como contratar um cuidador sem vínculo empregatício? | Guia Seguro"
         description="Aprenda como contratar um cuidador de idosos sem criar vínculo empregatício e evitar passivos trabalhistas com segurança jurídica. Saiba mais!"
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/como-contratar-cuidador-sem-vinculo-empregaticio"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const ContratarSemVinculo = () => {
 };
 
 export default ContratarSemVinculo;
+
 

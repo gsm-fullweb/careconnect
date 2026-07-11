@@ -104,7 +104,7 @@ const AcuidarMogiDasCruzes = () => {
       <SEO
         title="Acuidar Mogi das Cruzes Cuidadores de Idosos | CareConnect"
         description="Alternativa à Acuidar Mogi das Cruzes. Cuidadores de idosos, adultos e crianças. Plantões e home care. Fale via WhatsApp."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/acuidar-mogi-das-cruzes-cuidadores-de-idosos"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const AcuidarMogiDasCruzes = () => {
 };
 
 export default AcuidarMogiDasCruzes;
+
 

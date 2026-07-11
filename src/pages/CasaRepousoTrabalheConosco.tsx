@@ -104,7 +104,7 @@ const CasaRepousoTrabalheConosco = () => {
       <SEO
         title="Casa de Repouso Mogi das Cruzes Trabalhe Conosco | Vagas"
         description="Vagas para casa de repouso em Mogi das Cruzes. Trabalhe conosco como cuidador de idosos. Entre em contato pelo WhatsApp."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/casa-de-repouso-mogi-das-cruzes-trabalhe-conosco"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const CasaRepousoTrabalheConosco = () => {
 };
 
 export default CasaRepousoTrabalheConosco;
+
 

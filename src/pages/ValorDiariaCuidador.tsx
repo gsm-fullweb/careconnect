@@ -104,7 +104,7 @@ const ValorDiariaCuidador = () => {
       <SEO
         title="Qual o valor da diária do cuidador de idoso? | Tabela Oficial"
         description="Saiba exatamente qual o valor da diária de um cuidador de idoso. Preços atualizados para plantões de 12 e 24 horas. Fale conosco!"
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/qual-o-valor-da-diaria-do-cuidador-de-idoso"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const ValorDiariaCuidador = () => {
 };
 
 export default ValorDiariaCuidador;
+
 

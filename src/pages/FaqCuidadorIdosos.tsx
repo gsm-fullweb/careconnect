@@ -104,7 +104,7 @@ const FaqCuidadorIdosos = () => {
       <SEO
         title="As pessoas também perguntam sobre Cuidadores de Idosos | CareConnect"
         description="Principais dúvidas sobre cuidadores de idosos: valores, como contratar, diárias e muito mais. Fale com a CareConnect no WhatsApp."
-        canonical="/cuidador-idosos-mogi-das-cruzes"
+        canonical="/duvidas-frequentes-cuidador-de-idosos"
       />
       <LocalBusinessSchema
         name="CareConnect - Cuidador em Mogi das Cruzes"
@@ -530,4 +530,5 @@ const FaqCuidadorIdosos = () => {
 };
 
 export default FaqCuidadorIdosos;
+
 
