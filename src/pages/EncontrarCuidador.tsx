@@ -64,48 +64,22 @@ export default function EncontrarCuidador() {
       const specialCareText = `Disponibilidade desejada: ${diasHorarios}.`;
       const initialObs = `[Pre-cadastro Conversacional] Cliente informou necessidade para a regiao de ${normalizedCidade}. ${specialCareText}`;
 
-      const { data: existingCustomer, error: fetchError } = await supabase
-        .from("customer")
-        .select("*")
-        .eq("email", generatedEmail)
-        .maybeSingle();
+      const dataHora = new Date().toLocaleString("pt-BR");
+      const appendObs = `[Reenvio do Fluxo - ${dataHora}] Cidade: ${normalizedCidade}. ${specialCareText}`;
 
-      if (fetchError) throw fetchError;
+      // Captação de lead via RPC SECURITY DEFINER (sem acesso anônimo direto à
+      // tabela customer). A função insere ou atualiza + acrescenta a observação.
+      const { error: rpcError } = await supabase.rpc("upsert_customer_lead", {
+        p_email: generatedEmail,
+        p_name: nomeResponsavel,
+        p_whatsapp: whatsapp,
+        p_city: normalizedCidade,
+        p_special_care: specialCareText,
+        p_obs_initial: initialObs,
+        p_obs_append: appendObs,
+      });
 
-      if (existingCustomer) {
-        const dataHora = new Date().toLocaleString("pt-BR");
-        const updatedObs = existingCustomer.observations
-          ? `${existingCustomer.observations}\n\n[Reenvio do Fluxo - ${dataHora}] Cidade: ${normalizedCidade}. ${specialCareText}`
-          : initialObs;
-
-        const { error: updateError } = await supabase
-          .from("customer")
-          .update({
-            name: nomeResponsavel,
-            whatsapp,
-            city: normalizedCidade,
-            special_care: specialCareText,
-            observations: updatedObs,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", existingCustomer.id);
-
-        if (updateError) throw updateError;
-      } else {
-        const { error: insertError } = await supabase.from("customer").insert({
-          name: nomeResponsavel,
-          email: generatedEmail,
-          whatsapp,
-          city: normalizedCidade,
-          special_care: specialCareText,
-          observations: initialObs,
-          status: "pending",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-
-        if (insertError) throw insertError;
-      }
+      if (rpcError) throw rpcError;
 
       const searchParams = new URLSearchParams({
         cidade: normalizedCidade,

@@ -1,51 +1,48 @@
-
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminUser } from "@/lib/authRole";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
+type AccessStatus = "checking" | "granted" | "denied";
+
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => {
-    return localStorage.getItem("admin-token") ? true : null;
-  });
+  const [status, setStatus] = useState<AccessStatus>("checking");
   const location = useLocation();
 
   useEffect(() => {
     let isMounted = true;
 
+    // Verifica sessao E papel de admin. Estar apenas autenticado (cuidador ou
+    // cliente) NAO libera o painel administrativo.
+    const resolveAccess = async (user: User | null): Promise<AccessStatus> => {
+      if (!user) return "denied";
+      const admin = await isAdminUser(user);
+      return admin ? "granted" : "denied";
+    };
+
     const checkAuth = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
         if (error) throw error;
-
-        if (data?.session) {
-          localStorage.setItem("admin-token", data.session.access_token);
-          if (isMounted) setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem("admin-token");
-          if (isMounted) setIsAuthenticated(false);
-        }
+        const next = await resolveAccess(data?.session?.user ?? null);
+        if (isMounted) setStatus(next);
       } catch (err) {
         console.error("Auth check failed:", err);
-        localStorage.removeItem("admin-token");
-        if (isMounted) setIsAuthenticated(false);
+        if (isMounted) setStatus("denied");
       }
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session) {
-          localStorage.setItem("admin-token", session.access_token);
-          setIsAuthenticated(true);
-        } else {
-          localStorage.removeItem("admin-token");
-          setIsAuthenticated(false);
-        }
+      async (_event, session) => {
+        const next = await resolveAccess(session?.user ?? null);
+        if (isMounted) setStatus(next);
       }
     );
 
@@ -55,8 +52,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     };
   }, []);
 
-  // While checking authentication status
-  if (isAuthenticated === null) {
+  // Enquanto verifica sessao/papel
+  if (status === "checking") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -67,12 +64,12 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // If not authenticated, redirect to login
-  if (!isAuthenticated) {
+  // Sem sessao ou sem papel de admin: volta para o login administrativo
+  if (status === "denied") {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  // If authenticated, render the protected content
+  // Admin autenticado: libera o conteudo protegido
   return <>{children}</>;
 };
 

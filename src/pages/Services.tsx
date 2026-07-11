@@ -127,9 +127,9 @@ const Services = () => { // Alterado de export default function Servicos() para 
                 asChild
                 className="bg-[#3e8861] hover:bg-[#347553] text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <Link to="/plans">
+                <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
                   Encontrar Cuidadores
-                </Link>
+                </a>
               </Button>
             </div>
             <div className="flex justify-center">
@@ -320,9 +320,9 @@ const Services = () => { // Alterado de export default function Servicos() para 
               size="lg"
               className="bg-white text-[#3e8861] hover:bg-white/90 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <Link to="/plans">
+              <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
                 Buscar Cuidadores
-              </Link>
+              </a>
             </Button>
 
           </div>

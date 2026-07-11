@@ -227,9 +227,9 @@ const Contact = () => { // Alterado de export default function Contato() para co
             variant="outline"
             className="bg-white text-[#6B46C1] hover:bg-white/90 rounded-full"
           >
-            <Link to="/plans">
+            <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
               Buscar Cuidadores
-            </Link>
+            </a>
           </Button>
 
         </div>
