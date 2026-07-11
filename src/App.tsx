@@ -23,6 +23,19 @@ import ClientDashboard from "./pages/ClientDashboard";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
 import EncontrarCuidador from "./pages/EncontrarCuidador";
 import CuidadorIdososMogiDasCruzes from "./pages/CuidadorIdososMogiDasCruzes";
+import CuidadorMogiDasCruzes from "./pages/CuidadorMogiDasCruzes";
+import FaqCuidadorIdosos from "./pages/FaqCuidadorIdosos";
+import ValorDiariaCuidador from "./pages/ValorDiariaCuidador";
+import Valor12HorasCuidadora from "./pages/Valor12HorasCuidadora";
+import ContratarSemVinculo from "./pages/ContratarSemVinculo";
+import ValorCobrarCuidador from "./pages/ValorCobrarCuidador";
+import HomeCareTrabalheConosco from "./pages/HomeCareTrabalheConosco";
+import CuidareMogiDasCruzes from "./pages/CuidareMogiDasCruzes";
+import AcuidarMogiDasCruzes from "./pages/AcuidarMogiDasCruzes";
+import CasaRepousoTrabalheConosco from "./pages/CasaRepousoTrabalheConosco";
+import HomeAngelsMogiDasCruzes from "./pages/HomeAngelsMogiDasCruzes";
+import AvaliacoesCuidareMogi from "./pages/AvaliacoesCuidareMogi";
+import VagasCuidadoraParticular from "./pages/VagasCuidadoraParticular";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -67,6 +80,19 @@ const App = () => (
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
             <Route path="/cuidador-idosos-mogi-das-cruzes" element={<CuidadorIdososMogiDasCruzes />} />
+            <Route path="/cuidador-mogi-das-cruzes" element={<CuidadorMogiDasCruzes />} />
+            <Route path="/duvidas-frequentes-cuidador-de-idosos" element={<FaqCuidadorIdosos />} />
+            <Route path="/qual-o-valor-da-diaria-do-cuidador-de-idoso" element={<ValorDiariaCuidador />} />
+            <Route path="/quanto-e-12-horas-de-uma-cuidadora" element={<Valor12HorasCuidadora />} />
+            <Route path="/como-contratar-cuidador-sem-vinculo-empregaticio" element={<ContratarSemVinculo />} />
+            <Route path="/qual-valor-cobrar-para-cuidar-de-um-idoso" element={<ValorCobrarCuidador />} />
+            <Route path="/home-care-mogi-das-cruzes-trabalhe-conosco" element={<HomeCareTrabalheConosco />} />
+            <Route path="/cuidare-mogi-das-cruzes" element={<CuidareMogiDasCruzes />} />
+            <Route path="/acuidar-mogi-das-cruzes-cuidadores-de-idosos" element={<AcuidarMogiDasCruzes />} />
+            <Route path="/casa-de-repouso-mogi-das-cruzes-trabalhe-conosco" element={<CasaRepousoTrabalheConosco />} />
+            <Route path="/home-angels-mogi-das-cruzes" element={<HomeAngelsMogiDasCruzes />} />
+            <Route path="/avaliacoes-sobre-cuidare-mogi-das-cruzes" element={<AvaliacoesCuidareMogi />} />
+            <Route path="/vagas-de-cuidadora-de-idosos-particular" element={<VagasCuidadoraParticular />} />
 
             {/* Admin Routes */}
             <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />

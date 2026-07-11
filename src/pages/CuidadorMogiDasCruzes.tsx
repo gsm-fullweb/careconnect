@@ -23,7 +23,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-const CuidadorIdososMogiDasCruzes = () => {
+const CuidadorMogiDasCruzes = () => {
   const servicos = [
     {
       icon: <Bath className="w-8 h-8 text-[#3e8861]" />,
@@ -102,18 +102,18 @@ const CuidadorIdososMogiDasCruzes = () => {
   return (
     <Layout>
       <SEO
-        title="Cuidador de Idosos em Mogi das Cruzes | CareConnect Agência de Home Care"
-        description="Encontre a melhor agência de cuidador de idosos em Mogi das Cruzes. Home care, plantões e acompanhantes para Hospital Ipiranga, Santa Casa e clínicas locais. Solicite já!"
+        title="Cuidador em Mogi das Cruzes | Agência CareConnect Profissional"
+        description="Busca por cuidador em Mogi das Cruzes? Cuidadores de idosos qualificados, plantões, home care e assistência em hospitais. Solicite atendimento direto pelo WhatsApp."
         canonical="/cuidador-idosos-mogi-das-cruzes"
       />
       <LocalBusinessSchema
-        name="CareConnect - Cuidador de Idosos em Mogi das Cruzes"
-        description="Encontre cuidadores de idosos qualificados em Mogi das Cruzes e Alto Tietê. Home care 24h, acompanhante hospitalar, cuidados para Alzheimer e paliativos com matching inteligente por IA."
+        name="CareConnect - Cuidador em Mogi das Cruzes"
+        description="Encontre cuidadores em Mogi das Cruzes. Assistência domiciliar, acompanhantes e plantonistas."
         city="Mogi das Cruzes"
         state="SP"
         phone="+55-11-4863-3976"
         email="contato@careconnect.com.br"
-        url="/cuidador-idosos-mogi-das-cruzes"
+        url="/cuidador-mogi-das-cruzes"
       />
 
       {/* Hero Section */}
@@ -123,18 +123,16 @@ const CuidadorIdososMogiDasCruzes = () => {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#3e8861]/10 text-[#3e8861] rounded-full text-sm font-medium">
                 <MapPin className="w-4 h-4" />
-                Mogi das Cruzes e Região
+                Atendimento em Mogi das Cruzes
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Cuidador de Idosos em{" "}
-                <span className="text-[#3e8861]">Mogi das Cruzes</span>
+                Cuidador em <span className="text-[#3e8861]">Mogi das Cruzes</span>
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                A <strong>CareConnect</strong> é a agência de cuidadores de idosos referência em{" "}
-                <strong>Mogi das Cruzes</strong> e região do <strong>Alto Tietê</strong>. 
-                Conectamos famílias a cuidadores qualificados e verificados através de 
-                matching inteligente com IA, garantindo segurança, confiança e o melhor 
-                cuidado para seu ente querido.
+                A <strong>CareConnect</strong> é especializada em conectar famílias aos melhores 
+                <strong> cuidadores em Mogi das Cruzes</strong>. Profissionais selecionados com 
+                rigor e matching por Inteligência Artificial para garantir que o seu ente querido 
+                receba o atendimento exato e humanizado de que precisa.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
@@ -148,7 +146,7 @@ const CuidadorIdososMogiDasCruzes = () => {
                     rel="noopener noreferrer"
                   >
                     <MessageCircle className="mr-2 w-5 h-5" />
-                    Solicitar Orçamento Grátis
+                    Falar com Especialista
                   </a>
                 </Button>
                 <Button
@@ -167,7 +165,7 @@ const CuidadorIdososMogiDasCruzes = () => {
               <div className="flex flex-wrap gap-6 pt-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Shield className="w-5 h-5 text-[#3e8861]" />
-                  <span>Cuidadores Verificados</span>
+                  <span>Seleção Rigorosa</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Star className="w-5 h-5 text-[#3e8861]" />
@@ -175,7 +173,7 @@ const CuidadorIdososMogiDasCruzes = () => {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Clock className="w-5 h-5 text-[#3e8861]" />
-                  <span>Suporte 24/7</span>
+                  <span>Agilidade</span>
                 </div>
               </div>
             </div>
@@ -185,7 +183,7 @@ const CuidadorIdososMogiDasCruzes = () => {
                 <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
                   <img
                     src="/images/hero-image.jpg"
-                    alt="Cuidador de idosos profissional da CareConnect em Mogi das Cruzes"
+                    alt="Cuidador trabalhando na CareConnect em Mogi das Cruzes"
                     className="object-cover w-full h-full"
                     width="500"
                     height="500"
@@ -531,4 +529,4 @@ const CuidadorIdososMogiDasCruzes = () => {
   );
 };
 
-export default CuidadorIdososMogiDasCruzes;
+export default CuidadorMogiDasCruzes;
