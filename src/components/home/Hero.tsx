@@ -9,9 +9,9 @@ const Hero = () => {
       <div className="md:hidden flex flex-col min-h-[100dvh] bg-white relative overflow-hidden justify-between pb-10">
         <div className="flex flex-col items-center pt-[15vh] px-8 z-10">
           <img 
-            src="/images/logo-careconnect.png" 
+            src="/images/logo-careconnect-mobile.png" 
             alt="CareConnect Logo" 
-            className="w-56 object-contain mb-14"
+            className="w-64 object-contain mb-14"
           />
           <h1 className="text-[1.4rem] text-center text-gray-800 font-normal leading-snug">
             Encontre <span className="text-[#6850E2] font-semibold">Cuidadores de Idosos</span><br />ou acompanhante facilmente
