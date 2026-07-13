@@ -48,7 +48,6 @@ import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import TestimonialsManagement from "./pages/admin/TestimonialsManagement";
 import PartnersManagement from "./pages/admin/PartnersManagement";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
-import ChatbotWidget from "./components/ChatbotWidget";
 
 const queryClient = new QueryClient();
 
@@ -118,7 +117,6 @@ const App = () => (
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <ChatbotWidget />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

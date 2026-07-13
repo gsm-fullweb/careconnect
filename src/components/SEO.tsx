@@ -26,7 +26,11 @@ const SEO = ({
 
   const siteName = 'CareConnect';
   const defaultTitle = 'CareConnect — Cuidador de Idosos em SP e Alto Tietê | Home Care';
-  const fullTitle = title ? `${title} | ${siteName}` : defaultTitle;
+  
+  // Smart title formatting: don't append siteName if title already contains it or is too long (> 55 chars)
+  const fullTitle = title 
+    ? (title.includes(siteName) || title.length > 55 ? title : `${title} | ${siteName}`)
+    : defaultTitle;
   const fullDescription = description || 'Cuidadores de idosos qualificados em São Paulo, Mogi das Cruzes, Guarulhos e região. Home care para Alzheimer e Parkinson, acompanhamento hospitalar e paliativos. Matching por IA.';
   const url = `https://www.careconnect.com.br${canonical || ''}`;
   const defaultKeywords = 'cuidador de idosos, home care, cuidador de idosos sp, cuidador de idosos mogi das cruzes, cuidadora de idosos, Alzheimer, Parkinson, acompanhante hospitalar';

@@ -22,6 +22,17 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/(cuidador-idosos-mogi-das-cruzes|cuidador-mogi-das-cruzes|duvidas-frequentes-cuidador-de-idosos|qual-o-valor-da-diaria-do-cuidador-de-idoso|quanto-e-12-horas-de-uma-cuidadora|como-contratar-cuidador-sem-vinculo-empregaticio|qual-valor-cobrar-para-cuidar-de-um-idoso|home-care-mogi-das-cruzes-trabalhe-conosco|cuidare-mogi-das-cruzes|acuidar-mogi-das-cruzes-cuidadores-de-idosos|casa-de-repouso-mogi-das-cruzes-trabalhe-conosco|home-angels-mogi-das-cruzes|avaliacoes-sobre-cuidare-mogi-das-cruzes|vagas-de-cuidadora-de-idosos-particular)",
+      "destination": "/api/lp-render?path=$1",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Twitterbot|facebookexternalhit|LinkedInBot|Slack|WhatsApp|Telegram|Discordbot|Applebot).*"
+        }
+      ]
+    },
+    {
       "source": "/blog/(.*)",
       "destination": "/api/blog-render?slug=$1",
       "has": [

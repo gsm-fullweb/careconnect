@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
   return (
-    <header className="bg-[#6b26d9] shadow-sm sticky top-0 z-50">
+    <header className={`bg-[#6b26d9] shadow-sm sticky top-0 z-50 ${isHome ? 'hidden md:block' : 'block'}`}>
       <div className="container-custom flex justify-between items-center h-20 px-4">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-3">
