@@ -35,6 +35,25 @@ const SEO = ({
   const url = `https://www.careconnect.com.br${canonical || ''}`;
   const defaultKeywords = 'cuidador de idosos, home care, cuidador de idosos sp, cuidador de idosos mogi das cruzes, cuidadora de idosos, Alzheimer, Parkinson, acompanhante hospitalar';
 
+  const breadcrumbSchema = canonical && canonical !== '/' ? {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.careconnect.com.br/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": title ? title.replace(' | CareConnect', '') : siteName,
+        "item": url
+      }
+    ]
+  } : null;
+
   return (
     <Helmet>
       {/* Basic Meta Tags */}
@@ -58,6 +77,13 @@ const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={fullDescription} />
       <meta name="twitter:image" content={image} />
+
+      {/* Breadcrumb Schema */}
+      {breadcrumbSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      )}
     </Helmet>
   );
 };

@@ -108,9 +108,9 @@ const About = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   size="lg"
                 >
-                  <a href="https://careconnect.com.br/pre-cadastro" target="_self">
+                  <Link to="/pre-cadastro">
                     Faça parte da nossa equipe
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   asChild
@@ -295,9 +295,9 @@ const About = () => {
               size="lg"
               className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <a href="https://careconnect.com.br/pre-cadastro" target="_self">
+              <Link to="/pre-cadastro">
                 Cadastrar como Cuidador
-              </a>
+              </Link>
             </Button>
             <Button
               asChild

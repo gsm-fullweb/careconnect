@@ -12,7 +12,13 @@
     { "source": "/servicos", "destination": "/services", "permanent": true },
     { "source": "/planos", "destination": "/plans", "permanent": true },
     { "source": "/contato", "destination": "/contact", "permanent": true },
-    { "source": "/cuidadores-mogi", "destination": "/cuidador-idosos-mogi-das-cruzes", "permanent": true }
+    { "source": "/cuidadores-mogi", "destination": "/cuidador-idosos-mogi-das-cruzes", "permanent": true },
+    { 
+      "source": "/(.*)", 
+      "has": [{ "type": "host", "value": "careconnect.com.br" }],
+      "destination": "https://www.careconnect.com.br/$1", 
+      "permanent": true 
+    }
   ],
   "cleanUrls": true,
   "trailingSlash": false,

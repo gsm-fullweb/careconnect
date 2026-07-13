@@ -67,12 +67,12 @@ export default async function handler(_request: unknown, response: any) {
     }
 
     const posts = (await postsResponse.json()) as BlogPost[];
-    const today = new Date().toISOString().slice(0, 10);
+    const STATIC_LASTMOD = "2024-07-13"; // Changed from dynamic today to fix SEO issue #7
 
     const urls = [
       ...STATIC_URLS.map((path) => ({
         loc: `${SITE_URL}${path}`,
-        lastmod: today,
+        lastmod: STATIC_LASTMOD,
       })),
       ...posts.map((post) => ({
         loc: `${SITE_URL}/blog/${post.slug || post.id}`,
