@@ -46,6 +46,7 @@ export default function BlogSection() {
                 <img
                   src={article.image}
                   alt={article.title}
+                  loading="lazy"
                   className="object-cover w-full h-full"
                 />
               </div>

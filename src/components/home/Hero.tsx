@@ -13,9 +13,9 @@ const Hero = () => {
             alt="CareConnect Logo" 
             className="w-64 object-contain mb-14"
           />
-          <h1 className="text-[1.4rem] text-center text-gray-800 font-normal leading-snug">
+          <div className="text-[1.4rem] text-center text-gray-800 font-normal leading-snug">
             Encontre <span className="text-[#6850E2] font-semibold">Cuidadores de Idosos</span><br />ou acompanhante facilmente
-          </h1>
+          </div>
         </div>
 
         <div className="px-6 w-full flex justify-center z-10 relative mb-4">

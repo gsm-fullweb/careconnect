@@ -135,6 +135,7 @@ const Partners = () => {
                   <img
                     src={imageUrl}
                     alt={partner.name}
+                    loading="lazy"
                     className="max-h-full max-w-full object-contain"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = "/placeholder.svg";

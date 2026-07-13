@@ -136,6 +136,7 @@ function Testimonials() {
                     <img
                       src={getAvatarUrl(testimonial.avatar_url)}
                       alt={testimonial.name}
+                      loading="lazy"
                       className="object-cover w-full h-full"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -191,6 +192,7 @@ function Testimonials() {
                     <img
                       src={getAvatarUrl(testimonial.avatar_url)}
                       alt={testimonial.name}
+                      loading="lazy"
                       className="object-cover w-full h-full"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;

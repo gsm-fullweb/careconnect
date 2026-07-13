@@ -38,6 +38,7 @@ const AboutSection = () => {
               <img 
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Equipe CareConnect atendendo paciente" 
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             </div>

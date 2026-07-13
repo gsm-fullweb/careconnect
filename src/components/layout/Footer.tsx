@@ -11,6 +11,7 @@ const Footer = () => {
               <img 
                 src="/images/logo-careconnect.png" 
                 alt="CareConnect - Cuidadores de Idosos em Mogi das Cruzes" 
+                loading="lazy"
                 className="w-32 h-10 md:w-40 md:h-12 object-contain"
                 width="160"
                 height="48"
