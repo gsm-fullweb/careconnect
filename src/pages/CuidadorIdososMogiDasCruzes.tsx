@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
+import InterlinkingBlock from "@/components/seo/InterlinkingBlock";
   MapPin,
   Clock,
   Shield,
@@ -527,6 +528,7 @@ const CuidadorIdososMogiDasCruzes = () => {
           </div>
         </div>
       </section>
+      <InterlinkingBlock />
     </Layout>
   );
 };

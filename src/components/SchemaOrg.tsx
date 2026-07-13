@@ -86,6 +86,11 @@ export const LocalBusinessSchema = (props: {
       "latitude": -23.5225,
       "longitude": -46.1882
     },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "128"
+    },
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",

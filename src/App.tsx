@@ -36,6 +36,7 @@ import CasaRepousoTrabalheConosco from "./pages/CasaRepousoTrabalheConosco";
 import HomeAngelsMogiDasCruzes from "./pages/HomeAngelsMogiDasCruzes";
 import AvaliacoesCuidareMogi from "./pages/AvaliacoesCuidareMogi";
 import VagasCuidadoraParticular from "./pages/VagasCuidadoraParticular";
+import BuscaCuidadorLP from "./pages/BuscaCuidadorLP";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -78,6 +79,7 @@ const App = () => (
             <Route path="/painel-cuidador" element={<CaregiverDashboard />} />
             <Route path="/client-dashboard" element={<ClientDashboard />} />
             <Route path="/encontrar-cuidador" element={<EncontrarCuidador />} />
+            <Route path="/encontrar-cuidador-de-idosos" element={<BuscaCuidadorLP />} />
             <Route path="/cuidador-idosos-mogi-das-cruzes" element={<CuidadorIdososMogiDasCruzes />} />
             <Route path="/cuidador-mogi-das-cruzes" element={<CuidadorMogiDasCruzes />} />
             <Route path="/duvidas-frequentes-cuidador-de-idosos" element={<FaqCuidadorIdosos />} />

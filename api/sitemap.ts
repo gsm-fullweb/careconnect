@@ -21,6 +21,7 @@ const STATIC_URLS = [
   "/qual-valor-cobrar-para-cuidar-de-um-idoso",
   "/como-contratar-cuidador-sem-vinculo-empregaticio",
   "/duvidas-frequentes-cuidador-de-idosos",
+  "/encontrar-cuidador-de-idosos",
   "/home-care-mogi-das-cruzes-trabalhe-conosco",
   "/casa-de-repouso-mogi-das-cruzes-trabalhe-conosco",
   "/vagas-de-cuidadora-de-idosos-particular",
