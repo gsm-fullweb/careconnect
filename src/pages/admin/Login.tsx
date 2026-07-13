@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminUser } from "@/lib/authRole";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,24 +16,27 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if already logged in
+  // Check if already logged in.
+  // IMPORTANTE: só redireciona para /admin quem realmente tem papel de admin.
+  // Antes, qualquer sessão válida redirecionava para /admin — e como o
+  // ProtectedRoute exige papel de admin, um usuário comum ficava em loop
+  // infinito entre /admin e /admin/login.
   useEffect(() => {
     const checkAuthentication = async () => {
-      const isAuthenticated = localStorage.getItem("admin-token");
-      if (isAuthenticated) {
-        try {
-          const { data, error } = await supabase.auth.getSession();
-          if (error) throw error;
-          
-          if (data?.session) {
-            setShouldRedirect("/admin");
-          } else {
-            localStorage.removeItem("admin-token");
-          }
-        } catch (error) {
-          console.error('Error checking authentication:', error);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        const user = data?.session?.user ?? null;
+        if (user && (await isAdminUser(user))) {
+          setShouldRedirect("/admin");
+        } else {
+          // Sessão inexistente ou sem permissão de admin: limpa o token.
           localStorage.removeItem("admin-token");
         }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        localStorage.removeItem("admin-token");
       }
       setIsCheckingAuth(false);
     };
@@ -73,6 +77,21 @@ const Login = () => {
       }
 
       if (data.session) {
+        // Só libera o painel para administradores. Caso contrário, encerra a
+        // sessão e avisa — evita o loop de redirecionamento e deixa claro o motivo.
+        const admin = await isAdminUser(data.session.user);
+        if (!admin) {
+          await supabase.auth.signOut();
+          localStorage.removeItem("admin-token");
+          toast({
+            title: "Acesso restrito",
+            description:
+              "Esta conta não tem permissão de administrador. Fale com o responsável pelo CareConnect.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         // Store the session token
         localStorage.setItem("admin-token", data.session.access_token);
 
@@ -85,8 +104,8 @@ const Login = () => {
       }
     } catch (error: any) {
       toast({
-        title: "Login failed",
-        description: error.message || "Invalid email or password. Please try again.",
+        title: "Falha no login",
+        description: error.message || "E-mail ou senha inválidos. Tente novamente.",
         variant: "destructive",
       });
     } finally {

@@ -28,8 +28,10 @@ as $$
     from public.profiles p
     where p.id = auth.uid()
       and (
-        lower(coalesce(p.user_role, '')) in ('admin', 'administrator')
-        or lower(coalesce(p.type, '')) in ('admin', 'administrator')
+        -- user_role/type podem ser enums no banco; cast para text antes de comparar
+        -- (coalescer um enum com '' dispara "invalid input value for enum").
+        lower(coalesce(p.user_role::text, '')) in ('admin', 'administrator')
+        or lower(coalesce(p.type::text, '')) in ('admin', 'administrator')
       )
   );
 $$;

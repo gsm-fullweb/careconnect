@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Send, Bot, User, Loader2, Phone, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { whatsappUrl } from "@/lib/contact";
 
 interface Message {
     id: string;
@@ -75,10 +76,38 @@ const ChatbotWidget = () => {
         return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
     };
 
+    // Registrar o lead na tabela `customer` (via RPC segura), de forma que o
+    // cliente seja SEMPRE cadastrado — independente do n8n estar ativo ou não.
+    // Best-effort: uma falha aqui não impede o início da conversa.
+    const registrarLead = async () => {
+        try {
+            const digits = lead.whatsapp.replace(/\D/g, "");
+            if (digits.length < 10) return;
+            const generatedEmail = `${digits}@careconnect-family.com`;
+            const dataHora = new Date().toLocaleString("pt-BR");
+            const obs = `[Chatbot Encontre um Cuidador - ${dataHora}] Cidade informada: ${lead.cidade.trim()}.`;
+            await supabase.rpc("upsert_customer_lead", {
+                p_email: generatedEmail,
+                p_name: lead.nome.trim(),
+                p_whatsapp: digits,
+                p_city: lead.cidade.trim(),
+                p_special_care: null,
+                p_obs_initial: obs,
+                p_obs_append: obs,
+            });
+        } catch (err) {
+            // Não bloqueia a experiência do usuário; apenas registra no console.
+            console.error("Falha ao registrar lead do chatbot:", err);
+        }
+    };
+
     // Submeter formulário de lead e iniciar conversa
     const handleLeadSubmit = async () => {
         if (!validateLead()) return;
         setLeadLoading(true);
+
+        // Garante o cadastro do cliente antes de depender do n8n.
+        await registrarLead();
 
         try {
             // Enviar dados iniciais do lead para o n8n
@@ -194,12 +223,18 @@ const ChatbotWidget = () => {
                 { id: `a_${Date.now()}`, role: "assistant", content: replyText },
             ]);
         } catch {
+            const fallback = whatsappUrl(
+                `Olá! Sou ${lead.nome.trim() || "cliente"} e estou procurando um cuidador em ${lead.cidade.trim() || "minha cidade"}.`
+            );
             setMessages((prev) => [
                 ...prev,
                 {
                     id: `e_${Date.now()}`,
                     role: "assistant",
-                    content: "Ops! Tive um problema técnico. Tente novamente em instantes.",
+                    content:
+                        `Ops! Nossa assistente está indisponível no momento. ` +
+                        `Você pode falar direto com a nossa equipe pelo WhatsApp: ` +
+                        `<a href="${fallback}" target="_blank" rel="noopener noreferrer" class="underline text-careconnect-blue font-semibold">clique aqui para conversar</a>.`,
                 },
             ]);
         } finally {

@@ -11,7 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeCity } from "@/lib/utils";
 
 const CLIENT_SEARCH_STORAGE_KEY = "careconnect_client_search";
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 4;
+
+const maskCep = (value: string) => {
+  const clean = value.replace(/\D/g, "").slice(0, 8);
+  if (clean.length <= 5) return clean;
+  return `${clean.slice(0, 5)}-${clean.slice(5)}`;
+};
 
 export default function EncontrarCuidador() {
   const { toast } = useToast();
@@ -24,6 +30,12 @@ export default function EncontrarCuidador() {
   const [nomeResponsavel, setNomeResponsavel] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
 
+  // Passo 4 — dados de cadastro que o admin exibe (antes ficavam sempre vazios).
+  const [dataNascimento, setDataNascimento] = useState("");
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [estado, setEstado] = useState("");
+
   const isStepValid = () => {
     switch (step) {
       case 1:
@@ -32,6 +44,9 @@ export default function EncontrarCuidador() {
         return diasHorarios.trim().length > 3;
       case 3:
         return nomeResponsavel.trim().length > 2 && whatsapp.replace(/\D/g, "").length >= 10;
+      case 4:
+        // Endereço e CEP são obrigatórios; data de nascimento é opcional.
+        return endereco.trim().length > 3 && cep.replace(/\D/g, "").length === 8;
       default:
         return false;
     }
@@ -72,11 +87,15 @@ export default function EncontrarCuidador() {
       const { error: rpcError } = await supabase.rpc("upsert_customer_lead", {
         p_email: generatedEmail,
         p_name: nomeResponsavel,
-        p_whatsapp: whatsapp,
+        p_whatsapp: formattedWhatsapp,
         p_city: normalizedCidade,
         p_special_care: specialCareText,
         p_obs_initial: initialObs,
         p_obs_append: appendObs,
+        p_birth_date: dataNascimento || null,
+        p_cep: cep.replace(/\D/g, "") || null,
+        p_address: endereco.trim() || null,
+        p_state: estado.trim() || null,
       });
 
       if (rpcError) throw rpcError;
@@ -234,6 +253,80 @@ export default function EncontrarCuidador() {
                             />
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {step === 4 && (
+                    <div className="space-y-5 animate-fade-in">
+                      <Label className="text-xl md:text-2xl font-bold text-gray-800 leading-tight block">
+                        Para concluir o cadastro, alguns dados do endereço
+                      </Label>
+                      <p className="text-gray-500 text-xs md:text-sm">
+                        Usamos essas informações para indicar cuidadores próximos e organizar o atendimento.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="cep" className="text-sm font-medium text-gray-700">
+                            CEP
+                          </Label>
+                          <div className="relative">
+                            <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                            <Input
+                              id="cep"
+                              type="text"
+                              inputMode="numeric"
+                              placeholder="00000-000"
+                              value={cep}
+                              onChange={(event) => setCep(maskCep(event.target.value))}
+                              className="pl-10 py-5 border-gray-300 rounded-xl"
+                              autoFocus
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="estado" className="text-sm font-medium text-gray-700">
+                            Estado (UF)
+                          </Label>
+                          <Input
+                            id="estado"
+                            type="text"
+                            maxLength={2}
+                            placeholder="SP"
+                            value={estado}
+                            onChange={(event) => setEstado(event.target.value.toUpperCase())}
+                            className="py-5 border-gray-300 rounded-xl uppercase"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="endereco" className="text-sm font-medium text-gray-700">
+                          Endereço (rua, número e bairro)
+                        </Label>
+                        <Input
+                          id="endereco"
+                          type="text"
+                          placeholder="Ex: Rua das Flores, 123 - Centro"
+                          value={endereco}
+                          onChange={(event) => setEndereco(event.target.value)}
+                          className="py-5 border-gray-300 rounded-xl"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="nascimento" className="text-sm font-medium text-gray-700">
+                          Data de nascimento do idoso <span className="text-gray-400">(opcional)</span>
+                        </Label>
+                        <Input
+                          id="nascimento"
+                          type="date"
+                          value={dataNascimento}
+                          onChange={(event) => setDataNascimento(event.target.value)}
+                          className="py-5 border-gray-300 rounded-xl"
+                        />
                       </div>
                     </div>
                   )}

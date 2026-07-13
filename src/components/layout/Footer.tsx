@@ -1,5 +1,13 @@
 
 import { Link } from "react-router-dom";
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_CITY,
+  MAILTO_HREF,
+  TEL_HREF,
+  whatsappUrl,
+} from "@/lib/contact";
 
 const Footer = () => {
   return (
@@ -86,25 +94,25 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contatos</h4>
             <address className="not-italic">
-              <p className="mb-2">Mogi das Cruzes - SP</p>
+              <p className="mb-2">{CONTACT_CITY}</p>
               <p className="mb-2">
-                <a href="mailto:contato@careconnect.com.br" className="text-gray-300 hover:text-white">
-                  contato@careconnect.com.br
+                <a href={MAILTO_HREF} className="text-gray-300 hover:text-white">
+                  {CONTACT_EMAIL}
                 </a>
               </p>
               <p className="mb-2">
-                <a href="tel:+551148633976" className="text-gray-300 hover:text-white">
-                  (11) 4863-3976
+                <a href={TEL_HREF} className="text-gray-300 hover:text-white">
+                  {CONTACT_PHONE_DISPLAY}
                 </a>
               </p>
               <p>
-                <a 
-                  href="https://wa.me/551148633976" 
+                <a
+                  href={whatsappUrl()}
                   className="text-gray-300 hover:text-white"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  WhatsApp: (11) 4863-3976
+                  WhatsApp: {CONTACT_PHONE_DISPLAY}
                 </a>
               </p>
             </address>

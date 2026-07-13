@@ -1,50 +1,15 @@
 import SEO from "@/components/SEO";
 import Layout from "@/components/layout/Layout";
-import { Check, Star, Shield, Clock, Users, Sparkles, MessageCircle, Calendar, Heart, Pill, Bell, AlertTriangle, Database, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Check, Shield, Clock, Users, Sparkles, MessageCircle, Search, HeartHandshake } from "lucide-react";
+import { FIND_CAREGIVER_URL, FIND_CAREGIVER_LABEL } from "@/lib/contact";
 
 const Planos = () => {
-  const loadMercadoPago = () => new Promise<void>((resolve, reject) => {
-    if ((window as any).MercadoPago) return resolve();
-    const script = document.createElement('script');
-    script.src = 'https://sdk.mercadopago.com/js/v2';
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('mp-sdk-load-error'));
-    document.body.appendChild(script);
-  });
-
-  const handlePay = async () => {
-    try {
-      const res = await fetch('/api/create_preference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'completo', price: 19.9, currency: 'BRL' })
-      });
-      const data = await res.json();
-      const preferenceId = data.preferenceId || data.id;
-      if (!preferenceId) throw new Error('no preference');
-
-      await loadMercadoPago();
-      const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY;
-      if (!publicKey) throw new Error('missing-public-key');
-
-      const MPClass = (window as any).MercadoPago;
-      const mp = new MPClass(publicKey, { locale: 'pt-BR' });
-      (mp as any).checkout({
-        preference: { id: preferenceId },
-        autoOpen: true,
-        render: { container: '#mp-cho-container' },
-        theme: { elementsColor: '#3e8861' }
-      } as any);
-      return;
-    } catch (e) {
-      window.open('https://wa.me/551148633976', '_blank');
-    }
-  };
   return (
     <Layout>
-      <SEO 
-        title="Planos e Preços | Cuidador de Idosos em Mogi das Cruzes" 
-        description="Conheça os planos da CareConnect para cuidadores de idosos em Mogi das Cruzes. Encontre cuidadores qualificados e verificados com matching inteligente por IA no WhatsApp. Sem fidelidade!"
+      <SEO
+        title="Como Funciona | Encontre um Cuidador de Idosos em Mogi das Cruzes"
+        description="Encontre cuidadores de idosos qualificados e verificados em Mogi das Cruzes com a CareConnect. Acesso gratuito à plataforma, sem fidelidade. Fale pelo WhatsApp e encontre o profissional ideal."
         canonical="/plans"
       />
       {/* Hero Section - Estilo Humanizado */}
@@ -64,35 +29,35 @@ const Planos = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-4 text-gray-900 text-center lg:text-left">
                 Encontre o cuidador ideal{" "}
                 <span className="text-[#3e8861]">
-                  em minutos
+                  com segurança
                 </span>
               </h1>
 
               {/* Subheadline */}
               <p className="text-lg md:text-xl text-gray-600 mb-6 leading-relaxed text-center lg:text-left">
-                Com o <strong className="text-gray-900">Encontre um cuidador</strong>, sua assistente de IA no WhatsApp, você encontra cuidadores qualificados, agenda visitas e acompanha tudo em tempo real.
+                A CareConnect conecta a sua família a cuidadores de idosos qualificados e
+                verificados em Mogi das Cruzes e região. Você conta com nosso atendimento pelo
+                WhatsApp para encontrar o profissional certo — <strong className="text-gray-900">sem custo para usar a plataforma</strong>.
               </p>
-
-
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 mb-5 justify-center lg:justify-start">
                 <a
-                  href="/pre-cadastro"
+                  href={FIND_CAREGIVER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group inline-flex items-center justify-center bg-[#3e8861] text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 hover:bg-[#347553] transition-all duration-300"
+                >
+                  <MessageCircle className="mr-2 w-4 h-4" />
+                  <span>{FIND_CAREGIVER_LABEL}</span>
+                </a>
+                <Link
+                  to="/pre-cadastro"
+                  className="inline-flex items-center justify-center bg-white/90 backdrop-blur-sm text-gray-700 font-semibold px-6 py-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300"
                 >
                   <span>Cadastrar como Cuidador</span>
                   <Sparkles className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
-                </a>
-                <a
-                  href="https://wa.me/551148633976"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center bg-white/90 backdrop-blur-sm text-gray-700 font-semibold px-6 py-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-md transition-all duration-300"
-                >
-                  <MessageCircle className="mr-2 w-4 h-4 text-[#3e8861]" />
-                  <span>Encontre um cuidador</span>
-                </a>
+                </Link>
               </div>
 
               {/* Trust Badges */}
@@ -103,11 +68,11 @@ const Planos = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-5 h-5 text-[#3e8861]" />
-                  <span>100% seguro</span>
+                  <span>Cuidadores verificados</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-[#3e8861]" />
-                  <span>Suporte 24/7</span>
+                  <span>Atendimento no WhatsApp</span>
                 </div>
               </div>
             </div>
@@ -118,7 +83,7 @@ const Planos = () => {
                 <div className="absolute inset-0 bg-blue-200 rounded-3xl transform rotate-6"></div>
                 <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src="https://blog.careconnect.com.br/wp-content/uploads/2025/10/Google_AI_Studio_2025-10-13T14_15_01.222Z.png"
+                    src="/about-image.png"
                     alt="Cuidadora com idosa sorrindo - CareConnect"
                     className="object-cover w-full h-full"
                     loading="eager"
@@ -135,27 +100,19 @@ const Planos = () => {
         <div className="container-custom mx-auto px-4">
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-gray-600">
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#3e8861]">
-                <Shield className="w-10 h-10 mx-auto text-[#3e8861]" />
-              </div>
+              <Shield className="w-10 h-10 mx-auto text-[#3e8861]" />
               <div className="text-sm mt-2">Cuidadores verificados</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#3e8861]">
-                <MessageCircle className="w-10 h-10 mx-auto text-[#3e8861]" />
-              </div>
-              <div className="text-sm mt-2">IA no WhatsApp</div>
+              <MessageCircle className="w-10 h-10 mx-auto text-[#3e8861]" />
+              <div className="text-sm mt-2">Atendimento no WhatsApp</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#3e8861]">
-                <Clock className="w-10 h-10 mx-auto text-[#3e8861]" />
-              </div>
-              <div className="text-sm mt-2">Suporte 24/7</div>
+              <Clock className="w-10 h-10 mx-auto text-[#3e8861]" />
+              <div className="text-sm mt-2">Suporte humano</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#3e8861]">
-                <Check className="w-10 h-10 mx-auto text-[#3e8861]" />
-              </div>
+              <Check className="w-10 h-10 mx-auto text-[#3e8861]" />
               <div className="text-sm mt-2">Sem fidelidade</div>
             </div>
           </div>
@@ -167,22 +124,22 @@ const Planos = () => {
         <div className="container-custom mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">
-              Tudo que você precisa em um só lugar
+              Por que usar a CareConnect
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              O Encontre um cuidador simplifica cada etapa do processo de encontrar e gerenciar cuidadores
+              Simplificamos a busca por cuidadores de idosos qualificados, do primeiro contato até a contratação.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature 1 */}
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 hover:shadow-xl transition-all duration-300">
               <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <MessageCircle className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Assistente IA 24/7</h3>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Atendimento pelo WhatsApp</h3>
               <p className="text-gray-600 leading-relaxed">
-                Converse com o Encontre um cuidador a qualquer hora pelo WhatsApp. Ele entende suas necessidades e encontra o profissional perfeito.
+                Fale com a nossa equipe pelo WhatsApp, explique a necessidade da sua família e receba indicações de cuidadores adequados.
               </p>
             </div>
 
@@ -193,74 +150,77 @@ const Planos = () => {
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900">Cuidadores Verificados</h3>
               <p className="text-gray-600 leading-relaxed">
-                Profissionais avaliados e com documentos verificados.
+                Profissionais com documentos e referências verificados antes de serem apresentados às famílias.
               </p>
             </div>
 
-            {/* Feature 7 - Lembrete de Medicação */}
+            {/* Feature 3 */}
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 hover:shadow-xl transition-all duration-300">
               <div className="w-14 h-14 bg-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Pill className="w-7 h-7 text-white" />
+                <Search className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Lembrete de Medicação</h3>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Indicações Personalizadas</h3>
               <p className="text-gray-600 leading-relaxed">
-                Agende dosagens e receba alertas automáticos no WhatsApp. Ideal para manter a rotina com segurança.
+                Encontramos cuidadores de acordo com a cidade, a rotina e o tipo de cuidado que a sua família precisa.
               </p>
             </div>
 
-            {/* Feature 4 - Botão de Pânico */}
-            <div className="group p-8 rounded-2xl bg-gradient-to-br from-red-50 to-rose-100/50 hover:shadow-xl transition-all duration-300">
-              <div className="w-14 h-14 bg-rose-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <AlertTriangle className="w-7 h-7 text-white" />
+            {/* Feature 4 */}
+            <div className="group p-8 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/50 hover:shadow-xl transition-all duration-300">
+              <div className="w-14 h-14 bg-amber-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <HeartHandshake className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Botão de Pânico</h3>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Acesso Gratuito</h3>
               <p className="text-gray-600 leading-relaxed">
-                Alerta instantâneo via WhatsApp para familiares e responsáveis, acionado pelo idoso com uma mensagem.
+                Usar a plataforma para encontrar um cuidador é gratuito e sem fidelidade. Os valores do serviço são combinados diretamente com o profissional.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works - Encontre um cuidador */}
+      {/* How it works */}
       <section className="py-12 md:py-16 bg-gray-50 border-t border-gray-200">
         <div className="container-custom mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900">Como funciona em 3 passos</h2>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div className="flex items-start gap-3 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-              <Database className="w-6 h-6 text-[#3e8861] flex-shrink-0" />
+              <span className="w-8 h-8 flex-shrink-0 rounded-full bg-[#3e8861] text-white flex items-center justify-center font-bold">1</span>
               <div>
-                <p className="font-semibold text-gray-900">Banco de dados</p>
-                <p className="text-sm text-gray-600">Armazena agenda de medicamentos e contatos de emergência.</p>
+                <p className="font-semibold text-gray-900">Fale conosco</p>
+                <p className="text-sm text-gray-600">Envie uma mensagem pelo WhatsApp com a necessidade da sua família.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-              <Zap className="w-6 h-6 text-[#3e8861] flex-shrink-0" />
+              <span className="w-8 h-8 flex-shrink-0 rounded-full bg-[#3e8861] text-white flex items-center justify-center font-bold">2</span>
               <div>
-                <p className="font-semibold text-gray-900">Gatilhos automáticos</p>
-                <p className="text-sm text-gray-600">Processos automáticos disparam lembretes e alertas.</p>
+                <p className="font-semibold text-gray-900">Receba indicações</p>
+                <p className="text-sm text-gray-600">Apresentamos cuidadores verificados que combinam com o seu caso.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-              <MessageCircle className="w-6 h-6 text-[#3e8861] flex-shrink-0" />
+              <span className="w-8 h-8 flex-shrink-0 rounded-full bg-[#3e8861] text-white flex items-center justify-center font-bold">3</span>
               <div>
-                <p className="font-semibold text-gray-900">WhatsApp</p>
-                <p className="text-sm text-gray-600">Envio de mensagens para lembretes e acionamento do botão de pânico.</p>
+                <p className="font-semibold text-gray-900">Contrate com segurança</p>
+                <p className="text-sm text-gray-600">Converse com o cuidador escolhido e combine os detalhes do atendimento.</p>
               </div>
             </div>
           </div>
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="https://wa.me/551148633976" className="inline-flex items-center justify-center bg-[#3e8861] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#347553]">
-              Encontre um cuidador
-            </a>
-            <a href="https://wa.me/551148633976" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50">
-              Chama no WhatsApp
+          <div className="mt-8 flex justify-center">
+            <a
+              href={FIND_CAREGIVER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center bg-[#3e8861] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[#347553]"
+            >
+              <MessageCircle className="mr-2 w-4 h-4" />
+              {FIND_CAREGIVER_LABEL}
             </a>
           </div>
         </div>
       </section>
-
-      {/* Pricing Section */}
-
 
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-white">
@@ -270,29 +230,30 @@ const Planos = () => {
               Perguntas frequentes
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Tudo que você precisa saber sobre o CareConnect
+              Tudo que você precisa saber sobre a CareConnect
             </p>
           </div>
 
           <div className="max-w-3xl mx-auto space-y-4">
             <details className="group bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
               <summary className="flex items-center justify-between cursor-pointer font-semibold text-lg text-gray-900">
-                <span>Como funciona a assinatura?</span>
+                <span>Preciso pagar para usar a plataforma?</span>
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                Tenha acesso ao Encontre um cuidador e aos recursos essenciais da plataforma — sem pagar nada por mês.
-                100% gratuito, sem fidelidade e com liberdade total para usar quando quiser.
+                Não. Encontrar um cuidador pela CareConnect é gratuito e sem fidelidade. Os valores
+                do serviço são combinados diretamente com o cuidador escolhido.
               </p>
             </details>
 
             <details className="group bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
               <summary className="flex items-center justify-between cursor-pointer font-semibold text-lg text-gray-900">
-                <span>Como o Encontre um cuidador me ajuda a encontrar cuidadores?</span>
+                <span>Como encontro um cuidador?</span>
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                O Encontre um cuidador usa inteligência artificial para entender suas necessidades e recomendar os cuidadores mais adequados. Você conversa pelo WhatsApp de forma natural e ele cuida de tudo.
+                Basta falar com a nossa equipe pelo WhatsApp e contar a necessidade da sua família.
+                Nós apresentamos os cuidadores verificados mais adequados para o seu caso.
               </p>
             </details>
 
@@ -302,30 +263,21 @@ const Planos = () => {
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                Sim! Todos passam por verificação de documentos, referências profissionais e background check antes de serem aprovados na plataforma.
+                Sim. Os cuidadores passam por verificação de documentos e referências profissionais
+                antes de serem apresentados às famílias.
               </p>
             </details>
 
             <details className="group bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
               <summary className="flex items-center justify-between cursor-pointer font-semibold text-lg text-gray-900">
-                <span>Posso cancelar a qualquer momento?</span>
+                <span>Em quais cidades a CareConnect atende?</span>
                 <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
               </summary>
               <p className="mt-4 text-gray-600 leading-relaxed">
-                Sim, não há fidelidade. Você pode cancelar sua assinatura a qualquer momento pelo WhatsApp ou pelo painel de controle.
+                Atendemos Mogi das Cruzes e região do Alto Tietê, incluindo Suzano, Arujá,
+                Guararema, Biritiba Mirim, Poá e Ferraz de Vasconcelos.
               </p>
             </details>
-
-            <details className="group bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
-              <summary className="flex items-center justify-between cursor-pointer font-semibold text-lg text-gray-900">
-                <span>Há algum custo adicional além da assinatura?</span>
-                <span className="text-[#3e8861] text-2xl group-open:rotate-45 transition-transform">+</span>
-              </summary>
-              <p className="mt-4 text-gray-600 leading-relaxed">
-                O acesso à plataforma é gratuito. Os valores dos serviços dos cuidadores são negociados diretamente com eles.
-              </p>
-            </details>
-
           </div>
         </div>
       </section>
@@ -337,30 +289,34 @@ const Planos = () => {
             Pronto para encontrar o cuidador ideal?
           </h2>
           <p className="text-xl md:text-2xl mb-8 opacity-95 max-w-2xl mx-auto">
-            Comece agora e tenha o Encontre um cuidador ao seu lado em cada etapa
+            Fale com a nossa equipe pelo WhatsApp e encontre o cuidador certo para a sua família.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://wa.me/551148633976"
-              className="inline-flex items-center justify-center bg-white text-[#3e8861] font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
-            >
-              <span>Começar agora</span>
-              <Sparkles className="ml-2 w-5 h-5" />
-            </a>
-            <a
-              href="https://wa.me/551148633976"
+              href={FIND_CAREGIVER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white font-semibold px-8 py-4 rounded-xl border border-white/30 hover:bg-white/20 transition-all duration-300"
+              className="inline-flex items-center justify-center bg-white text-[#3e8861] font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               <MessageCircle className="mr-2 w-5 h-5" />
-              <span>Encontre um cuidador</span>
+              <span>{FIND_CAREGIVER_LABEL}</span>
             </a>
+            <Link
+              to="/pre-cadastro"
+              className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md text-white font-semibold px-8 py-4 rounded-xl border border-white/30 hover:bg-white/20 transition-all duration-300"
+            >
+              <span>Cadastrar como Cuidador</span>
+            </Link>
           </div>
+          <p className="mt-6 text-sm text-white/80">
+            Prefere se cadastrar pelo site?{" "}
+            <Link to="/encontrar-cuidador" className="underline font-semibold hover:text-white">
+              Faça seu cadastro completo aqui
+            </Link>
+            .
+          </p>
         </div>
       </section>
-      {/* Container oculto para o modal do Mercado Pago */}
-      <div id="mp-cho-container" className="hidden" />
     </Layout>
   );
 };

@@ -154,6 +154,10 @@ const BlogPost = () => {
                       fetchPriority="high"
                       decoding="sync"
                       className="w-full h-auto max-h-[500px] object-cover"
+                      onError={(e) => {
+                        // Remove a imagem de capa se o link estiver quebrado.
+                        e.currentTarget.closest("div")?.remove();
+                      }}
                     />
                   </div>
                 )}
@@ -285,6 +289,9 @@ const BlogPost = () => {
                                 loading="lazy"
                                 decoding="async"
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
                               />
                             </div>
                           )}

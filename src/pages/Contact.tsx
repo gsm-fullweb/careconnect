@@ -8,8 +8,16 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout"; // Alterado de MainLayout para Layout
 import SEO from "@/components/SEO";
-import { MapPin, Phone, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, Phone, Mail, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"; // Alterado de sonner para hooks/use-toast
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_CITY,
+  FIND_CAREGIVER_URL,
+  FIND_CAREGIVER_LABEL,
+  whatsappUrl,
+} from "@/lib/contact";
 
 interface FaqItem {
   question: string;
@@ -24,50 +32,30 @@ const Contact = () => { // Alterado de export default function Contato() para co
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = {
-      name,
-      email,
-      phone,
-      message,
-    };
+    // Não existe backend de e-mail conectado ao site. Para garantir que a
+    // mensagem chegue de verdade, encaminhamos o contato pelo WhatsApp — canal
+    // efetivamente monitorado pela equipe — com os dados já preenchidos.
+    const texto =
+      `Olá! Vim pelo site da CareConnect.\n\n` +
+      `*Nome:* ${name}\n` +
+      `*E-mail:* ${email}\n` +
+      `*Telefone:* ${phone}\n\n` +
+      `*Mensagem:* ${message}`;
 
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    window.open(whatsappUrl(texto), "_blank", "noopener,noreferrer");
 
-      if (response.ok) {
-        toast({
-          title: "Mensagem enviada com sucesso!",
-          description: "Responderemos em breve.",
-        });
-        setName("");
-        setEmail("");
-        setPhone("");
-        setMessage("");
-      } else {
-        const errorData = await response.json();
-        toast({
-          title: "Erro ao enviar mensagem",
-          description: `Falha ao enviar mensagem: ${errorData.message || 'Erro desconhecido'}`,
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('Error sending contact form:', error);
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao enviar a mensagem.",
-        variant: "destructive"
-      });
-    }
+    toast({
+      title: "Abrindo o WhatsApp...",
+      description: "Sua mensagem foi preparada. É só confirmar o envio no WhatsApp.",
+    });
+
+    setName("");
+    setEmail("");
+    setPhone("");
+    setMessage("");
   };
 
   return (
@@ -96,7 +84,7 @@ const Contact = () => { // Alterado de export default function Contato() para co
                     <div>
                       <h3 className="font-bold mb-2">Endereço</h3>
                       <p className="text-gray-600">
-                        Mogi das Cruzes - SP
+                        {CONTACT_CITY}
                       </p>
                     </div>
                   </div>
@@ -108,7 +96,7 @@ const Contact = () => { // Alterado de export default function Contato() para co
                     <div>
                       <h3 className="font-bold mb-2">Telefone</h3>
                       <p className="text-gray-600">
-                        (11) 4863-3976
+                        {CONTACT_PHONE_DISPLAY}
                       </p>
                     </div>
                   </div>
@@ -120,7 +108,9 @@ const Contact = () => { // Alterado de export default function Contato() para co
                     <div>
                       <h3 className="font-bold mb-2">Email</h3>
                       <p className="text-gray-600 break-words leading-normal">
-                        contato@careconnect.com.br
+                        <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-[#6B46C1]">
+                          {CONTACT_EMAIL}
+                        </a>
                       </p>
                     </div>
                   </div>
@@ -132,7 +122,9 @@ const Contact = () => { // Alterado de export default function Contato() para co
                     <div>
                       <h3 className="font-bold mb-2">WhatsApp</h3>
                       <p className="text-gray-600">
-                        (11) 4863-3976
+                        <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="hover:text-[#6B46C1]">
+                          {CONTACT_PHONE_DISPLAY}
+                        </a>
                       </p>
                     </div>
                   </div>
@@ -203,8 +195,11 @@ const Contact = () => { // Alterado de export default function Contato() para co
                     type="submit"
                     className="w-full bg-[#6B46C1] hover:bg-[#5A3A9F]"
                   >
-                    Enviar mensagem
+                    Enviar pelo WhatsApp
                   </Button>
+                  <p className="text-xs text-gray-500 text-center">
+                    Ao enviar, sua mensagem é encaminhada para o nosso WhatsApp já preenchida.
+                  </p>
                 </form>
               </Card>
             </div>
@@ -216,10 +211,10 @@ const Contact = () => { // Alterado de export default function Contato() para co
       <section className="py-16 md:py-20 bg-[#6B46C1] text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Prefere falar diretamente com o Encontre um cuidador?
+            Prefere falar direto pelo WhatsApp?
           </h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Nossa assistente virtual está disponível 24/7 para ajudar você a encontrar o cuidador ideal
+            Nossa equipe está pronta para ajudar você a encontrar o cuidador ideal para a sua família.
           </p>
           <Button
             asChild
@@ -227,8 +222,8 @@ const Contact = () => { // Alterado de export default function Contato() para co
             variant="outline"
             className="bg-white text-[#6B46C1] hover:bg-white/90 rounded-full"
           >
-            <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
-              Buscar Cuidadores
+            <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+              {FIND_CAREGIVER_LABEL}
             </a>
           </Button>
 
