@@ -142,7 +142,7 @@ const HomeCareTrabalheConosco = () => {
                   className="bg-[#3e8861] hover:bg-[#347553] text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <a
-                    href="https://www.careconnect.com.br/pre-cadastro"
+                    href="/pre-cadastro"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -506,7 +506,7 @@ const HomeCareTrabalheConosco = () => {
               className="bg-white text-[#3e8861] hover:bg-white/90 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               <a
-                href="https://www.careconnect.com.br/pre-cadastro"
+                href="/pre-cadastro"
                 target="_blank"
                 rel="noopener noreferrer"
               >

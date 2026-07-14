@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { FIND_CAREGIVER_URL, FIND_CAREGIVER_LABEL } from "@/lib/contact";
 
 const Hero = () => {
   return (
@@ -23,8 +24,8 @@ const Hero = () => {
             asChild
             className="w-full max-w-sm rounded-full py-7 bg-[#7058EB] hover:bg-[#5C45C8] text-white text-lg font-medium shadow-lg hover:shadow-xl transition-all"
           >
-            <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
-              Encontre Agora
+            <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+              {FIND_CAREGIVER_LABEL}
               <ArrowRight className="ml-2 w-5 h-5" />
             </a>
           </Button>
@@ -55,7 +56,7 @@ const Hero = () => {
                 size="lg"
                 className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white text-base"
               >
-                <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">Encontre um Cuidador</a>
+                <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">{FIND_CAREGIVER_LABEL}</a>
               </Button>
               <Button
                 asChild
@@ -63,7 +64,7 @@ const Hero = () => {
                 size="lg"
                 className="border-[#6B46C1] text-[#6B46C1] hover:bg-[#6B46C1]/10 text-base"
               >
-                <a href="https://careconnect.com.br/pre-cadastro" target="_self" rel="noopener noreferrer">Cadastrar como Cuidador</a>
+                <Link to="/pre-cadastro">Cadastrar como Cuidador</Link>
               </Button>
             </div>
           </div>

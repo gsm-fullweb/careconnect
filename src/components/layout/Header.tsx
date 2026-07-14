@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { FIND_CAREGIVER_URL, FIND_CAREGIVER_LABEL } from "@/lib/contact";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -54,7 +55,7 @@ const Header = () => {
         <div className="hidden lg:flex items-center space-x-3">
           
           <Button asChild size="sm" className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1]">
-            <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">Encontre um Cuidador</a>
+            <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">{FIND_CAREGIVER_LABEL}</a>
           </Button>
           <Button asChild size="sm" className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white border border-white">
             <Link to="/pre-cadastro">Cadastrar como Cuidador</Link>
@@ -120,8 +121,8 @@ const Header = () => {
                 </Link>
               </Button>
               <Button asChild className="bg-white text-[#6B46C1] hover:bg-gray-100 border border-[#6B46C1] w-full">
-                <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>
-                  Encontre um Cuidador
+                <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>
+                  {FIND_CAREGIVER_LABEL}
                 </a>
               </Button>
               <Button asChild className="bg-[#6B46C1] hover:bg-[#5A3A9F] text-white border border-white w-full">

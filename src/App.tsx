@@ -49,8 +49,17 @@ import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import TestimonialsManagement from "./pages/admin/TestimonialsManagement";
 import PartnersManagement from "./pages/admin/PartnersManagement";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
+import ChatbotWidget from "./components/ChatbotWidget";
+import { useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
+
+// Mostra o assistente flutuante apenas nas páginas públicas (nunca no /admin).
+const PublicChatbot = () => {
+  const { pathname } = useLocation();
+  if (pathname.toLowerCase().startsWith("/admin")) return null;
+  return <ChatbotWidget />;
+};
 
 // ✅ Function: App
 // 📌 Description: Main application component that sets up routing and providers
@@ -119,6 +128,8 @@ const App = () => (
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {/* Assistente flutuante "Encontre um Cuidador" — só nas páginas públicas */}
+          <PublicChatbot />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

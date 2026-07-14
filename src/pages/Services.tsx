@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Layout from "@/components/layout/Layout"; // Alterado de MainLayout para Layout
 import SEO from "@/components/SEO";
+import { FIND_CAREGIVER_URL, FIND_CAREGIVER_LABEL } from "@/lib/contact";
 import {
   Clock,
   Heart,
@@ -127,8 +128,8 @@ const Services = () => { // Alterado de export default function Servicos() para 
                 asChild
                 className="bg-[#3e8861] hover:bg-[#347553] text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
-                  Encontrar Cuidadores
+                <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+                  {FIND_CAREGIVER_LABEL}
                 </a>
               </Button>
             </div>
@@ -137,7 +138,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
                 <div className="absolute inset-0 bg-blue-200 rounded-3xl transform rotate-6"></div>
                 <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src="https://dyxkbbojlyppizsgjjxx.supabase.co/storage/v1/object/public/images//services-main.png"
+                    src="/services-main.png"
                     alt="Cuidador auxiliando idoso"
                     className="object-cover w-full h-full"
                     loading="lazy"
@@ -240,7 +241,15 @@ const Services = () => { // Alterado de export default function Servicos() para 
           </div>
 
           <div className="mt-12 text-center">
-
+            <Button
+              asChild
+              size="lg"
+              className="bg-[#3e8861] hover:bg-[#347553] text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+                {FIND_CAREGIVER_LABEL}
+              </a>
+            </Button>
           </div>
         </div>
       </section>
@@ -296,7 +305,7 @@ const Services = () => { // Alterado de export default function Servicos() para 
 
           <div className="mt-10 text-center">
             <Link
-              to="/contato"
+              to="/contact"
               className="text-[#3e8861] font-medium hover:underline"
             >
               Ver todas as perguntas frequentes →
@@ -320,8 +329,8 @@ const Services = () => { // Alterado de export default function Servicos() para 
               size="lg"
               className="bg-white text-[#3e8861] hover:bg-white/90 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
-                Buscar Cuidadores
+              <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+                {FIND_CAREGIVER_LABEL}
               </a>
             </Button>
 

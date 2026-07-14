@@ -149,15 +149,23 @@ const CustomersManagement = () => {
     },
   });
 
-  // Delete customer
+  // Delete customer.
+  // Usa a RPC admin_delete_customer (SECURITY DEFINER) que retorna quantas linhas
+  // foram removidas. Isso evita a "falha silenciosa": um DELETE direto bloqueado
+  // pela RLS retorna sem erro e sem apagar nada — a UI dizia "excluído" e o
+  // cliente reaparecia. Agora, 0 linhas afetadas vira um erro explícito.
   const deleteCustomerMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("customer")
-        .delete()
-        .eq("id", id);
+      const { data, error } = await supabase.rpc("admin_delete_customer", {
+        p_id: id,
+      });
 
       if (error) throw error;
+      if (!data || Number(data) < 1) {
+        throw new Error(
+          "Nenhuma linha foi excluída. Verifique se você tem permissão de administrador."
+        );
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -169,7 +177,10 @@ const CustomersManagement = () => {
     onError: (error) => {
       toast({
         title: "Erro",
-        description: "Não foi possível excluir o cliente.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Não foi possível excluir o cliente.",
         variant: "destructive",
       });
       console.error("Error deleting customer:", error);

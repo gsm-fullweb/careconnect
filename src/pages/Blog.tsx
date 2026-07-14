@@ -104,6 +104,15 @@ const Blog = () => {
                           loading="lazy"
                           decoding="async"
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                          onError={(e) => {
+                            // Se a imagem de capa estiver quebrada, cai para o placeholder.
+                            e.currentTarget.style.display = "none";
+                            e.currentTarget.parentElement?.classList.add(
+                              "flex",
+                              "items-center",
+                              "justify-center"
+                            );
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">

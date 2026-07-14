@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { Shield, Clock, Award, Heart, CheckCircle, Lock, Zap } from "lucide-react";
+import { FIND_CAREGIVER_URL, FIND_CAREGIVER_LABEL } from "@/lib/contact";
 
 // ✅ Function: About
 // 📌 Description: Main About page component that displays company information, values, team, and features
@@ -118,8 +119,8 @@ const About = () => {
                   className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300"
                   size="lg"
                 >
-                  <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_self">
-                    Encontrar cuidadores
+                  <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+                    {FIND_CAREGIVER_LABEL}
                   </a>
                 </Button>
               </div>
@@ -304,8 +305,8 @@ const About = () => {
               size="lg"
               className="bg-green-600 text-white hover:bg-green-700 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <a href="https://api.whatsapp.com/send/?phone=551148633976&text&type=phone_number&app_absent=0" target="_self">
-                Encontrar cuidadores
+              <a href={FIND_CAREGIVER_URL} target="_blank" rel="noopener noreferrer">
+                {FIND_CAREGIVER_LABEL}
               </a>
             </Button>
           </div>

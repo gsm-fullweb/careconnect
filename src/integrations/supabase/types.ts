@@ -418,12 +418,95 @@ export type Database = {
           },
         ]
       }
+      customer: {
+        Row: {
+          address: string | null
+          birth_date: string | null
+          cep: string | null
+          city: string
+          created_at: string
+          email: string
+          has_children: boolean | null
+          id: string
+          name: string
+          necessity: string | null
+          observations: string | null
+          smoker: boolean | null
+          special_care: string | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          birth_date?: string | null
+          cep?: string | null
+          city: string
+          created_at?: string
+          email: string
+          has_children?: boolean | null
+          id?: string
+          name: string
+          necessity?: string | null
+          observations?: string | null
+          smoker?: boolean | null
+          special_care?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          birth_date?: string | null
+          cep?: string | null
+          city?: string
+          created_at?: string
+          email?: string
+          has_children?: boolean | null
+          id?: string
+          name?: string
+          necessity?: string | null
+          observations?: string | null
+          smoker?: boolean | null
+          special_care?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_delete_customer: {
+        Args: { p_id: string }
+        Returns: number
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      upsert_customer_lead: {
+        Args: {
+          p_email: string
+          p_name: string
+          p_whatsapp: string
+          p_city: string
+          p_special_care: string | null
+          p_obs_initial: string
+          p_obs_append: string
+          p_birth_date?: string | null
+          p_cep?: string | null
+          p_address?: string | null
+          p_state?: string | null
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

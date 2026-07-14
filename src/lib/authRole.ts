@@ -16,11 +16,20 @@ const isAdminRole = (role?: string | null) => {
 export const getUserProfile = async (user: User | null) => {
   if (!user) return null;
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("user_role,type")
     .eq("id", user.id)
     .maybeSingle();
+
+  // Antes o erro era silenciosamente ignorado: se a RLS bloqueasse a leitura do
+  // próprio profile, o usuário admin era tratado como "não admin" e o painel
+  // ficava batendo em loop no login sem qualquer pista do motivo. Agora o
+  // problema fica visível no console para diagnóstico.
+  if (error) {
+    console.error("[authRole] Falha ao ler o profile do usuário:", error.message);
+    return null;
+  }
 
   return data;
 };
