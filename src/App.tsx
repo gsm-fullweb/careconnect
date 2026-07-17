@@ -38,7 +38,6 @@ import AvaliacoesCuidareMogi from "./pages/AvaliacoesCuidareMogi";
 import VagasCuidadoraParticular from "./pages/VagasCuidadoraParticular";
 
 // Admin Pages
-import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminLayout from "./components/admin/AdminLayout";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -106,7 +105,10 @@ const App = () => (
             <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />
             <Route caseSensitive path="/Admin/login" element={<Navigate to="/admin/login" replace />} />
             <Route caseSensitive path="/Admin/*" element={<Navigate to="/admin" replace />} />
-            <Route path="/admin/login" element={<Login />} />
+            <Route
+              path="/admin/login"
+              element={<Navigate to="/login" state={{ from: { pathname: "/admin" } }} replace />}
+            />
 
             {/* Protected Admin Routes */}
             <Route path="/admin" element={

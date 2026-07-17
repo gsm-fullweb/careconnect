@@ -22,12 +22,17 @@ export const getUserProfile = async (user: User | null) => {
     .eq("id", user.id)
     .maybeSingle();
 
-  // Antes o erro era silenciosamente ignorado: se a RLS bloqueasse a leitura do
-  // próprio profile, o usuário admin era tratado como "não admin" e o painel
-  // ficava batendo em loop no login sem qualquer pista do motivo. Agora o
-  // problema fica visível no console para diagnóstico.
   if (error) {
     console.error("[authRole] Falha ao ler o profile do usuário:", error.message);
+    // Fallback: tenta usar o user_metadata do token JWT como fonte alternativa
+    // de papel. Isso evita logout espúrio quando a tabela profiles é inacessível
+    // por problemas de RLS ou rede.
+    const meta = user.user_metadata ?? {};
+    const roleFromMeta = meta.user_role ?? meta.role ?? meta.type ?? null;
+    if (roleFromMeta) {
+      console.warn("[authRole] Usando user_metadata como fallback de papel:", roleFromMeta);
+      return { user_role: roleFromMeta as string, type: roleFromMeta as string };
+    }
     return null;
   }
 

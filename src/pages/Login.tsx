@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { toast } = useToast();
     const { user, isLoading: authLoading } = useAuth();
 
@@ -25,12 +26,27 @@ const LoginPage = () => {
         }
     }, [user, authLoading]);
 
+    const getRequestedPath = () => {
+        const from = location.state?.from;
+        if (typeof from === "string") return from;
+        if (from?.pathname) {
+            return `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`;
+        }
+        return null;
+    };
+
     const redirectByRole = async (u: typeof user) => {
         if (!u) return;
         // Verificar na tabela candidatos se é cuidador
         const dashboardPath = await getDashboardPathForUser(u);
+        const requestedPath = getRequestedPath();
 
-        navigate(dashboardPath);
+        if (requestedPath?.toLowerCase().startsWith("/admin") && dashboardPath === "/admin") {
+            navigate(requestedPath, { replace: true });
+            return;
+        }
+
+        navigate(dashboardPath, { replace: true });
     };
 
     if (authLoading) {
