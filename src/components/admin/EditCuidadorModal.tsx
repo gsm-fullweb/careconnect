@@ -122,12 +122,12 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-white border-none shadow-2xl rounded-2xl p-0 overflow-hidden">
-        <div className="bg-careconnect-blue p-6 text-white">
+      <DialogContent className="admin-edit-modal sm:max-w-[720px] bg-white border-none shadow-2xl rounded-lg p-0 overflow-hidden">
+        <div className="bg-careconnect-blue p-4 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-2xl font-bold">
+            <DialogTitle className="flex items-center gap-2 text-xl font-bold">
               <div className="bg-white/20 p-2 rounded-lg">
-                <Pencil className="w-6 h-6 text-white" />
+                <Pencil className="w-5 h-5 text-white" />
               </div>
               Editar Cuidador
             </DialogTitle>
@@ -137,9 +137,9 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </p>
         </div>
 
-        <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div className="p-4 space-y-5 max-h-[68vh] overflow-y-auto custom-scrollbar">
           {/* GRUPO 1: NOME COMPLETO */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
               Nome completo
@@ -166,12 +166,12 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </div>
 
           {/* GRUPO 2: CONTATO */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
               Contato
             </h3>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <label className="text-xs font-medium text-gray-500 ml-1">Telefone / WhatsApp</label>
                 <Input
@@ -197,12 +197,12 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </div>
 
           {/* GRUPO 3: LOCALIZAÇÃO */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
               Localização
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <label className="text-xs font-medium text-gray-500 ml-1">Cidade</label>
                 <Input
@@ -237,12 +237,12 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </div>
 
           {/* GRUPO 4: QUALIFICAÇÃO */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
               Qualificação
             </h3>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <label className="text-xs font-medium text-gray-500 ml-1">Cargo / Especialidade</label>
                 <Input
@@ -264,7 +264,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-2">
+            <div className="grid grid-cols-2 gap-3 mt-2">
               <div className="grid gap-2">
                 <label className="text-xs font-medium text-gray-500 ml-1">Possui Experiência?</label>
                 <select
@@ -334,7 +334,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </div>
 
           {/* GRUPO 5: VISIBILIDADE */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-xs font-bold text-careconnect-blue uppercase tracking-wider flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-careconnect-blue rounded-full"></span>
               Visibilidade (Marketplace)
@@ -355,7 +355,7 @@ export const EditCuidadorModal: React.FC<EditCuidadorModalProps> = ({
           </div>
         </div>
 
-        <DialogFooter className="p-6 bg-gray-50 flex gap-3 sm:justify-end border-t border-gray-100">
+        <DialogFooter className="p-4 bg-gray-50 flex gap-2 sm:justify-end border-t border-gray-100">
           <Button 
             variant="outline" 
             onClick={onClose} 

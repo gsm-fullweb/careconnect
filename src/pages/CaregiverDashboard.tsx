@@ -16,7 +16,7 @@ import { ProfessionalDataSection } from "@/components/caregiver-dashboard/Profes
 import TermsAndDeclarationSection from "@/components/caregiver-dashboard/TermsAndDeclarationSection";
 
 const PainelCuidador = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [candidatoData, setCandidatoData] = useState<any>(null);
@@ -32,6 +32,8 @@ const PainelCuidador = () => {
 
   useEffect(() => {
     const fetchCandidatoData = async () => {
+      if (authLoading) return;
+
       if (!user?.email) {
         setLoading(false);
         return;
@@ -69,7 +71,7 @@ const PainelCuidador = () => {
     };
 
     fetchCandidatoData();
-  }, [user]);
+  }, [user, authLoading]);
 
   // Check for changes
   useEffect(() => {
@@ -80,7 +82,7 @@ const PainelCuidador = () => {
   }, [candidatoData, editFormData]);
 
   // Redirect if not authenticated
-  if (!user) {
+  if (!authLoading && !user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -209,7 +211,7 @@ const PainelCuidador = () => {
     return 'bg-red-50 border-red-200';
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

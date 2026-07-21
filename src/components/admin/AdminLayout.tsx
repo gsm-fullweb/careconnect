@@ -1,52 +1,40 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Menu, X, Home, Users, FileText, MessageSquare, User, LogOut } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { ErrorBoundary } from '../ErrorBoundary';
+import { useAuth } from "@/hooks/useAuth";
+import { ErrorBoundary } from "../ErrorBoundary";
 
-// ✅ Function: AdminLayout
-// 📌 Description: Admin layout component with sidebar navigation
-// 📥 Parameters: none
-// 📤 Returns: JSX.Element - complete admin layout with sidebar
+const navItems = [
+  { to: "/admin", label: "Painel", icon: Home },
+  { to: "/admin/users", label: "Cuidadores", icon: Users },
+  { to: "/admin/customers", label: "Clientes", icon: Users },
+  { to: "/admin/blog", label: "Posts do Blog", icon: FileText },
+  { to: "/admin/testimonials", label: "Depoimentos", icon: MessageSquare },
+  { to: "/admin/partners", label: "Parceiros", icon: Users },
+];
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, logout } = useAuth();
 
-  useEffect(() => {
-    // Get current user info
-    const getUserInfo = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email);
-      }
-    };
-    
-    getUserInfo();
-  }, []);
+  const isActiveRoute = (path: string) => location.pathname === path;
 
-  const isActiveRoute = (path: string) => {
-    return location.pathname === path;
-  };
-  
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
-      localStorage.removeItem("admin-token");
-      
+      await logout();
+
       toast({
         title: "Logout realizado com sucesso",
-        description: "Você foi desconectado do painel administrativo.",
+        description: "Voce foi desconectado do painel administrativo.",
       });
-      
-      navigate("/admin/login");
-    } catch (error) {
+
+      navigate("/login", { replace: true });
+    } catch {
       toast({
         title: "Falha no logout",
         description: "Houve um problema ao fazer logout. Tente novamente.",
@@ -56,129 +44,63 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Mobile Sidebar Toggle */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+    <div className="admin-shell min-h-screen bg-gray-100">
+      <div className="lg:hidden fixed top-3 left-3 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-md bg-white shadow-md text-careconnect-dark"
           aria-label={sidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
         >
-          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
-      
-      {/* Sidebar */}
+
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-56 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="h-full flex flex-col">
-          {/* Sidebar Header */}
-          <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
+          <div className="h-12 flex items-center justify-center border-b border-gray-200 px-3">
             <Link to="/admin" className="flex items-center">
-              <span className="text-xl font-semibold text-careconnect-blue">
+              <span className="text-lg font-semibold text-careconnect-blue">
                 Care<span className="text-careconnect-green">Connect</span>
               </span>
-              <span className="ml-2 text-sm text-gray-500">Admin</span>
+              <span className="ml-2 text-xs text-gray-500">Admin</span>
             </Link>
           </div>
-          
-          {/* Sidebar Navigation */}
-          <nav className="flex-grow py-6 px-4 space-y-1">
-            <Link
-              to="/admin"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <Home size={20} className="mr-3" />
-              <span>Painel</span>
-            </Link>
-            
-            <Link
-              to="/admin/users"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin/users")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <Users size={20} className="mr-3" />
-              <span>Cuidadores</span>
-            </Link>
-            
-            <Link
-              to="/admin/customers"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin/customers")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <Users size={20} className="mr-3" />
-              <span>Clientes</span>
-            </Link>
-            
-            <Link
-              to="/admin/blog"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin/blog")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <FileText size={20} className="mr-3" />
-              <span>Posts do Blog</span>
-            </Link>
-            
-            <Link
-              to="/admin/testimonials"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin/testimonials")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <MessageSquare size={20} className="mr-3" />
-              <span>Depoimentos</span>
-            </Link>
-            
-            <Link
-              to="/admin/partners"
-              className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                isActiveRoute("/admin/partners")
-                  ? "bg-careconnect-blue text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
-            >
-              <Users size={20} className="mr-3" />
-              <span>Parceiros</span>
-            </Link>
+
+          <nav className="flex-grow py-3 px-3 space-y-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`flex items-center py-2 px-3 rounded-md text-sm transition-colors ${
+                  isActiveRoute(to)
+                    ? "bg-careconnect-blue text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+                onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+              >
+                <Icon size={16} className="mr-2" />
+                <span>{label}</span>
+              </Link>
+            ))}
           </nav>
-          
-          {/* Sidebar Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
-                <User size={20} className="text-gray-600" />
+
+          <div className="p-3 border-t border-gray-200">
+            <div className="flex items-center mb-3">
+              <div className="w-8 h-8 rounded-full bg-gray-200 mr-2 flex items-center justify-center">
+                <User size={16} className="text-gray-600" />
               </div>
-              <div>
-                <p className="font-medium text-gray-800">Usuário Admin</p>
-                <p className="text-sm text-gray-500">{userEmail || "admin@careconnect.com"}</p>
+              <div className="min-w-0">
+                <p className="font-medium text-sm text-gray-800">Usuario Admin</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email || "admin@careconnect.com"}</p>
               </div>
             </div>
             <Button
               variant="outline"
+              size="sm"
               className="w-full flex items-center justify-center"
               onClick={handleLogout}
             >
@@ -188,22 +110,19 @@ const AdminLayout = () => {
           </div>
         </div>
       </aside>
-      
-      {/* Main Content */}
+
       <main
         className={`transition-all duration-300 ease-in-out ${
-          sidebarOpen ? "lg:ml-64" : ""
+          sidebarOpen ? "lg:ml-56" : ""
         }`}
       >
-        <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-          <ErrorBoundary 
-            fallback={<div>Erro ao carregar gestão de clientes. Tente recarregar a página.</div>}>
+        <div className="min-h-screen bg-gray-100 p-3 md:p-4">
+          <ErrorBoundary fallback={<div>Erro ao carregar gestao. Tente recarregar a pagina.</div>}>
             <Outlet />
           </ErrorBoundary>
         </div>
       </main>
-      
-      {/* Backdrop for mobile */}
+
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"

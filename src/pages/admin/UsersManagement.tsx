@@ -299,6 +299,11 @@ const UsersManagement = () => {
     setSelectedEditUser(null);
   };
 
+  const handleEditUpdate = () => {
+    handleCloseEditModal();
+    fetchUsers();
+  };
+
   const [newCandidate, setNewCandidate] = useState({
     nome: "",
     email: "",
@@ -430,17 +435,17 @@ const UsersManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white border border-gray-200 p-6 rounded-lg shadow-sm">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <Users className="w-8 h-8 text-careconnect-blue" />
-            <h1 className="text-3xl font-bold text-gray-900">Gerenciamento de Candidatos</h1>
+    <div className="space-y-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Users className="w-6 h-6 text-careconnect-blue" />
+            <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Candidatos</h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-sm text-gray-600">
             Gerencie contas de candidatos e visualize seus dados de forma organizada.
           </p>
-          <div className="flex items-center gap-4 mt-4">
+          <div className="flex flex-wrap items-center gap-2 mt-3">
             <div className="bg-gray-100 px-3 py-1 rounded-full">
               <span className="text-sm font-medium text-gray-700">{users.length} candidatos total</span>
             </div>
@@ -450,7 +455,8 @@ const UsersManagement = () => {
           </div>
         </div>
         <Button 
-          className="mt-6 lg:mt-0 bg-careconnect-blue hover:bg-careconnect-blue/90 text-white font-semibold"
+          size="sm"
+          className="mt-4 lg:mt-0 bg-careconnect-blue hover:bg-careconnect-blue/90 text-white font-semibold"
           onClick={() => setIsAddUserModalOpen(true)}
         >
           <UserPlus className="w-4 h-4 mr-2" />
@@ -458,26 +464,27 @@ const UsersManagement = () => {
         </Button>
       </div>
       
-      <Card className="shadow-lg">
-        <CardHeader className="border-b bg-gray-50/50">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <CardTitle className="flex items-center gap-2">
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-gray-50/50 p-4">
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Users className="w-5 h-5 text-careconnect-blue" />
               Lista de Candidatos
             </CardTitle>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                 <Input
                   placeholder="Buscar por nome, email ou cidade..."
-                  className="pl-9 w-64"
+                  className="pl-9 h-9 w-64"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2"
               >
@@ -486,6 +493,7 @@ const UsersManagement = () => {
               </Button>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={fetchUsers}
                 className="flex items-center gap-2"
                 disabled={loading}
@@ -497,11 +505,11 @@ const UsersManagement = () => {
           </div>
           
           {showFilters && (
-            <div className="flex flex-wrap gap-4 pt-4 border-t">
+            <div className="flex flex-wrap gap-3 pt-3 border-t">
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">Cargo</label>
                 <select 
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-careconnect-blue min-w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-careconnect-blue min-w-40"
                   value={cargoFilter}
                   onChange={(e) => setCargoFilter(e.target.value)}
                 >
@@ -515,7 +523,7 @@ const UsersManagement = () => {
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">Status</label>
                 <select 
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-careconnect-blue min-w-40"
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-careconnect-blue min-w-40"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -547,16 +555,16 @@ const UsersManagement = () => {
         
         <CardContent className="p-0">
           {loading && (
-            <div className="flex flex-col justify-center items-center py-16">
-              <div className="w-12 h-12 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-500">Carregando candidatos...</p>
+            <div className="flex flex-col justify-center items-center py-10">
+              <div className="w-10 h-10 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-sm text-gray-500">Carregando candidatos...</p>
             </div>
           )}
           
           {!loading && error && (
-            <div className="bg-red-50 border border-red-200 p-6 m-6 rounded-lg text-center">
-              <div className="text-red-600 mb-4">
-                <XCircle className="w-12 h-12 mx-auto mb-2" />
+            <div className="bg-red-50 border border-red-200 p-4 m-4 rounded-lg text-center">
+              <div className="text-red-600 mb-3">
+                <XCircle className="w-10 h-10 mx-auto mb-2" />
                 <h3 className="font-semibold text-lg">Erro ao carregar dados</h3>
                 <p className="text-sm">{error}</p>
               </div>
@@ -572,7 +580,7 @@ const UsersManagement = () => {
           
           {!loading && !error && (
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="admin-table text-xs [&_th]:h-9 [&_th]:px-2 [&_td]:px-2 [&_td]:py-2">
                 <TableHeader>
                   <TableRow className="bg-gray-50/50">
                     <TableHead className="font-semibold">Candidato</TableHead>
@@ -611,19 +619,19 @@ const UsersManagement = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1 text-sm">
+                          <div className="space-y-1 text-xs">
                             <p className="text-gray-900">{user.email}</p>
                             <p className="text-gray-500">{user.telefone}</p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1 text-sm">
+                          <div className="space-y-1 text-xs">
                             <p className="text-gray-900">{user.cidade}</p>
                             <p className="text-gray-500">{user.cep}</p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1 text-sm">
+                          <div className="space-y-1 text-xs">
                             <p className="text-gray-900">{user.escolaridade}</p>
                             <p className="text-gray-500">
                               {user.possui_experiencia === "Sim" ? "Com experiência" : "Sem experiência"}
@@ -631,7 +639,7 @@ const UsersManagement = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm text-gray-700 max-w-[200px] truncate" title={user.disponibilidade_horarios || 'Não informado'}>
+                          <div className="text-xs text-gray-700 max-w-[160px] truncate" title={user.disponibilidade_horarios || 'Não informado'}>
                             {user.disponibilidade_horarios || 'Não informado'}
                           </div>
                         </TableCell>
@@ -640,7 +648,7 @@ const UsersManagement = () => {
                             value={normalizeStatus(user.status_candidatura)}
                             onValueChange={(newStatus) => handleStatusChange(user.id, newStatus)}
                           >
-                            <SelectTrigger className="w-32">
+                            <SelectTrigger className="h-8 w-28 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -660,7 +668,7 @@ const UsersManagement = () => {
                             value={normalizeAtivo(user.ativo)}
                             onValueChange={(newAtivo) => handleAtivoChange(user.id, newAtivo)}
                           >
-                            <SelectTrigger className="w-32">
+                            <SelectTrigger className="h-8 w-28 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
@@ -676,16 +684,16 @@ const UsersManagement = () => {
                             </SelectContent>
                           </Select>
                         </TableCell>
-                        <TableCell className="text-sm text-gray-500">
+                        <TableCell className="text-xs text-gray-500">
                           {formatDate(user.data_cadastro)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center justify-center gap-2">
+                          <div className="flex items-center justify-center gap-1">
                             <Button 
                               variant="ghost" 
                               size="sm"
                               onClick={() => handleViewDetails(user)}
-                              className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                              className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600"
                               title="Visualizar detalhes"
                             >
                               <Eye className="w-4 h-4" />
@@ -694,7 +702,7 @@ const UsersManagement = () => {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleEditUser(user)}
-                              className="h-8 w-8 p-0 border-yellow-200 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
+                              className="h-7 w-7 p-0 border-yellow-200 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700"
                               title="Editar candidato"
                             >
                               <Pencil className="w-4 h-4" />
@@ -703,7 +711,7 @@ const UsersManagement = () => {
                               variant="ghost" 
                               size="sm" 
                               onClick={() => handleDeleteUser(user.id)}
-                              className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                              className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-600"
                               title="Excluir candidato"
                             >
                               <Trash className="w-4 h-4" />
@@ -719,12 +727,12 @@ const UsersManagement = () => {
           )}
           
           {!loading && !error && filteredUsers.length > 0 && (
-            <div className="flex justify-between items-center p-4 border-t bg-gray-50/30">
-              <div className="text-sm text-gray-600">
+            <div className="flex justify-between items-center p-3 border-t bg-gray-50/30">
+              <div className="text-xs text-gray-600">
                 Mostrando <span className="font-medium">{filteredUsers.length}</span> de{" "}
                 <span className="font-medium">{users.length}</span> candidatos
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span>Paginação em desenvolvimento</span>
               </div>
             </div>
@@ -747,18 +755,18 @@ const UsersManagement = () => {
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
           cuidador={selectedEditUser}
-          onUpdate={handleCloseEditModal}
+          onUpdate={handleEditUpdate}
         />
       )}
       
       {isAddUserModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsAddUserModalOpen(false)}></div>
-          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Adicionar Novo Candidato</h3>
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-4">
+              <h3 className="text-lg font-semibold mb-3">Adicionar Novo Candidato</h3>
               <form onSubmit={handleAddCandidate}>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nome Completo
@@ -791,7 +799,7 @@ const UsersManagement = () => {
                       onChange={(e) => setNewCandidate({...newCandidate, telefone: e.target.value})}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         CEP
@@ -859,10 +867,11 @@ const UsersManagement = () => {
                     </select>
                   </div>
                 </div>
-                <div className="mt-6 flex justify-end space-x-3">
+                <div className="mt-4 flex justify-end space-x-2">
                   <Button 
                     type="button" 
                     variant="outline"
+                    size="sm"
                     onClick={() => setIsAddUserModalOpen(false)}
                     disabled={loading}
                   >
@@ -870,6 +879,7 @@ const UsersManagement = () => {
                   </Button>
                   <Button
                     type="submit"
+                    size="sm"
                     className="bg-careconnect-blue hover:bg-careconnect-blue/90"
                     disabled={loading}
                   >

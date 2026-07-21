@@ -135,4 +135,51 @@
   .btn-secondary {
     @apply bg-careconnect-green text-white hover:bg-careconnect-green/90;
   }
+
+  .admin-shell {
+    font-size: 13px;
+  }
+
+  .admin-shell .text-3xl {
+    font-size: 1.45rem;
+    line-height: 1.85rem;
+  }
+
+  .admin-shell .text-2xl {
+    font-size: 1.25rem;
+    line-height: 1.65rem;
+  }
+
+  .admin-shell .text-xl {
+    font-size: 1.05rem;
+    line-height: 1.4rem;
+  }
+
+  .admin-shell .gap-8 {
+    gap: 1rem;
+  }
+
+  .admin-shell .gap-6 {
+    gap: 0.875rem;
+  }
+
+  .admin-table th {
+    height: 2.25rem;
+    padding: 0.5rem;
+  }
+
+  .admin-table td {
+    padding: 0.5rem;
+  }
+
+  .admin-edit-modal input,
+  .admin-edit-modal select {
+    height: 2.25rem;
+    border-radius: 0.5rem;
+  }
+
+  .admin-edit-modal textarea {
+    min-height: 4rem;
+    border-radius: 0.5rem;
+  }
 }

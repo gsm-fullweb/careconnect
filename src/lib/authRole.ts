@@ -48,6 +48,15 @@ export const hasCaregiverCandidate = async (email?: string | null) => {
 };
 
 export const isAdminUser = async (user: User | null) => {
+  if (!user) return false;
+
+  const { data, error } = await supabase.rpc("is_admin");
+  if (error) {
+    console.error("[authRole] Falha ao validar admin pela RPC:", error.message);
+  }
+
+  if (data === true) return true;
+
   const profile = await getUserProfile(user);
   return isAdminRole(profile?.user_role) || isAdminRole(profile?.type);
 };
@@ -66,11 +75,11 @@ export const isCaregiverUser = async (user: User | null) => {
 export const getDashboardPathForUser = async (user: User | null) => {
   if (!user) return "/login";
 
-  const profile = await getUserProfile(user);
-
-  if (isAdminRole(profile?.user_role) || isAdminRole(profile?.type)) {
+  if (await isAdminUser(user)) {
     return "/admin";
   }
+
+  const profile = await getUserProfile(user);
 
   if (isCaregiverRole(profile?.user_role) || isCaregiverRole(profile?.type)) {
     return "/painel-cuidador";

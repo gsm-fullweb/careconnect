@@ -12,7 +12,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { formatCargoLabel, normalizeCity } from "@/lib/utils";
 
 const CadastrarCuidador = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [candidatoData, setCandidatoData] = useState<any>(null);
@@ -27,6 +27,8 @@ const CadastrarCuidador = () => {
   // 📤 Returns: void
   useEffect(() => {
     const fetchCandidatoData = async () => {
+      if (authLoading) return;
+
       if (!user?.email) {
         setLoading(false);
         return;
@@ -64,10 +66,10 @@ const CadastrarCuidador = () => {
     };
 
     fetchCandidatoData();
-  }, [user]);
+  }, [user, authLoading]);
 
   // Redirect if not authenticated
-  if (!user && !loading) {
+  if (!authLoading && !user && !loading) {
     return <Navigate to="/login" replace />;
   }
 
@@ -204,7 +206,7 @@ const CadastrarCuidador = () => {
     !candidatoData?.cargo ||
     !candidatoData?.experiencia;
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="w-16 h-16 border-4 border-careconnect-blue border-t-transparent rounded-full animate-spin"></div>

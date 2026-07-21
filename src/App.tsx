@@ -39,7 +39,6 @@ import VagasCuidadoraParticular from "./pages/VagasCuidadoraParticular";
 import BuscaCuidadorLP from "./pages/BuscaCuidadorLP";
 
 // Admin Pages
-import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminLayout from "./components/admin/AdminLayout";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -106,9 +105,9 @@ const App = () => (
 
             {/* Admin Routes */}
             <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />
-            <Route caseSensitive path="/Admin/login" element={<Navigate to="/admin/login" replace />} />
+            <Route caseSensitive path="/Admin/login" element={<Navigate to="/login" replace />} />
             <Route caseSensitive path="/Admin/*" element={<Navigate to="/admin" replace />} />
-            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/login" element={<Navigate to="/login" replace />} />
 
             {/* Protected Admin Routes */}
             <Route path="/admin" element={
