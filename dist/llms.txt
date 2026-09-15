@@ -1,0 +1,21 @@
+# CareConnect — Cuidador de Idosos em SP, Mogi e Alto Tietê
+
+## CareConnect
+- Somos uma plataforma de matching inteligente que conecta famílias a cuidadores de idosos qualificados e verificados.
+- Atendemos São Paulo, Mogi das Cruzes, Guarulhos, Suzano, Arujá e todo o Alto Tietê.
+- Usamos IA para encontrar o cuidador ideal baseado nas necessidades do paciente.
+- Serviços: home care 24h, acompanhamento hospitalar, cuidados para Alzheimer e Parkinson, cuidados paliativos, cuidador noturno.
+
+## Key pages
+- Homepage: https://www.careconnect.com.br/
+- Sobre: https://www.careconnect.com.br/about
+- Serviços: https://www.careconnect.com.br/services
+- Planos: https://www.careconnect.com.br/plans
+- Contato (WhatsApp): https://www.careconnect.com.br/contact
+
+## Blog posts
+- Alzheimer: https://www.careconnect.com.br/blog/como-cuidar-de-idoso-com-alzheimer-em-casa-guia-pratico-2026
+- Parkinson: https://www.careconnect.com.br/blog/como-cuidar-de-idoso-com-parkinson-em-casa-guia-2026
+- Preços São Paulo: https://www.careconnect.com.br/blog/quanto-custa-cuidador-idosos-sao-paulo
+- Preços Mogi: https://www.careconnect.com.br/blog/quanto-custa-cuidador-idosos-mogi-das-cruzes
+- Preços Guarulhos: https://www.careconnect.com.br/blog/quanto-custa-um-cuidador-de-idosos-em-guarulhos-em-2026

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Geo Meta Tags (SEO Local) -->
+    <meta name="geo.region" content="BR-SP" />
+    <meta name="geo.placename" content="Mogi das Cruzes" />
+    <meta name="geo.position" content="-23.5225;-46.1882" />
+    <meta name="ICBM" content="-23.5225, -46.1882" />
+
+    <!-- Preconnect para origens críticas (elimina latência de DNS) -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://dyxkbbojlyppizsgjjxx.supabase.co" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GYZ36MKT4N"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-GYZ36MKT4N');
+    </script>
+
+    <!-- Google Fonts com display=swap (evita FOIT / bloqueio de renderização) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+
+    <!-- Schema.org JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "CareConnect",
+      "url": "https://www.careconnect.com.br",
+      "logo": "https://www.careconnect.com.br/og-image.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+55-11-4863-3976",
+        "contactType": "customer service",
+        "areaServed": "BR",
+        "availableLanguage": "Portuguese"
+      }
+    }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <!-- Script de terceiro com defer para não bloquear renderização -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module" defer></script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
