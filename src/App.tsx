@@ -36,6 +36,17 @@ import HomeAngelsMogiDasCruzes from "./pages/HomeAngelsMogiDasCruzes";
 import AvaliacoesCuidareMogi from "./pages/AvaliacoesCuidareMogi";
 import VagasCuidadoraParticular from "./pages/VagasCuidadoraParticular";
 import BuscaCuidadorLP from "./pages/BuscaCuidadorLP";
+import CuidadoraPerfil from "./pages/CuidadoraPerfil";
+import PaulaBeneditoDaSilva from "./pages/PaulaBeneditoDaSilva";
+import Suellen from "./pages/Suellen";
+import Jozimar from "./pages/Jozimar";
+import DanieleLemes from "./pages/DanieleLemes";
+import DalvaXavier from "./pages/DalvaXavier";
+import DanielaCristina from "./pages/DanielaCristina";
+import HosanaRodrigues from "./pages/HosanaRodrigues";
+import BrunaCaroline from "./pages/BrunaCaroline";
+import Patricia from "./pages/Patricia";
+import DulceRafaela from "./pages/DulceRafaela";
 
 // Admin Pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -102,6 +113,17 @@ const App = () => (
             <Route path="/home-angels-mogi-das-cruzes" element={<HomeAngelsMogiDasCruzes />} />
             <Route path="/avaliacoes-sobre-cuidare-mogi-das-cruzes" element={<AvaliacoesCuidareMogi />} />
             <Route path="/vagas-de-cuidadora-de-idosos-particular" element={<VagasCuidadoraParticular />} />
+            <Route path="/cuidadora/paula-benedito-da-silva" element={<PaulaBeneditoDaSilva />} />
+            <Route path="/cuidadora/suellen" element={<Suellen />} />
+            <Route path="/cuidador/jozimar" element={<Jozimar />} />
+            <Route path="/cuidadora/daniele-lemes" element={<DanieleLemes />} />
+            <Route path="/cuidadora/dalva-xavier" element={<DalvaXavier />} />
+            <Route path="/cuidadora/daniela-cristina" element={<DanielaCristina />} />
+            <Route path="/cuidadora/hosana-rodrigues" element={<HosanaRodrigues />} />
+            <Route path="/cuidadora/bruna-caroline" element={<BrunaCaroline />} />
+            <Route path="/cuidadora/patricia" element={<Patricia />} />
+            <Route path="/cuidadora/dulce-rafaela" element={<DulceRafaela />} />
+            <Route path="/cuidadora/:slug" element={<CuidadoraPerfil />} />
 
             {/* Admin Routes */}
             <Route caseSensitive path="/Admin" element={<Navigate to="/admin" replace />} />

@@ -41,3 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# vite build output
+/dist
+*.log
+_ptest*.mjs
+build_error.txt
+package.json.bak
+
+
